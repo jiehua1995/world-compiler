@@ -11,7 +11,13 @@ const { mode, name, nameEn } = Astro.props;
     <h2 data-copy-zh={name} data-copy-en={nameEn}>{name}</h2>
   </header>
   <div class="comparison-card__viewport">
-    <canvas data-mode={mode} role="img" aria-label={`${name}预览画布`}></canvas>
+    <canvas
+      data-mode={mode}
+      role="img"
+      data-label-zh={`${name}预览画布`}
+      data-label-en={`${nameEn} preview canvas`}
+      aria-label={`${name}预览画布`}
+    ></canvas>
     <div class="comparison-card__waiting" data-preview-placeholder>
       <span aria-hidden="true"></span>
     </div>
@@ -21,6 +27,8 @@ const { mode, name, nameEn } = Astro.props;
     data-preview-mode={mode}
     data-name-zh={name}
     data-name-en={nameEn}
+    data-label-zh={`放大查看 ${name}`}
+    data-label-en={`Inspect ${nameEn}`}
     aria-label={`放大查看 ${name}`}
     disabled
   >

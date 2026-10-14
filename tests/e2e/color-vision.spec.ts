@@ -5,6 +5,18 @@ import { expect, test } from '@playwright/test';
 const fixture = path.resolve('tests/fixtures/color-grid.png');
 const corruptFixture = path.resolve('tests/fixtures/not-an-image.png');
 
+test('applies a stored English locale to the complete workbench on first load', async ({ page }) => {
+  await page.addInitScript(() => {
+    localStorage.setItem('world-compiler:locale', 'en');
+  });
+
+  await page.goto('./tools/color-vision/');
+
+  await expect(page.getByRole('heading', { name: 'Original' })).toBeVisible();
+  await expect(page.getByLabel('Original preview canvas')).toBeVisible();
+  await expect(page.getByLabel('Export mode')).toContainText('Protanopia');
+});
+
 test('imports locally and renders five labelled comparisons without uploads', async ({ page }) => {
   const externalDataRequests: string[] = [];
   page.on('request', (request) => {

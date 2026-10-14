@@ -62,6 +62,10 @@ function translateDocument(doc: Document, locale: Locale): void {
     if (key && key in copy) element.placeholder = copy[key];
   });
 
+  doc.querySelectorAll<HTMLElement>('[data-copy-zh][data-copy-en]').forEach((element) => {
+    element.textContent = locale === 'en' ? element.dataset.copyEn ?? '' : element.dataset.copyZh ?? '';
+  });
+
   doc.querySelectorAll<HTMLElement>('[data-label-zh][data-label-en]').forEach((element) => {
     element.setAttribute(
       'aria-label',
@@ -97,6 +101,7 @@ export function initializePreferences(doc: Document, win: Window) {
 
   translateDocument(doc, locale);
   applyTheme();
+  doc.dispatchEvent(new CustomEvent('worldcompiler:localechange', { detail: { locale } }));
   media?.addEventListener?.('change', onSystemThemeChange);
 
   return {
