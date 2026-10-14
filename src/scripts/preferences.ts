@@ -57,6 +57,11 @@ function translateDocument(doc: Document, locale: Locale): void {
     if (key && key in copy) element.textContent = copy[key];
   });
 
+  doc.querySelectorAll<HTMLInputElement>('[data-i18n-placeholder]').forEach((element) => {
+    const key = element.dataset.i18nPlaceholder as DictionaryKey | undefined;
+    if (key && key in copy) element.placeholder = copy[key];
+  });
+
   doc.querySelectorAll<HTMLElement>('[data-locale]').forEach((control) => {
     control.setAttribute('aria-pressed', String(control.dataset.locale === locale));
   });
@@ -92,6 +97,7 @@ export function initializePreferences(doc: Document, win: Window) {
       locale = nextLocale;
       storage.set(localeKey, locale);
       translateDocument(doc, locale);
+      doc.dispatchEvent(new CustomEvent('worldcompiler:localechange', { detail: { locale } }));
     },
     setTheme(nextTheme: ThemePreference) {
       themePreference = nextTheme;

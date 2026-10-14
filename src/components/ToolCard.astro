@@ -1,0 +1,32 @@
+---
+import type { ToolDefinition } from '../data/tools';
+
+interface Props { tool: ToolDefinition; }
+const { tool } = Astro.props;
+const base = import.meta.env.BASE_URL;
+const baseWithSlash = base.endsWith('/') ? base : `${base}/`;
+const href = `${baseWithSlash}tools/${tool.slug}/`;
+const openZh = `打开${tool.title['zh-CN']}`;
+const openEn = `Open ${tool.title.en}`;
+const categoryZh = tool.category === 'vision' ? '视觉' : tool.category === 'text' ? '文本' : tool.category === 'data' ? '数据' : '媒体';
+---
+
+<article class:list={['tool-card', { 'tool-card--available': tool.status === 'available' }]} data-tool-slug={tool.slug}>
+  <div class="tool-card__visual">
+    {tool.asset ? <img src={`${baseWithSlash}${tool.asset}`} alt="" width="320" height="320" loading="lazy" /> : <span class="tool-card__placeholder" aria-hidden="true"><i></i><i></i><i></i></span>}
+    <span class="tool-card__sequence">WC—{tool.sequence}</span>
+  </div>
+  <div class="tool-card__body">
+    <div class="tool-card__meta">
+      <span data-copy-zh={categoryZh} data-copy-en={tool.category}>{categoryZh}</span>
+      <span class:list={['tool-card__status', `tool-card__status--${tool.status}`]} data-i18n={`tool.${tool.status}`}>{tool.status === 'available' ? '可用' : '计划中'}</span>
+    </div>
+    <h3 data-copy-zh={tool.title['zh-CN']} data-copy-en={tool.title.en}>{tool.title['zh-CN']}</h3>
+    <p data-copy-zh={tool.summary['zh-CN']} data-copy-en={tool.summary.en}>{tool.summary['zh-CN']}</p>
+    {tool.status === 'available' ? (
+      <a href={href} data-label-zh={openZh} data-label-en={openEn} aria-label={openZh}><span data-copy-zh="打开工具" data-copy-en="Open tool">打开工具</span><b aria-hidden="true">↗</b></a>
+    ) : (
+      <span class="tool-card__planned" data-copy-zh="进入开发队列" data-copy-en="In the build queue">进入开发队列</span>
+    )}
+  </div>
+</article>
