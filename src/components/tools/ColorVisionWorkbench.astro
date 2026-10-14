@@ -1,0 +1,34 @@
+---
+import ComparisonCard from './ComparisonCard.astro';
+import DropZone from './DropZone.astro';
+import ExportPanel from './ExportPanel.astro';
+import PreviewDialog from './PreviewDialog.astro';
+
+const modes = [
+  { mode: 'original', name: '原图', nameEn: 'Original' },
+  { mode: 'protanopia', name: '红色盲', nameEn: 'Protanopia' },
+  { mode: 'deuteranopia', name: '绿色盲', nameEn: 'Deuteranopia' },
+  { mode: 'tritanopia', name: '蓝色盲', nameEn: 'Tritanopia' },
+  { mode: 'achromatopsia', name: '全色盲', nameEn: 'Achromatopsia' },
+] as const;
+---
+
+<div class="color-vision-lab" data-color-vision-lab data-state="empty">
+  <section class="input-panel" aria-labelledby="input-title">
+    <div>
+      <p class="section-kicker">INPUT / 本地文件</p>
+      <h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2>
+    </div>
+    <DropZone />
+    <div class="workbench-feedback">
+      <p role="status" aria-live="polite" data-workbench-status data-i18n="cv.status.empty">等待导入图片</p>
+      <p role="alert" data-workbench-error hidden></p>
+      <button type="button" data-reset data-i18n="cv.reset">重置工作台</button>
+    </div>
+  </section>
+  <section class="comparison-section" aria-label="色觉模式对照">
+    {modes.map(({ mode, name, nameEn }) => <ComparisonCard mode={mode} name={name} nameEn={nameEn} />)}
+  </section>
+  <ExportPanel />
+  <PreviewDialog />
+</div>

@@ -1,0 +1,30 @@
+<section class="export-panel" aria-labelledby="export-title">
+  <div>
+    <p class="section-kicker">OUTPUT / 本地导出</p>
+    <h2 id="export-title" data-i18n="cv.exportTitle">导出结果</h2>
+  </div>
+  <div class="export-panel__controls">
+    <label>
+      <span data-i18n="cv.exportMode">导出模式</span>
+      <select data-export-mode disabled>
+        <option value="original" data-copy-zh="原图" data-copy-en="Original">原图</option>
+        <option value="protanopia" data-copy-zh="红色盲" data-copy-en="Protanopia">红色盲</option>
+        <option value="deuteranopia" data-copy-zh="绿色盲" data-copy-en="Deuteranopia">绿色盲</option>
+        <option value="tritanopia" data-copy-zh="蓝色盲" data-copy-en="Tritanopia">蓝色盲</option>
+        <option value="achromatopsia" data-copy-zh="全色盲" data-copy-en="Achromatopsia">全色盲</option>
+      </select>
+    </label>
+    <label>
+      <span data-i18n="cv.exportFormat">导出格式</span>
+      <select data-export-format disabled>
+        <option value="image/png">PNG</option>
+        <option value="image/jpeg">JPEG</option>
+      </select>
+    </label>
+    <label data-quality-row hidden>
+      <span data-i18n="cv.exportQuality">JPEG 质量</span>
+      <input type="range" min="0.5" max="1" step="0.05" value="0.9" data-export-quality disabled />
+    </label>
+    <button type="button" class="export-panel__button" data-export disabled data-i18n="cv.exportButton">导出图片</button>
+  </div>
+</section>

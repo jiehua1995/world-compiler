@@ -1,0 +1,29 @@
+---
+import type { VisionMode } from '../../features/color-vision/types';
+
+interface Props { mode: VisionMode; name: string; nameEn: string; }
+const { mode, name, nameEn } = Astro.props;
+---
+
+<article class="comparison-card" data-comparison-card={mode}>
+  <header>
+    <span class="comparison-card__index">{String(['original','protanopia','deuteranopia','tritanopia','achromatopsia'].indexOf(mode) + 1).padStart(2, '0')}</span>
+    <h2 data-copy-zh={name} data-copy-en={nameEn}>{name}</h2>
+  </header>
+  <div class="comparison-card__viewport">
+    <canvas data-mode={mode} role="img" aria-label={`${name}预览画布`}></canvas>
+    <div class="comparison-card__waiting" data-preview-placeholder>
+      <span aria-hidden="true"></span>
+    </div>
+  </div>
+  <button
+    type="button"
+    data-preview-mode={mode}
+    data-name-zh={name}
+    data-name-en={nameEn}
+    aria-label={`放大查看 ${name}`}
+    disabled
+  >
+    <span data-i18n="cv.inspect">放大查看</span><b aria-hidden="true">↗</b>
+  </button>
+</article>

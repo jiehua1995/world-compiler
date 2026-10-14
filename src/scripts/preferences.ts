@@ -62,6 +62,13 @@ function translateDocument(doc: Document, locale: Locale): void {
     if (key && key in copy) element.placeholder = copy[key];
   });
 
+  doc.querySelectorAll<HTMLElement>('[data-label-zh][data-label-en]').forEach((element) => {
+    element.setAttribute(
+      'aria-label',
+      locale === 'en' ? element.dataset.labelEn ?? '' : element.dataset.labelZh ?? '',
+    );
+  });
+
   doc.querySelectorAll<HTMLElement>('[data-locale]').forEach((control) => {
     control.setAttribute('aria-pressed', String(control.dataset.locale === locale));
   });

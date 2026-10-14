@@ -1,0 +1,34 @@
+---
+import ColorVisionWorkbench from '../../components/tools/ColorVisionWorkbench.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/color-vision.css';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+---
+
+<BaseLayout titleKey="cv.pageTitle" descriptionKey="cv.pageDescription">
+  <section class="tool-hero">
+    <a class="tool-hero__back" href={`${base}#tools`} data-i18n="cv.back">← 返回工具目录</a>
+    <div class="tool-hero__grid">
+      <div>
+        <p class="section-kicker" data-i18n="cv.kicker">视觉工具 / WC—001</p>
+        <h1 data-i18n="cv.title">色觉实验室</h1>
+        <p class="tool-hero__intro" data-i18n="cv.intro">导入一张图片，同时观察不同色觉模式下的视觉差异。所有像素只在当前浏览器中处理。</p>
+      </div>
+      <div class="tool-hero__notes">
+        <p class="local-badge"><span aria-hidden="true"></span><b data-i18n="cv.localBadge">文件不会上传</b></p>
+        <p data-i18n="cv.disclaimer">教育性近似模拟，不用于医学诊断。个体视觉体验可能不同。</p>
+      </div>
+    </div>
+  </section>
+  <ColorVisionWorkbench />
+  <script>
+    import { mountColorVisionLab } from '../../features/color-vision/controller';
+    const root = document.querySelector<HTMLElement>('[data-color-vision-lab]');
+    if (root) {
+      const controller = mountColorVisionLab(root);
+      window.addEventListener('pagehide', () => controller.destroy(), { once: true });
+    }
+  </script>
+</BaseLayout>
