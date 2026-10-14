@@ -1,0 +1,74 @@
+---
+import type { DictionaryKey } from '../i18n/dictionaries';
+import { dictionary } from '../i18n/dictionaries';
+import SiteFooter from '../components/SiteFooter.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import '../styles/tokens.css';
+import '../styles/global.css';
+import '../styles/shell.css';
+
+interface Props {
+  titleKey: DictionaryKey;
+  descriptionKey: DictionaryKey;
+}
+
+const { titleKey, descriptionKey } = Astro.props;
+const copy = dictionary('zh-CN');
+---
+
+<!doctype html>
+<html lang="zh-CN" data-theme="light" data-theme-preference="system">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f3f0e8" />
+    <meta name="description" content={copy[descriptionKey]} />
+    <title>{copy[titleKey]}</title>
+    <script is:inline>
+      (() => {
+        let preference = 'system';
+        try {
+          const stored = localStorage.getItem('world-compiler:theme');
+          if (stored === 'light' || stored === 'dark' || stored === 'system') preference = stored;
+        } catch {}
+        const dark = preference === 'dark' ||
+          (preference === 'system' && matchMedia('(prefers-color-scheme: dark)').matches);
+        document.documentElement.dataset.theme = dark ? 'dark' : 'light';
+        document.documentElement.dataset.themePreference = preference;
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content" data-i18n="a11y.skipToContent">跳到主要内容</a>
+    <div class="site-frame">
+      <SiteHeader />
+      <main id="main-content" tabindex="-1">
+        <slot />
+      </main>
+      <SiteFooter />
+    </div>
+    <script>
+      import { initializePreferences } from '../scripts/preferences';
+
+      const preferences = initializePreferences(document, window);
+
+      document.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof Element)) return;
+
+        const localeControl = target.closest<HTMLElement>('[data-locale]');
+        if (localeControl?.dataset.locale === 'zh-CN' || localeControl?.dataset.locale === 'en') {
+          preferences.setLocale(localeControl.dataset.locale);
+        }
+
+        const themeControl = target.closest<HTMLElement>('[data-theme-value]');
+        const nextTheme = themeControl?.dataset.themeValue;
+        if (nextTheme === 'system' || nextTheme === 'light' || nextTheme === 'dark') {
+          preferences.setTheme(nextTheme);
+        }
+      });
+
+      window.addEventListener('pagehide', () => preferences.destroy(), { once: true });
+    </script>
+  </body>
+</html>

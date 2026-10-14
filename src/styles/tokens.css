@@ -1,0 +1,39 @@
+:root {
+  color-scheme: light;
+  --signal-amber: #fca104;
+  --institution-blue: #2f6db3;
+  --signal-coral: #e56c57;
+  --lunar-violet: #5200a6;
+  --chartreuse-gold: #cdb742;
+  --observatory-cyan: #45a6b2;
+  --paper: #f3f0e8;
+  --paper-raised: #fffdf8;
+  --ink: #101a27;
+  --ink-muted: #58616c;
+  --line: #c8c5bc;
+  --line-strong: #87909b;
+  --focus: #1f5fa8;
+  --shadow: rgba(24, 35, 50, 0.12);
+  --grid: rgba(47, 109, 179, 0.075);
+  --space-1: clamp(0.5rem, 0.4rem + 0.25vw, 0.75rem);
+  --space-2: clamp(0.75rem, 0.6rem + 0.4vw, 1.125rem);
+  --space-3: clamp(1rem, 0.8rem + 0.7vw, 1.75rem);
+  --space-4: clamp(1.5rem, 1rem + 1.4vw, 3rem);
+  --space-5: clamp(2.5rem, 1.6rem + 3vw, 6rem);
+  --radius-sm: 0.4rem;
+  --radius-md: 0.8rem;
+  --content: 88rem;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --paper: #09111d;
+  --paper-raised: #101b2a;
+  --ink: #eef3f4;
+  --ink-muted: #a7b2bd;
+  --line: #2c3a4c;
+  --line-strong: #607187;
+  --focus: #72cad5;
+  --shadow: rgba(0, 0, 0, 0.35);
+  --grid: rgba(69, 166, 178, 0.095);
+}
