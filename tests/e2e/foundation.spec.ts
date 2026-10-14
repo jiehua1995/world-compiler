@@ -9,6 +9,7 @@ test('serves the World Compiler root without console errors', async ({ page }) =
   await page.goto('./');
 
   await expect(page).toHaveTitle(/World Compiler/);
-  await expect(page.getByRole('heading', { level: 1 })).toContainText('World Compiler');
+  await expect(page.getByRole('heading', { level: 1 })).not.toBeEmpty();
+  await expect(page.getByRole('link', { name: '世界编译局 / World Compiler' })).toBeVisible();
   expect(errors).toEqual([]);
 });

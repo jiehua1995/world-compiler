@@ -100,7 +100,8 @@
 }
 
 .preference-control button {
-  min-height: 2rem;
+  min-width: 2.75rem;
+  min-height: 2.75rem;
   padding: 0.25rem 0.7rem;
   color: var(--ink-muted);
   background: transparent;
