@@ -15,6 +15,44 @@ test('applies a stored English locale to the complete workbench on first load', 
   await expect(page.getByRole('heading', { name: 'Original' })).toBeVisible();
   await expect(page.getByLabel('Original preview canvas')).toBeVisible();
   await expect(page.getByLabel('Export mode')).toContainText('Protanopia');
+  await expect(page).toHaveTitle('Color Vision Lab / World Compiler');
+  await expect(page.getByRole('region', { name: 'Color vision mode comparison' })).toBeVisible();
+  await expect(page.getByText('INPUT / Local file')).toBeVisible();
+  await expect(page.getByText('OUTPUT / Local export')).toBeVisible();
+  await expect(page.locator('[data-quality-row]')).toBeHidden();
+  await page.getByLabel('Choose a local image').setInputFiles(fixture);
+  await expect(page.getByRole('status')).toContainText('Complete');
+  const downloadPromise = page.waitForEvent('download');
+  await page.getByRole('button', { name: 'Export image' }).click();
+  expect((await downloadPromise).suggestedFilename()).toBe('world-compiler-original.png');
+});
+
+test('cancels an in-flight comparison when reset is pressed', async ({ page }) => {
+  await page.goto('./tools/color-vision/');
+  await page.evaluate(() => {
+    const worker = window.Worker;
+    window.Worker = class extends worker {
+      postMessage(message: unknown) {
+        setTimeout(() => super.postMessage(message), 400);
+      }
+    };
+  });
+  await page.reload();
+  await page.getByLabel('选择本地图片').setInputFiles(fixture);
+  await expect(page.getByRole('status')).toContainText('正在生成');
+  await page.getByRole('button', { name: '重置工作台' }).click();
+  await expect(page.getByRole('status')).toHaveText('等待导入图片');
+  await page.waitForTimeout(1500);
+  await expect(page.locator('canvas[data-rendered="true"]')).toHaveCount(0);
+});
+
+test('keeps error text localized after switching language', async ({ page }) => {
+  await page.goto('./tools/color-vision/');
+  await page.getByRole('button', { name: 'English' }).click();
+  await page.getByLabel('Choose a local image').setInputFiles(corruptFixture);
+  await expect(page.getByRole('alert')).toContainText('could not be decoded');
+  await page.getByRole('button', { name: '中文' }).click();
+  await expect(page.getByRole('alert')).toContainText('无法解码');
 });
 
 test('imports locally and renders five labelled comparisons without uploads', async ({ page }) => {
@@ -68,18 +106,21 @@ test('exports the selected JPEG and reveals quality control', async ({ page }) =
 
   await page.getByLabel('导出格式').selectOption('image/jpeg');
   await expect(page.getByLabel('JPEG 质量')).toBeVisible();
+  await page.getByLabel('导出格式').selectOption('image/png');
+  await expect(page.locator('[data-quality-row]')).toBeHidden();
+  await page.getByLabel('导出格式').selectOption('image/jpeg');
   await page.getByLabel('导出模式').selectOption('tritanopia');
   const downloadPromise = page.waitForEvent('download');
   await page.getByRole('button', { name: '导出图片' }).click();
   const download = await downloadPromise;
-  expect(download.suggestedFilename()).toMatch(/tritanopia\.jpg$/);
+  expect(download.suggestedFilename()).toBe('世界编译局-蓝色盲.jpg');
 });
 
 test('recovers from a corrupt image and remains keyboard operable', async ({ page }) => {
   await page.goto('./tools/color-vision/');
   const input = page.getByLabel('选择本地图片');
   await input.setInputFiles(corruptFixture);
-  await expect(page.getByRole('alert')).toContainText('无法读取');
+  await expect(page.getByRole('alert')).toContainText('无法解码');
 
   await page.getByRole('button', { name: '重置工作台' }).focus();
   await page.keyboard.press('Enter');

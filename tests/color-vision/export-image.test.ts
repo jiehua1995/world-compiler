@@ -2,12 +2,14 @@
 
 import { describe, expect, it } from 'vitest';
 import { exportSimulation, type CanvasEnvironment } from '../../src/features/color-vision/export-image';
+import type { VisionMode } from '../../src/features/color-vision/types';
 
 function canvasEnvironment(pixels: number[], fail = false) {
   let written: number[] = [];
   const context = {
     drawImage() {},
     getImageData: () => ({ data: new Uint8ClampedArray(pixels), width: 1, height: 1 }),
+    createImageData: (width: number, height: number) => ({ data: new Uint8ClampedArray(width * height * 4), width, height }),
     putImageData: (image: ImageData) => { written = Array.from(image.data); },
   } as unknown as CanvasRenderingContext2D;
   const canvas = {
@@ -37,6 +39,18 @@ describe('exportSimulation', () => {
 
     expect(blob.type).toBe('image/jpeg');
     expect(fixture.written()).toEqual([252, 161, 4, 255]);
+  });
+
+  it('uses the asynchronous pixel processor when supplied', async () => {
+    const fixture = canvasEnvironment([252, 161, 4, 40]);
+    const transform = async (pixels: Uint8ClampedArray, mode: VisionMode) => {
+      expect(mode).toBe('original');
+      return new Uint8ClampedArray([1, 2, 3, pixels[3]!]);
+    };
+
+    await exportSimulation({} as CanvasImageSource, { width: 1, height: 1 }, 'original', { format: 'image/png' }, fixture.env, transform);
+
+    expect(fixture.written()).toEqual([1, 2, 3, 40]);
   });
 
   it('maps unavailable canvas and encoder failures', async () => {

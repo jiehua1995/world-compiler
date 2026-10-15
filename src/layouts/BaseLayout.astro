@@ -22,8 +22,13 @@ const copy = dictionary('zh-CN');
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f3f0e8" />
-    <meta name="description" content={copy[descriptionKey]} />
-    <title>{copy[titleKey]}</title>
+    <meta
+      name="description"
+      content={copy[descriptionKey]}
+      data-description-zh={dictionary('zh-CN')[descriptionKey]}
+      data-description-en={dictionary('en')[descriptionKey]}
+    />
+    <title data-title-zh={dictionary('zh-CN')[titleKey]} data-title-en={dictionary('en')[titleKey]}>{copy[titleKey]}</title>
     <script is:inline>
       (() => {
         let preference = 'system';

@@ -12,6 +12,8 @@ export interface CanvasEnvironment {
   createCanvas(): HTMLCanvasElement;
 }
 
+type PixelTransformer = (pixels: Uint8ClampedArray, mode: VisionMode) => Promise<Uint8ClampedArray>;
+
 const browserCanvasEnvironment: CanvasEnvironment = {
   createCanvas: () => document.createElement('canvas'),
 };
@@ -22,6 +24,7 @@ export async function exportSimulation(
   mode: VisionMode,
   options: ExportOptions,
   environment: CanvasEnvironment = browserCanvasEnvironment,
+  transform: PixelTransformer = async (pixels, visionMode) => transformPixels(pixels, visionMode),
 ): Promise<Blob> {
   try {
     assertSafeDimensions(dimensions.width, dimensions.height);
@@ -33,12 +36,13 @@ export async function exportSimulation(
 
     context.drawImage(source, 0, 0, dimensions.width, dimensions.height);
     const image = context.getImageData(0, 0, dimensions.width, dimensions.height);
-    const pixels = transformPixels(image.data, mode);
+    const pixels = await transform(image.data, mode);
     if (options.format === 'image/jpeg') {
       for (let index = 3; index < pixels.length; index += 4) pixels[index] = 255;
     }
-    image.data.set(pixels);
-    context.putImageData(image, 0, 0);
+    const output = context.createImageData(dimensions.width, dimensions.height);
+    output.data.set(pixels);
+    context.putImageData(output, 0, 0);
 
     return await new Promise<Blob>((resolve, reject) => {
       canvas.toBlob(

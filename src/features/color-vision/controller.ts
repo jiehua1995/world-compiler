@@ -10,7 +10,7 @@ type WorkbenchState = 'empty' | 'decoding' | 'processing' | 'ready' | 'error';
 
 export interface ColorVisionDependencies {
   decode(file: File): Promise<DecodedImage>;
-  render(decoded: DecodedImage, canvases: Map<VisionMode, HTMLCanvasElement>, requestId: number): Promise<void>;
+  render(decoded: DecodedImage, canvases: Map<VisionMode, HTMLCanvasElement>, requestId: number, isCurrent: () => boolean): Promise<void>;
   exportMode(decoded: DecodedImage, mode: VisionMode, options: ExportOptions): Promise<Blob>;
   download(blob: Blob, filename: string): void;
   dispose?(): void;
@@ -19,10 +19,11 @@ export interface ColorVisionDependencies {
 function createBrowserDependencies(): ColorVisionDependencies {
   const worker = new Worker(new URL('./simulation.worker.ts', import.meta.url), { type: 'module' });
   const client = new SimulationWorkerClient(worker);
+  let exportRequestId = 0;
 
   return {
     decode: decodeLocalImage,
-    async render(decoded, canvases, requestId) {
+    async render(decoded, canvases, requestId, isCurrent) {
       const dimensions = fitWithin(decoded.width, decoded.height, 1200, 1_200_000);
       const sourceCanvas = document.createElement('canvas');
       sourceCanvas.width = dimensions.width;
@@ -33,12 +34,14 @@ function createBrowserDependencies(): ColorVisionDependencies {
       const sourcePixels = sourceContext.getImageData(0, 0, dimensions.width, dimensions.height).data;
 
       for (const [index, mode] of modes.entries()) {
+        if (!isCurrent()) return;
         const canvas = canvases.get(mode);
         const context = canvas?.getContext('2d');
         if (!canvas || !context) throw new ColorVisionError('processing-failed', 'A preview canvas is unavailable.');
         const pixels = mode === 'original'
           ? new Uint8ClampedArray(sourcePixels)
           : await client.process(requestId * 10 + index, sourcePixels, mode);
+        if (!isCurrent()) return;
         canvas.width = dimensions.width;
         canvas.height = dimensions.height;
         const imageData = context.createImageData(dimensions.width, dimensions.height);
@@ -48,7 +51,14 @@ function createBrowserDependencies(): ColorVisionDependencies {
         canvas.closest<HTMLElement>('[data-comparison-card]')?.classList.add('is-rendered');
       }
     },
-    exportMode: (decoded, mode, options) => exportSimulation(decoded.source, decoded, mode, options),
+    exportMode: (decoded, mode, options) => exportSimulation(
+      decoded.source,
+      decoded,
+      mode,
+      options,
+      undefined,
+      (pixels, visionMode) => client.process(--exportRequestId, pixels, visionMode),
+    ),
     download(blob, filename) {
       const url = URL.createObjectURL(blob);
       const anchor = document.createElement('a');
@@ -75,6 +85,15 @@ const messages: Record<WorkbenchState, { 'zh-CN': string; en: string }> = {
   processing: { 'zh-CN': '正在生成多模式对照…', en: 'Generating comparison modes…' },
   ready: { 'zh-CN': '处理完成，所有预览均可导出', en: 'Complete — every preview is ready to export' },
   error: { 'zh-CN': '处理未完成', en: 'Processing did not complete' },
+};
+
+const errorMessages: Record<ColorVisionError['code'], { 'zh-CN': string; en: string }> = {
+  'unsupported-type': { 'zh-CN': '请选择 PNG、JPEG、WebP 或 GIF 图片。', en: 'Choose a PNG, JPEG, WebP, or GIF image.' },
+  'decode-failed': { 'zh-CN': '无法解码这张图片，请确认文件未损坏。', en: 'This image could not be decoded. Check that the file is intact.' },
+  'invalid-dimensions': { 'zh-CN': '图片尺寸无效，请选择其他图片。', en: 'This image has invalid dimensions. Choose another image.' },
+  'too-large': { 'zh-CN': '图片尺寸超过浏览器安全处理范围，请选择较小的图片。', en: 'This image exceeds safe browser processing limits. Choose a smaller image.' },
+  'processing-failed': { 'zh-CN': '无法生成预览，请重试或选择其他图片。', en: 'Previews could not be generated. Try again or choose another image.' },
+  'export-failed': { 'zh-CN': '无法导出图片，请重试或更换格式。', en: 'The image could not be exported. Try again or choose another format.' },
 };
 
 export function mountColorVisionLab(
@@ -109,6 +128,7 @@ export function mountColorVisionLab(
   let state: WorkbenchState = 'empty';
   let activeImage: DecodedImage | null = null;
   let requestId = 0;
+  let currentError: ColorVisionError['code'] | undefined;
   let previewTrigger: HTMLButtonElement | null = null;
   let destroyed = false;
 
@@ -116,6 +136,7 @@ export function mountColorVisionLab(
   const localizeDynamic = () => {
     const activeLocale = locale();
     status.textContent = messages[state][activeLocale];
+    error.textContent = currentError ? errorMessages[currentError][activeLocale] : '';
     previewButtons.forEach((button) => {
       const mode = button.dataset.previewMode as VisionMode;
       const name = names[mode][activeLocale];
@@ -129,15 +150,11 @@ export function mountColorVisionLab(
 
   const setState = (next: WorkbenchState, problem?: unknown) => {
     state = next;
+    currentError = next === 'error'
+      ? problem instanceof ColorVisionError ? problem.code : 'decode-failed'
+      : undefined;
     root.dataset.state = next;
     error.hidden = next !== 'error';
-    if (next === 'error') {
-      const activeLocale = locale();
-      const unsupported = problem instanceof ColorVisionError && problem.code === 'unsupported-type';
-      error.textContent = activeLocale === 'en'
-        ? unsupported ? 'Choose a PNG, JPEG, WebP, or GIF image.' : 'This image could not be read. Check that the file is intact and supported.'
-        : unsupported ? '请选择 PNG、JPEG、WebP 或 GIF 图片。' : '无法读取这张图片，请确认文件未损坏且格式受支持。';
-    }
     const ready = next === 'ready';
     previewButtons.forEach((button) => { button.disabled = !ready; });
     [exportMode, exportFormat, exportQuality, exportButton].forEach((control) => { control.disabled = !ready; });
@@ -177,7 +194,7 @@ export function mountColorVisionLab(
       if (destroyed || currentRequest !== requestId) { decoded.cleanup(); return; }
       activeImage = decoded;
       setState('processing');
-      await dependencies.render(decoded, canvases, currentRequest);
+      await dependencies.render(decoded, canvases, currentRequest, () => !destroyed && requestId === currentRequest);
       if (destroyed || currentRequest !== requestId) return;
       setState('ready');
     } catch (problem) {
@@ -196,16 +213,20 @@ export function mountColorVisionLab(
   const onFormat = () => { qualityRow.hidden = exportFormat.value !== 'image/jpeg'; };
   const onExport = async () => {
     if (!activeImage) return;
+    const exportingImage = activeImage;
     const mode = exportMode.value as VisionMode;
     const format = exportFormat.value as ExportOptions['format'];
     exportButton.disabled = true;
     try {
       const blob = await dependencies.exportMode(activeImage, mode, { format, quality: Number(exportQuality.value) });
-      dependencies.download(blob, `world-compiler-${mode}.${format === 'image/jpeg' ? 'jpg' : 'png'}`);
+      const filename = locale() === 'en'
+        ? `world-compiler-${mode}.${format === 'image/jpeg' ? 'jpg' : 'png'}`
+        : `世界编译局-${names[mode]['zh-CN']}.${format === 'image/jpeg' ? 'jpg' : 'png'}`;
+      dependencies.download(blob, filename);
     } catch (problem) {
-      setState('error', problem);
+      if (activeImage === exportingImage && !destroyed) setState('error', problem);
     } finally {
-      if (state === 'ready') exportButton.disabled = false;
+      if (state === 'ready' && activeImage === exportingImage) exportButton.disabled = false;
     }
   };
   const onPreview = (event: Event) => {

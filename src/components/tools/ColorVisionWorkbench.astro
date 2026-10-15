@@ -16,7 +16,7 @@ const modes = [
 <div class="color-vision-lab" data-color-vision-lab data-state="empty">
   <section class="input-panel" aria-labelledby="input-title">
     <div>
-      <p class="section-kicker">INPUT / 本地文件</p>
+      <p class="section-kicker" data-copy-zh="INPUT / 本地文件" data-copy-en="INPUT / Local file">INPUT / 本地文件</p>
       <h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2>
     </div>
     <DropZone />
@@ -26,7 +26,7 @@ const modes = [
       <button type="button" data-reset data-i18n="cv.reset">重置工作台</button>
     </div>
   </section>
-  <section class="comparison-section" aria-label="色觉模式对照">
+  <section class="comparison-section" aria-label="色觉模式对照" data-label-zh="色觉模式对照" data-label-en="Color vision mode comparison">
     {modes.map(({ mode, name, nameEn }) => <ComparisonCard mode={mode} name={name} nameEn={nameEn} />)}
   </section>
   <ExportPanel />

@@ -41,6 +41,15 @@ test('keyboard focus is visible and compact controls meet practical target size'
   }
 });
 
+test('shows keyboard focus on the visible local image picker', async ({ page }) => {
+  await page.goto('./tools/color-vision/');
+  await page.getByRole('link', { name: '返回工具目录' }).focus();
+  await page.keyboard.press('Tab');
+
+  await expect(page.getByLabel('选择本地图片')).toBeFocused();
+  expect(await page.locator('label[for="image-input"]').evaluate((label) => getComputedStyle(label).outlineStyle)).toBe('solid');
+});
+
 test('reduced-motion preference removes meaningful transitions', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('./');

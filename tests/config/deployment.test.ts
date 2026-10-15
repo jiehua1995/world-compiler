@@ -19,9 +19,16 @@ describe('deployment configuration', () => {
     });
 
     const buildActions = workflow.jobs.build.steps.map((step: { uses?: string }) => step.uses);
+    const buildSteps: { uses?: string; run?: string }[] = workflow.jobs.build.steps;
+    const buildCommands = buildSteps.map((step) => step.run);
     const deployActions = workflow.jobs.deploy.steps.map((step: { uses?: string }) => step.uses);
 
     expect(buildActions).toContain('withastro/action@v3');
+    expect(buildActions).toContain('actions/setup-node@v4');
+    expect(buildCommands).toContain('npx playwright install --with-deps chromium');
+    expect(buildCommands).toContain('npm run verify');
+    expect(buildSteps.findIndex((step) => step.run === 'npm run verify'))
+      .toBeLessThan(buildSteps.findIndex((step) => step.uses === 'withastro/action@v3'));
     expect(deployActions).toContain('actions/deploy-pages@v4');
   });
 

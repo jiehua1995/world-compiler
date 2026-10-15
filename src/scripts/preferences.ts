@@ -47,10 +47,13 @@ function storageFrom(win: Window): StorageAccess | null {
 function translateDocument(doc: Document, locale: Locale): void {
   const copy = dictionary(locale);
   doc.documentElement.lang = locale;
-  doc.title = copy['site.title'];
+  const title = doc.querySelector<HTMLTitleElement>('title');
+  doc.title = locale === 'en' ? title?.dataset.titleEn ?? copy['site.title'] : title?.dataset.titleZh ?? copy['site.title'];
 
   const description = doc.querySelector<HTMLMetaElement>('meta[name="description"]');
-  if (description) description.content = copy['site.description'];
+  if (description) description.content = locale === 'en'
+    ? description.dataset.descriptionEn ?? copy['site.description']
+    : description.dataset.descriptionZh ?? copy['site.description'];
 
   doc.querySelectorAll<HTMLElement>('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n as DictionaryKey | undefined;
