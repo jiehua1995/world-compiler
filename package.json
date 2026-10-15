@@ -7,10 +7,10 @@
     "node": ">=22.0.0"
   },
   "scripts": {
-    "predev": "node scripts/copy-pdf-assets.mjs",
-    "prebuild": "node scripts/copy-pdf-assets.mjs",
+    "predev": "node scripts/copy-pdf-assets.mjs && node scripts/copy-ocr-assets.mjs",
+    "prebuild": "node scripts/copy-pdf-assets.mjs && node scripts/copy-ocr-assets.mjs",
     "dev": "astro dev",
-    "build": "astro build",
+    "build": "astro build && node scripts/build-pwa.mjs",
     "preview": "astro preview",
     "check": "astro check",
     "test": "vitest run",
@@ -19,10 +19,15 @@
     "verify": "npm run check && npm run test:unit && npm run build && npm run test:e2e"
   },
   "dependencies": {
+    "@tesseract.js-data/chi_sim": "^1.0.0",
+    "@tesseract.js-data/deu": "^1.0.0",
+    "@tesseract.js-data/eng": "^1.0.0",
     "astro": "7.3.8",
     "diff": "^9.0.0",
+    "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299",
-    "qrcode": "^1.5.4"
+    "qrcode": "^1.5.4",
+    "tesseract.js": "^7.0.0"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",

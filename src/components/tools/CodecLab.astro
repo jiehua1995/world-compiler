@@ -1,4 +1,33 @@
 ---
 import Copy from '../Copy.astro';
 ---
-<section class="lab" data-lab="codec-lab"><div class="lab-toolbar"><label><Copy as="span" text={["转换操作","Operation","Operation"]} /><select data-codec-mode><option value="base64-encode">UTF-8 → Base64</option><option value="base64-decode">Base64 → UTF-8</option><option value="url-encode">URL encode</option><option value="url-decode">URL decode</option><option value="html-encode">HTML escape</option><option value="html-decode">HTML unescape</option><option value="sha256">SHA-256</option></select></label><button type="button" data-codec-run class="primary"><Copy as="span" text={["运行转换","Run conversion","Umwandeln"]} /></button><button type="button" data-codec-transfer class=""><Copy as="span" text={["结果作为输入","Use result as input","Ergebnis als Eingabe"]} /></button></div><div class="lab-grid"><section class="lab-panel"><header><b>01</b><Copy as="h2" text={["原始内容","Source content","Quellinhalt"]} /></header><label><Copy as="span" text={["输入文本（最多 200,000 字符）","Input text (up to 200,000 characters)","Eingabetext (bis 200.000 Zeichen)"]} /><textarea data-codec-input maxlength="200000"></textarea></label><label><Copy as="span" text={["或计算文件 SHA-256（最多 64 MB）","Or hash a file with SHA-256 (up to 64 MB)","Oder SHA-256 einer Datei berechnen (bis 64 MB)"]} /><input type="file" data-codec-file /></label><p role="alert" data-tool-error hidden></p></section><section class="lab-panel"><header><b>02</b><Copy as="h2" text={["转换结果","Conversion result","Umwandlungsergebnis"]} /></header><pre class="lab-output" data-codec-output></pre><p role="status" data-tool-status></p><p class="hint"><Copy as="span" text={["HTML 解码支持常见特殊字符与数字实体。Base64 是编码，不提供加密保护。","HTML decoding supports common special characters and numeric entities. Base64 is an encoding, not encryption.","HTML-Dekodierung unterstützt häufige Sonderzeichen und numerische Entitäten. Base64 ist keine Verschlüsselung."]} /></p></section></div><footer class="lab-export"><Copy as="p" text={["所有处理均在当前浏览器中完成。","All processing stays in this browser.","Alles wird in diesem Browser verarbeitet."]} /><div class="lab-actions"><button type="button" data-codec-copy disabled class=""><Copy as="span" text={["复制结果","Copy result","Ergebnis kopieren"]} /></button><button type="button" data-codec-download disabled class="primary"><Copy as="span" text={["下载结果","Download result","Ergebnis herunterladen"]} /></button></div></footer></section>
+<section class="lab" data-lab="codec-lab">
+  <div class="lab-toolbar">
+    <label><Copy text={['转换操作','Operation','Operation']} /><select data-codec-mode>
+      <option value="base64-encode">UTF-8 → Base64</option><option value="base64-decode">Base64 → UTF-8</option>
+      <option value="url-encode">URL encode</option><option value="url-decode">URL decode</option>
+      <option value="html-encode">HTML escape</option><option value="html-decode">HTML unescape</option><option value="sha256">SHA-256</option>
+    </select></label>
+    <button type="button" data-codec-run class="primary"><Copy text={['运行转换','Run conversion','Umwandeln']} /></button>
+    <button type="button" data-codec-transfer><Copy text={['结果作为输入','Use result as input','Ergebnis als Eingabe']} /></button>
+  </div>
+  <div class="lab-grid">
+    <section class="lab-panel">
+      <header><b>01</b><Copy as="h2" text={['原始内容','Source content','Quellinhalt']} /></header>
+      <label><Copy text={['输入文本（最多 200,000 字符）','Input text (up to 200,000 characters)','Eingabetext (bis 200.000 Zeichen)']} /><textarea data-codec-input maxlength="200000"></textarea></label>
+      <label><Copy text={['或计算文件 SHA-256（最多 64 MB）','Or hash a file with SHA-256 (up to 64 MB)','Oder SHA-256 einer Datei berechnen (bis 64 MB)']} /><input type="file" data-codec-file /></label>
+      <p role="alert" data-tool-error hidden></p>
+    </section>
+    <section class="lab-panel">
+      <header><b>02</b><Copy as="h2" text={['转换结果','Conversion result','Umwandlungsergebnis']} /></header>
+      <span class="output-caption" id="codec-output-label"><Copy text={['输出文本','Output text','Ausgabetext']} /></span>
+      <pre class="lab-output" data-codec-output aria-labelledby="codec-output-label" tabindex="0"></pre>
+      <p role="status" data-tool-status></p>
+      <p class="hint"><Copy text={['HTML 解码支持常见特殊字符与数字实体。Base64 是编码，不提供加密保护。','HTML decoding supports common special characters and numeric entities. Base64 is an encoding, not encryption.','HTML-Dekodierung unterstützt häufige Sonderzeichen und numerische Entitäten. Base64 ist keine Verschlüsselung.']} /></p>
+    </section>
+  </div>
+  <footer class="lab-export">
+    <Copy as="p" text={['所有处理均在当前浏览器中完成。','All processing stays in this browser.','Alles wird in diesem Browser verarbeitet.']} />
+    <div class="lab-actions"><button type="button" data-codec-copy disabled><Copy text={['复制结果','Copy result','Ergebnis kopieren']} /></button><button type="button" data-codec-download disabled class="primary"><Copy text={['下载结果','Download result','Ergebnis herunterladen']} /></button></div>
+  </footer>
+</section>

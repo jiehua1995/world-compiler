@@ -19,20 +19,44 @@ An open-source browser toolkit for the public good. It turns useful but scattere
 - **JSON 工作台 / JSON Studio**：校验、格式化、压缩、折叠结构、文件导入与导出。
 - **时间桥 / Time Bridge**：Unix 秒/毫秒和含时区 ISO 日期转换，显示六个世界时区。
 - **编码实验室 / Codec Lab**：UTF-8 Base64、URL 和常见 HTML 实体转换，文本或文件 SHA-256。
+- **声音实验室 / Audio Lab**：本地解码、波形预览、裁剪、增益、单声道与 16-bit WAV 导出（40 MB、10 分钟以内；输入编码取决于浏览器）。
+- **配色提取台 / Palette Lab**：图片主色、数量选择、HEX 色板与 CSS/JSON 导出。
+- **正则实验室 / Regex Lab**：独立 Worker 匹配与替换，1 秒超时终止，限制输入与结果体积。
+- **网址工作台 / URL Lab**：结构检查、查询参数编辑、保留重复键、移除常见追踪参数、编码/解码；不自动访问输入网址。
+- **单位换算台 / Unit Lab**：长度、质量、速度、数据与温度换算，含绝对零度与溢出校验。
+- **随机生成器 / Token Lab**：设备加密随机数生成密码和 UUID v4；不保存输出。
+- **文字工坊 / Text Workshop**：大小写、去重行、排序、修剪与文本统计。
+- **流媒体工作室 / Stream Studio**：检查公开、允许 CORS 的未加密 M3U8 点播列表，按序下载为 MPEG-TS（最多 2000 段、128 MB）。不支持直播、主列表、DRM、加密、字节范围或 fMP4，不绕过登录和版权限制，不伪装成 MP4。
+- **文字识别台 / OCR Studio**：中、英、德图片识别。首次显式下载本站托管的引擎与语言包；缓存后可离线识别。图片不上传，结果需人工校对。
+- **PDF 整理台 / PDF Desk**：调整文件顺序、合并、按页码范围提取；最多 20 文件、64 MB、2000 页。不支持加密文件，书签、表单与签名可能丢失，请保留原件。
+- **PDF 文本提取 / PDF Text Extractor**：提取已有文字层、保留分页标记并导出 TXT；扫描件请用 OCR。
+- **图片转 PDF / Images to PDF**：PNG/JPEG 排序，A4、Letter 或原图尺寸，每页一图等比居中。
+- 独立关于页、设备本地时间观测钟、自动统计工具数量、GitHub 与 MIT 版权链接。
+- 可安装 PWA，缓存应用页面与静态资源；工具内容不保存。PDF/OCR 资源需先在线下载。
 - 响应式布局、键盘操作、焦点样式、减少动态效果支持 / Responsive layout, keyboard support, visible focus, and reduced-motion support
 - Astro 静态构建与 GitHub Pages 自动部署配置 / Static Astro build and GitHub Pages deployment workflow
 
-**English:** Ten local tools share a responsive input/preview/export workbench: Color Vision Lab, Contrast Lens, Plain Language Meter, Data Shaper, Image Studio, Text Diff, QR Studio, JSON Studio, Time Bridge, and Codec Lab. The original 36-glyph artwork supplies distinct tool identities; no remote assets or processing are required.
+**English:** Twenty-two local tools share responsive input/result/export workbenches. New additions cover audio/WAV, image palettes, regular expressions, URL inspection, units, secure random generation, text cleanup, M3U8 transport streams, offline OCR, PDF merging/extraction, PDF text and images-to-PDF. The original 36-glyph artwork supplies distinct identities. Processing stays on-device; streams are fetched directly from their source with CORS permission. OCR engine/language assets require an initial download from this site.
 
 Color Vision Lab also accepts SVG (5 MB) and PDF (32 MB, with page selection). Both are rasterized to at most 4096 px per edge / 16 MP, then simulated and exported as PNG/JPEG. SVG scripts, interactive content and external references are removed. Unlock password-protected PDFs before import. PDF.js, its worker, fonts, CMaps, ICC profiles and decoders ship with the site.
 
-**Deutsch:** Zehn lokale Werkzeuge mit responsiven Eingabe-, Vorschau- und Exportbereichen: Color Vision Lab, Kontrastlinse, Klartext-Meter, Datenformer, Bildwerkstatt, Textvergleich, QR-Werkstatt, JSON-Werkstatt, Zeitbrücke und Kodierungslabor. Alle Oberflächen unterstützen Chinesisch, Englisch und Deutsch.
+**Deutsch:** Zweiundzwanzig lokale Werkzeuge mit responsiven Eingabe-, Ergebnis- und Exportbereichen, darunter Audio/WAV, Farbpaletten, Regex, URLs, Einheiten, sichere Zufallswerte, Textbereinigung, M3U8, Offline-OCR sowie PDF-Verarbeitung. Alle Oberflächen unterstützen Chinesisch, Englisch und Deutsch. Streams benötigen CORS-Freigabe; OCR-Engine und Sprachdateien werden beim ersten Gebrauch von dieser Website geladen.
 
 Color Vision Lab unterstützt SVG (5 MB) und PDF (32 MB, mit Seitenauswahl). Beide werden als Rasterbild mit maximal 4096 px / 16 MP simuliert und als PNG/JPEG exportiert. Externe und interaktive SVG-Inhalte werden entfernt. Passwortgeschützte PDFs vor dem Import entsperren.
 
 以上工具均在浏览器本地处理用户输入，不要求账户、不上传内容。色觉模拟是教育性近似工具，不是医学诊断；对比度和可读性结果也不构成认证或对个人能力的判断。
 
 All tools process user input locally in the browser: no account is required and content is not uploaded. Color-vision simulation is an educational approximation, not medical diagnosis; contrast and readability results are not certifications or judgments of individual ability.
+
+## 安装与离线 / Install & offline
+
+页脚的“安装应用”可在支持的浏览器中安装；不支持安装提示时使用浏览器菜单（iOS Safari：共享 → 添加到主屏幕）。需要 HTTPS 或 localhost，安装界面由浏览器决定。构建后的 `manifest.webmanifest` 和 `sw.js` 自动适配部署子路径。
+
+The footer offers app installation in compatible browsers. Otherwise use the browser menu (iOS Safari: Share → Add to Home Screen). HTTPS or localhost is required. Installation UI is browser-dependent. The build generates base-aware `manifest.webmanifest` and `sw.js`.
+
+应用壳与页面预缓存；大型 PDF/OCR 资源只在下载后缓存。仅缓存本站静态资源白名单，不缓存跨域流媒体、查询字符串、文件或输入。缓存可能被浏览器回收，清除站点数据会删除离线资源。更新等所有应用窗口关闭后激活，不会自动刷新正在编辑的内容。开发模式不注册 Service Worker；测试 PWA 请运行 `npm run build` 和 `npm run preview`。
+
+The shell and routes are precached. Large PDF/OCR assets become offline-ready after download. Only allowlisted same-origin static assets are cached, never external streams, query strings, files or input. Browser eviction or clearing site data removes offline assets. Updates activate after all app windows close, without reloading open editors. Development mode does not register the worker; test PWA with a production build and preview.
 
 ## 本地开发 / Local development
 

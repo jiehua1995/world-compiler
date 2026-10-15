@@ -1,5 +1,18 @@
 World Compiler — third-party notices
 
+Tesseract.js and tesseract.js-core — https://github.com/naptha/tesseract.js
+Licensed under the Apache License, Version 2.0.
+Full licenses: vendor/ocr/LICENSE-tesseract and vendor/ocr/LICENSE-core.
+Tesseract language data: eng, deu, chi_sim from @tesseract.js-data packages
+https://github.com/naptha/tessdata — package metadata declares MIT; upstream
+Tesseract trained language data is distributed under Apache-2.0:
+https://github.com/tesseract-ocr/tessdata_best/blob/main/LICENSE
+Full Apache-2.0 license text for traineddata: vendor/ocr/LICENSE-traineddata.
+
+pdf-lib — https://github.com/Hopding/pdf-lib
+MIT License; Copyright (c) 2019 Andrew Dillon.
+Full license: vendor/ocr/LICENSE-pdf-lib (included in this static distribution).
+
 PDF.js (pdfjs-dist) — https://mozilla.github.io/pdf.js/
 Copyright Mozilla Foundation and individual contributors.
 Licensed under the Apache License, Version 2.0.

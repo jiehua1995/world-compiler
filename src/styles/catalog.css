@@ -17,6 +17,27 @@
 .hero-console__orbit--inner { width: 42%; border-style: dashed; }
 .hero-console__beam { width: 88%; height: 1px; background: var(--signal-coral); rotate: -24deg; transform-origin: left center; }
 .hero-console__core { width: 6.5rem; aspect-ratio: 1; background: var(--lunar-violet); border: 1rem solid var(--paper-raised); border-radius: 50%; box-shadow: 0 0 0 1px var(--line-strong); }
+.hero-console__scope { display:flex; flex-direction:column; align-items:center; justify-content:center; padding:2rem 1.25rem 5rem; }
+.observatory-clock { width:100%; max-width:30rem; overflow:visible; }
+.clock-halo { fill:color-mix(in srgb, var(--institution-blue) 4%, transparent); stroke:var(--line); }
+.clock-orbit { fill:none; stroke:var(--line-strong); }
+.clock-orbit--inner { stroke-dasharray:2 7; }
+.clock-tick { stroke:var(--line-strong); stroke-width:1; }
+.clock-tick--major { stroke:var(--institution-blue); stroke-width:3; }
+.clock-number { fill:var(--ink-muted); font:11px ui-monospace,monospace; text-anchor:middle; }
+.clock-hand { transform-origin:200px 200px; stroke-linecap:round; }
+.clock-hand--hour { stroke:var(--institution-blue); stroke-width:8; transform:rotate(var(--clock-hour,0deg)); }
+.clock-hand--minute { stroke:var(--lunar-violet); stroke-width:5; transform:rotate(var(--clock-minute,0deg)); }
+.clock-hand--second { stroke:var(--signal-coral); stroke-width:1.5; transform:rotate(var(--clock-second,0deg)); }
+.clock-readout { display:grid; justify-items:center; gap:.4rem; margin-top:-1rem; color:var(--ink-muted); font:.68rem ui-monospace,monospace; letter-spacing:.09em; }
+.clock-readout time { color:var(--ink); font-size:1.3rem; letter-spacing:.18em; }
+.home-principles { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); border-top:1px solid var(--line); }
+.home-principles article { padding:2.5rem var(--space-3); border-right:1px solid var(--line); }
+.home-principles article:last-child { border-right:0; }
+.home-principles article > span { display:grid; place-items:center; width:2.8rem; height:2.8rem; margin-bottom:1.5rem; background:var(--institution-blue); color:white; font-size:1.6rem; }
+.home-principles h2 { font-size:1.25rem; line-height:1.5; }
+.home-principles p { margin-bottom:0; color:var(--ink-muted); font-size:.9rem; }
+@media(max-width:48rem) { .home-principles{grid-template-columns:1fr}.home-principles article{border-right:0;border-bottom:1px solid var(--line)} .hero-console__scope{padding-bottom:2.5rem} }
 .hero-console__status { position: absolute; inset: auto 0 0; z-index: 2; display: grid; grid-template-columns: repeat(3, 1fr); background: var(--paper-raised); border-top: 1px solid var(--line); }
 .hero-console__status span { display: flex; align-items: center; gap: .65rem; min-height: 3.8rem; padding-inline: var(--space-2); border-right: 1px solid var(--line); }
 .hero-console__status i { width: .5rem; aspect-ratio: 1; background: var(--observatory-cyan); border-radius: 50%; box-shadow: 0 0 0 .22rem color-mix(in srgb, var(--observatory-cyan) 18%, transparent); }
@@ -25,8 +46,10 @@
 .catalog-section { padding: var(--space-5) var(--space-4); border-bottom: 1px solid var(--line); }
 .catalog-section--page { min-height: 70vh; }
 .catalog-section--page h1 { margin: 0; font-size: clamp(2.2rem, 4.5vw, 4.8rem); letter-spacing: -.045em; line-height: 1.02; }
-.home-actions { padding: 0 var(--space-4) var(--space-4); }
+.home-actions { display:flex; justify-content:center; padding: clamp(2.5rem, 6vw, 5rem) var(--space-4); }
 .home-actions__link { display: inline-flex; min-height: 3.2rem; align-items: center; padding: .7rem 1.1rem; color: #fff; background: #265f9e; border-radius: var(--radius-sm); text-decoration: none; }
+.home-actions__link { gap:1rem; padding-inline:1.5rem; box-shadow:0 4px 12px var(--shadow); }
+.home-actions__link::after { content:'↗'; font-size:1.2rem; }
 .catalog-section__heading { display: grid; grid-template-columns: 1fr minmax(18rem, .65fr); gap: var(--space-4); align-items: end; }
 .catalog-section h2, .privacy-panel h2, .roadmap-panel h2 { margin: 0; font-size: clamp(2.2rem, 4.5vw, 4.8rem); letter-spacing: -.045em; line-height: 1.02; }
 .catalog-section__heading > p, .privacy-panel > div > p:last-child, .roadmap-panel p { color: var(--ink-muted); }

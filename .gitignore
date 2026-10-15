@@ -1,11 +1,15 @@
 node_modules/
 dist/
 public/vendor/pdfjs/
+public/vendor/ocr/
 .astro/
 .worktrees/
 playwright-report/
 test-results/
+test-results-media/
 coverage/
 *.log
 .DS_Store
 Thumbs.db
+output/playwright/
+.playwright-cli/

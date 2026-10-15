@@ -1,0 +1,21 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PrivacyPanel from '../components/PrivacyPanel.astro';
+import RoadmapPanel from '../components/RoadmapPanel.astro';
+import Copy from '../components/Copy.astro';
+import '../styles/catalog.css';
+---
+<BaseLayout title={{'zh-CN':'关于世界编译局',en:'About World Compiler',de:'Über World Compiler'}}>
+  <section class="catalog-section">
+    <p class="section-kicker">WC / OPEN PUBLIC INFRASTRUCTURE</p>
+    <Copy as="h1" text={['把工具，还给每个人。','Good tools belong to everyone.','Gute Werkzeuge gehören allen.']} />
+    <Copy as="p" text={['世界编译局是免费、开源、本地优先的公益工具平台。我们用中、英、德三种语言，把专业处理能力带到你的浏览器。','World Compiler is a free, open-source, local-first public toolkit. We bring practical processing tools to your browser in Chinese, English and German.','World Compiler ist ein kostenloser, quelloffener und lokal arbeitender Werkzeugkasten auf Chinesisch, Englisch und Deutsch.']} />
+  </section>
+  <PrivacyPanel />
+  <RoadmapPanel />
+  <section class="catalog-section">
+    <Copy as="h2" text={['使用与许可','Use & licensing','Nutzung & Lizenz']} />
+    <Copy as="p" text={['© 2026 World Compiler contributors。项目源码采用 MIT 许可证，第三方依赖及其许可单独列明。你导入的文件与生成内容不会转让版权给本项目。工具按现状提供；色觉模拟不是医学诊断。','© 2026 World Compiler contributors. Source code is MIT licensed; third-party notices apply separately. Importing files or producing output does not transfer your copyright to this project. Tools are provided as-is; vision simulation is not a medical diagnosis.','© 2026 World Compiler contributors. Der Quellcode steht unter der MIT-Lizenz; für Abhängigkeiten gelten eigene Lizenzen. Urheberrechte an Eingaben und Ausgaben gehen nicht an dieses Projekt über. Nutzung ohne Gewähr; Farbseh-Simulation ist keine medizinische Diagnose.']} />
+    <a href="https://github.com/jiehua1995/world-compiler/blob/main/LICENSE">MIT License ↗</a> · <a href="https://github.com/jiehua1995/world-compiler/blob/main/public/THIRD_PARTY_NOTICES.txt">Third-party notices ↗</a>
+  </section>
+</BaseLayout>

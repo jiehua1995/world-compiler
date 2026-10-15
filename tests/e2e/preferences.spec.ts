@@ -21,7 +21,8 @@ test('switches the full document to English with the keyboard', async ({ page })
   const english = page.getByRole('combobox', { name: 'Language' });
   await language.focus();
   await page.keyboard.press('ArrowDown');
-  await page.keyboard.press('Enter');
+  // ArrowDown commits a native select on Windows; Enter would open its OS popup.
+  await page.keyboard.press('Tab');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page).toHaveTitle(/^World Compiler/);

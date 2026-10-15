@@ -30,7 +30,7 @@
 .lab-toolbar {
   display: flex;
   flex-wrap: wrap;
-  align-items: center;
+  align-items: end;
   gap: 0.75rem;
   padding: 1rem var(--space-4);
   border-bottom: 1px solid var(--line);
@@ -82,6 +82,11 @@
   color: var(--ink-muted);
   font-size: 0.85rem;
 }
+.lab-toolbar > label { margin:0; flex:0 1 auto; }
+.lab-toolbar > label.check { min-height:2.9rem; margin:0; }
+.lab-toolbar > button { min-height:2.9rem; }
+.lab-panel > .lab-output { margin:0 0 1rem; }
+.lab-panel > .output-caption { display:block; margin-bottom:.5rem; color:var(--ink-muted); font-size:.85rem; }
 .lab input:not([type="checkbox"]):not([type="range"]),
 .lab textarea,
 .lab select {
@@ -168,6 +173,7 @@
   max-width: 42rem;
 }
 .lab-output {
+  margin-top:0;
   min-height: 18rem;
   padding: 1.25rem;
   border: 1px solid var(--line);
@@ -183,11 +189,17 @@
   max-height: 40rem;
   overflow: auto;
 }
+.lab[data-lab="codec-lab"] textarea,
+.lab[data-lab="codec-lab"] .lab-output { height:20rem; min-height:20rem; margin-bottom:0; }
+.lab-panel > header { min-height:2.8rem; }
+.lab label > span:first-child, .output-caption { min-height:1.4rem; }
 .lab .field-pair {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1rem;
+  align-items:end;
 }
+.lab[data-lab="time-bridge"] .lab-output { min-height:0; padding:1rem; margin:0 0 1.5rem; }
 .lab .stat-strip {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));

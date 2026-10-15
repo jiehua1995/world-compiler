@@ -80,6 +80,7 @@ function translateDocument(doc: Document, locale: Locale): void {
   });
 
   doc.querySelectorAll<HTMLSelectElement>('[data-locale-select]').forEach((control) => { control.value = locale; });
+  doc.querySelectorAll<SVGElement>('[data-locale-flag]').forEach((flag) => { flag.style.display = flag.dataset.localeFlag === locale ? '' : 'none'; });
 }
 
 export function initializePreferences(doc: Document, win: Window) {

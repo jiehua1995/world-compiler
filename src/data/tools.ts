@@ -1,5 +1,7 @@
 import type { Locale, LocalizedText } from '../i18n/types';
 import { extraTools } from './extra-tools';
+import { nativeTools } from './native-tools';
+import { mediaTools } from './media-tools';
 
 export type ToolCategory = 'vision' | 'text' | 'data' | 'media';
 export type ToolStatus = 'available' | 'planned';
@@ -47,4 +49,6 @@ export const tools: readonly ToolDefinition[] = [
     tags: { 'zh-CN': ['数据', '表格'], en: ['data', 'table'], de: ['Daten', 'Tabelle'] },
   },
   ...extraTools,
+  ...nativeTools,
+  ...mediaTools,
 ];

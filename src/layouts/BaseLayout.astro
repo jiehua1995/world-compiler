@@ -26,6 +26,9 @@ const descriptions = description ?? { 'zh-CN': dictionary('zh-CN')[descriptionKe
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f3f0e8" />
+    <link rel="manifest" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/manifest.webmanifest`} />
+    <link rel="apple-touch-icon" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/pwa-192.png`} />
+    <link rel="icon" href={`${import.meta.env.BASE_URL.replace(/\/$/, '')}/pwa-icon.svg`} type="image/svg+xml" />
     <meta
       name="description"
       content={descriptions['zh-CN']}

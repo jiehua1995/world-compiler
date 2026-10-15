@@ -1,8 +1,7 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import HeroConsole from '../components/HeroConsole.astro';
-import PrivacyPanel from '../components/PrivacyPanel.astro';
-import RoadmapPanel from '../components/RoadmapPanel.astro';
+import Copy from '../components/Copy.astro';
 import '../styles/catalog.css';
 
 const base = import.meta.env.BASE_URL;
@@ -14,6 +13,9 @@ const baseWithSlash = base.endsWith('/') ? base : `${base}/`;
   <div class="home-actions">
     <a class="home-actions__link" href={`${baseWithSlash}tools/`} data-i18n="home.catalogCta">浏览工具目录</a>
   </div>
-  <PrivacyPanel />
-  <RoadmapPanel />
+  <section class="home-principles" aria-label="World Compiler principles">
+    <article><span aria-hidden="true">◎</span><Copy as="h2" text={['你的数据，留在你手里。','Your data stays yours.','Deine Daten bleiben bei dir.']} /><Copy as="p" text={['文件在本地处理，不上传到我们的服务器。','Files are processed locally, not uploaded to our servers.','Dateien werden lokal verarbeitet, nicht auf unsere Server hochgeladen.']} /></article>
+    <article><span aria-hidden="true">⌘</span><Copy as="h2" text={['专业能力，人人可用。','Useful power, open to everyone.','Leistungsfähig. Für alle zugänglich.']} /><Copy as="p" text={['无需账号，免费使用。用清晰的界面化解复杂。','No account. No fee. Clear interfaces for complex tasks.','Ohne Konto, kostenlos. Klare Oberflächen für komplexe Aufgaben.']} /></article>
+    <article><span aria-hidden="true">↗</span><Copy as="h2" text={['开放源码，持续编译。','Open source. Always evolving.','Offener Code. Stetige Entwicklung.']} /><Copy as="p" text={['每一次改进，都成为共享的公共基础设施。','Every improvement becomes part of a shared public toolkit.','Jede Verbesserung wird Teil eines gemeinsamen Werkzeugkastens.']} /></article>
+  </section>
 </BaseLayout>

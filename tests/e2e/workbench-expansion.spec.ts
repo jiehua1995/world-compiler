@@ -1,12 +1,13 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
+import { tools } from '../../src/data/tools';
 
-test("expanded catalog has distinct artwork and all ten tools", async ({
+test("expanded catalog has distinct artwork and every released tool", async ({
   page,
 }) => {
   await page.goto("./tools/");
-  await expect(page.getByRole("article")).toHaveCount(10);
-  await expect(page.locator(".tool-card .instrument-glyph")).toHaveCount(9);
+  await expect(page.getByRole("article")).toHaveCount(tools.length);
+  await expect(page.locator(".tool-card .instrument-glyph")).toHaveCount(tools.filter(tool=>tool.glyph!==undefined).length);
   await expect(page.locator(".tool-card__placeholder")).toHaveCount(0);
 });
 test("contrast suggestion meets target and exports report", async ({

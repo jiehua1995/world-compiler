@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { tools } from '../../src/data/tools';
 
 test('filters the bilingual catalog and announces result counts', async ({ page }) => {
   await page.goto('./tools/');
@@ -16,7 +17,7 @@ test('filters the bilingual catalog and announces result counts', async ({ page 
   await expect(textCategory).toBeFocused();
 
   await page.getByRole('button', { name: '重置筛选' }).click();
-  await expect(page.getByRole('article')).toHaveCount(10);
+  await expect(page.getByRole('article')).toHaveCount(tools.length);
 });
 
 test('searches English content after language switching', async ({ page }) => {
@@ -38,7 +39,7 @@ test('links the available tool through the configured Pages base', async ({ page
 
 test('keeps the landing page card-free and links to the separate directory', async ({ page }) => {
   await page.goto('./');
-  await expect(page.getByRole('article')).toHaveCount(0);
+  await expect(page.locator('.tool-card')).toHaveCount(0);
   await expect(page.getByRole('link', { name: '浏览工具目录' })).toHaveAttribute('href', '/world-compiler/tools/');
   await expect(page.getByText(/MIT/)).toBeVisible();
 });
@@ -47,7 +48,7 @@ test('searches German catalog titles and tags', async ({ page }) => {
   await page.goto('./tools/');
   await page.getByRole('combobox', { name: '语言' }).selectOption('de');
   const search = page.getByRole('searchbox', { name: 'Werkzeuge suchen' });
-  await search.fill('Klartext');
+  await search.fill('Klartext-Meter');
   await expect(page.getByRole('article')).toHaveCount(1);
   await expect(page.getByRole('heading', { name: 'Klartext-Meter' })).toBeVisible();
 });

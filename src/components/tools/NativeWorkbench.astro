@@ -1,0 +1,70 @@
+---
+import Copy from '../Copy.astro';
+import { units } from '../../features/native-tools/core';
+const {slug}=Astro.props as {slug:string};
+---
+<section class="lab" data-native-lab={slug}>
+ <div class="lab-toolbar"><Copy text={['全部处理均在此设备上完成。','Everything is processed on this device.','Die Verarbeitung erfolgt vollständig auf diesem Gerät.']} /></div>
+ <div class="lab-grid"><div class="lab-panel">
+ <header><b>01</b><Copy as="h2" text={['输入与设置','Input & settings','Eingabe & Einstellungen']} /></header>
+ {slug==='audio-lab' && <>
+  <label><Copy text={['音频文件（最大 40 MB）','Audio file (40 MB maximum)','Audiodatei (maximal 40 MB)']} /><input data-file type="file" accept="audio/*" /></label>
+  <canvas data-wave width="800" height="160" aria-label="波形" data-label-zh="波形" data-label-en="Waveform" data-label-de="Wellenform" role="img"></canvas>
+  <label><Copy text={['开始（秒）','Start (seconds)','Start (Sekunden)']} /><input data-start type="number" min="0" value="0" step="0.01" /></label>
+  <label><Copy text={['结束（秒）','End (seconds)','Ende (Sekunden)']} /><input data-end type="number" min="0" step="0.01" /></label>
+  <label><Copy text={['增益','Gain','Verstärkung']} /><input data-gain type="range" min="0" max="2" step="0.05" value="1" /></label>
+  <label><input data-mono type="checkbox" /><Copy text={['混合为单声道','Mix to mono','In Mono mischen']} /></label>
+  <Copy as="p" text={['超过峰值的信号将在导出时削波。','Peaks above full scale are clipped on export.','Übersteuerte Spitzen werden beim Export begrenzt.']} />
+ </>}
+ {slug==='palette-lab' && <>
+  <label><Copy text={['本地图片（最大 20 MB）','Local image (20 MB maximum)','Lokales Bild (maximal 20 MB)']} /><input data-file type="file" accept="image/*" /></label>
+  <canvas data-image width="400" height="250" aria-label="图片预览" data-label-zh="图片预览" data-label-en="Image preview" data-label-de="Bildvorschau" role="img"></canvas>
+  <label><Copy text={['颜色数量','Color count','Farbanzahl']} /><input data-count type="number" min="2" max="12" value="6" /></label>
+  <Copy as="p" text={['按像素频率提取主色；忽略透明像素。','Colors are ranked by pixel frequency; transparent pixels are ignored.','Farben werden nach Pixelhäufigkeit sortiert; transparente Pixel werden ignoriert.']} />
+ </>}
+ {slug==='regex-lab' && <>
+  <label><Copy text={['测试文本','Test text','Testtext']} /><textarea data-input rows="16" maxlength="1000000">Hello world. Hello again.</textarea></label>
+  <label><Copy text={['正则表达式','Regular expression','Regulärer Ausdruck']} /><input data-pattern value="\b\w+\b" spellcheck="false" /></label>
+  <label><Copy text={['标志','Flags','Flags']} /><input data-flags value="g" spellcheck="false" /></label>
+  <label><Copy text={['替换内容（支持 $1）','Replacement (supports $1)','Ersetzung (unterstützt $1)']} /><input data-replace value="$&" /></label>
+  <Copy as="p" text={['独立任务运行；1 秒超时自动终止。最多 1 MB 文本。','Runs in a worker; stops after 1 second. Maximum 1 MB of text.','Läuft in einem Worker; Abbruch nach 1 Sekunde. Maximal 1 MB Text.']} />
+ </>}
+ {slug==='url-lab' && <>
+  <label>URL<input data-url type="text" value="https://example.com/search?q=hello&utm_source=newsletter#results" spellcheck="false" /></label>
+  <label><Copy text={['查询参数（保留重复项）','Query string (duplicates preserved)','Abfrage (Duplikate bleiben erhalten)']} /><textarea data-query rows="5">q=hello&utm_source=newsletter</textarea></label>
+  <label><input data-strip type="checkbox" checked /><Copy text={['移除常见追踪参数','Remove common tracking parameters','Bekannte Trackingparameter entfernen']} /></label>
+  <label><Copy text={['编码与解码文本','Text to encode or decode','Text zum Kodieren oder Dekodieren']} /><textarea data-code rows="3">Hello world / 你好</textarea></label>
+  <button data-encode type="button"><Copy text={['编码','Encode','Kodieren']} /></button> <button data-decode type="button"><Copy text={['解码','Decode','Dekodieren']} /></button>
+ </>}
+ {slug==='unit-lab' && <>
+  <label><Copy text={['类别','Category','Kategorie']} /><select data-group>{Object.keys(units).map((g,i)=><option value={g} data-copy-zh={['长度','质量','速度','数据','温度'][i]} data-copy-en={['Length','Mass','Speed','Data','Temperature'][i]} data-copy-de={['Länge','Masse','Geschwindigkeit','Daten','Temperatur'][i]}>{g}</option>)}</select></label>
+  <label><Copy text={['数值','Value','Wert']} /><input data-value type="number" value="1" step="any" /></label>
+  <label><Copy text={['从','From','Von']} /><select data-from>{Object.keys(units.length).map(u=><option>{u}</option>)}</select></label>
+  <label><Copy text={['到','To','Nach']} /><select data-to>{Object.keys(units.length).map(u=><option>{u}</option>)}</select></label>
+ </>}
+ {slug==='token-lab' && <>
+  <label><Copy text={['类型','Type','Typ']} /><select data-kind><option value="password" data-copy-zh="密码" data-copy-en="Password" data-copy-de="Passwort">密码</option><option value="uuid">UUID v4</option></select></label>
+  <label><Copy text={['密码长度（4–256）','Password length (4–256)','Passwortlänge (4–256)']} /><input data-length type="number" min="4" max="256" value="24" /></label>
+  <label><input data-symbols type="checkbox" checked /><Copy text={['包含符号','Include symbols','Symbole einschließen']} /></label>
+  <Copy as="p" text={['使用设备的加密随机数。输出不会保存。','Uses device cryptographic randomness. Output is not saved.','Verwendet kryptografischen Zufall des Geräts. Ausgaben werden nicht gespeichert.']} />
+ </>}
+ {slug==='text-workshop' && <>
+  <label><Copy text={['原文','Source text','Ausgangstext']} /><textarea data-input rows="16" maxlength="1000000">Hello world
+Hello world
+  A fresh line  </textarea></label>
+  <label><Copy text={['操作','Operation','Aktion']} /><select data-mode>{[['upper','大写','Uppercase','Großbuchstaben'],['lower','小写','Lowercase','Kleinbuchstaben'],['dedupe','去重行','Deduplicate lines','Doppelte Zeilen entfernen'],['sort','排序行','Sort lines','Zeilen sortieren'],['trim','修剪并移除空行','Trim & remove blank lines','Trimmen & Leerzeilen entfernen']].map(([value,zh,en,de])=><option value={value} data-copy-zh={zh} data-copy-en={en} data-copy-de={de}>{zh}</option>)}</select></label>
+ </>}
+ <button data-run class="primary" type="button"><Copy text={slug==='audio-lab'?['导出 WAV','Export WAV','WAV exportieren']:slug==='token-lab'?['生成','Generate','Erzeugen']:['运行','Run','Ausführen']} /></button>
+ </div><div class="lab-panel">
+ <header><b>02</b><Copy as="h2" text={['结果','Result','Ergebnis']} /></header>
+ <div data-swatches class="native-swatches"></div><audio data-audio controls hidden></audio>
+ <label><Copy text={['输出内容','Output content','Ausgabeinhalt']} /><textarea data-output rows="16" readonly aria-label="结果" data-label-zh="结果" data-label-en="Result" data-label-de="Ergebnis"></textarea></label>
+ <div class="lab-toolbar"><button data-copy type="button"><Copy text={['复制结果','Copy result','Ergebnis kopieren']} /></button>{slug==='palette-lab'&&<><button data-css type="button">CSS ↓</button><button data-json type="button">JSON ↓</button></>}</div>
+ <p data-status role="status" aria-live="polite"></p>
+ </div></div>
+</section>
+<style>.native-swatches{display:flex;flex-wrap:wrap;gap:.5rem}.native-swatches:empty{display:none}.lab canvas{width:100%;height:auto;max-height:250px;object-fit:contain;background:var(--paper);margin:1rem 0}.lab audio{width:100%;margin-bottom:1rem}.lab input[type=checkbox]{width:auto}</style>
+<script>
+ const root=document.querySelector<HTMLElement>('[data-native-lab]');
+ if(root) import('../../features/native-tools/controller').then(({mount})=>{const cleanup=mount(root);window.addEventListener('pagehide',cleanup,{once:true});});
+</script>
