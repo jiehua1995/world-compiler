@@ -24,7 +24,7 @@ Unit tests cover parsers, byte and size boundaries, page selection, conversions,
 
 ## Local verification record (2026-10-15)
 
-- `npm run verify`: Astro/TypeScript 0 errors/warnings/hints; 105 unit/configuration tests passed; 25 static pages built; 82 Chromium tests passed.
+- `npm run verify`: Astro/TypeScript 0 errors/warnings/hints; 105 unit/configuration tests passed; 25 static pages built; 83 Chromium tests passed.
 - All 25 routes checked at 390px in Chinese, English and German without horizontal overflow.
 - OCR first recognition after an explicit asset download was verified offline; PNG/JPEG, PDF exports and MPEG-TS output were exercised locally.
 - A Windows-specific keyboard test was corrected: ArrowDown commits the native select; Tab leaves it without reopening the OS popup with Enter. Application keyboard support remains native.

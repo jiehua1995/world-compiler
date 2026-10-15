@@ -22,6 +22,7 @@
   padding: 1rem var(--space-3);
   text-decoration: none;
   border-right: 1px solid var(--line);
+  min-width:0;
 }
 
 .signal-mark {
@@ -33,6 +34,8 @@
 .brand__copy {
   display: grid;
   line-height: 1.25;
+  min-width:0;
+  overflow-wrap:anywhere;
 }
 
 .brand__copy strong {

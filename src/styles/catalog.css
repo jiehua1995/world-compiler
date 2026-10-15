@@ -10,6 +10,7 @@
 }
 .hero-console h1 { max-width: 12ch; margin: 0; font-size: clamp(3.4rem, 7.5vw, 7.8rem); font-weight: 730; letter-spacing: -.065em; line-height: .96; }
 .hero-console__lede { max-width: 43rem; margin: var(--space-3) 0 0; color: var(--ink-muted); font-size: clamp(1rem, 1.6vw, 1.25rem); }
+.hero-console h1 { overflow-wrap:anywhere; }
 .hero-console__scope { position: relative; min-height: 32rem; border-left: 1px solid var(--line); background: color-mix(in srgb, var(--institution-blue) 7%, transparent); }
 .hero-console__orbit, .hero-console__beam, .hero-console__core { position: absolute; inset: 50% auto auto 50%; transform: translate(-50%, -50%); }
 .hero-console__orbit { aspect-ratio: 1; border: 1px solid var(--line-strong); border-radius: 50%; }
@@ -96,7 +97,7 @@
 .roadmap-panel__signal span:nth-child(3) { width: 85%; }
 
 @media (max-width: 68rem) {
-  .hero-console { grid-template-columns: 1fr; }
+  .hero-console { grid-template-columns: minmax(0,1fr); }
   .hero-console__scope { min-height: 22rem; border-top: 1px solid var(--line); border-left: 0; }
   .hero-console__copy { padding-bottom: var(--space-5); }
   .hero-console__status { position: relative; grid-column: 1; }

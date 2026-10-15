@@ -1,6 +1,15 @@
 import { expect, test } from '@playwright/test';
 import { contrastRatio, parseHexColor } from '../../src/features/contrast-lens/contrast';
 
+test('long German branding wraps even with wider fallback font metrics', async ({page})=>{
+  await page.setViewportSize({width:390,height:844});
+  await page.goto('./');
+  await page.locator('[data-locale-select]').selectOption('de');
+  await page.locator('.brand__copy strong').evaluate(element=>{ (element as HTMLElement).style.cssText='font-family:monospace;font-size:28px'; });
+  expect(await page.locator('.brand__copy').evaluate(element=>element.getBoundingClientRect().right)).toBeLessThanOrEqual(390);
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
+});
+
 test('clock minute hand stays distinguishable on the dark face', async ({page})=>{
   await page.goto('./');
   await page.locator('[data-theme-value="dark"]').click();
