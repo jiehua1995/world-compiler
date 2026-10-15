@@ -6,7 +6,7 @@ import { parse } from 'yaml';
 const root = resolve(import.meta.dirname, '../..');
 
 describe('deployment configuration', () => {
-  it('deploys main to GitHub Pages with the official Astro workflow', () => {
+  it('uploads the verified static build and deploys main to GitHub Pages', () => {
     const source = readFileSync(resolve(root, '.github/workflows/deploy.yml'), 'utf8');
     const workflow = parse(source);
 
@@ -23,12 +23,12 @@ describe('deployment configuration', () => {
     const buildCommands = buildSteps.map((step) => step.run);
     const deployActions = workflow.jobs.deploy.steps.map((step: { uses?: string }) => step.uses);
 
-    expect(buildActions).toContain('withastro/action@v3');
+    expect(buildActions).toContain('actions/upload-pages-artifact@v3');
     expect(buildActions).toContain('actions/setup-node@v4');
     expect(buildCommands).toContain('npx playwright install --with-deps chromium');
     expect(buildCommands).toContain('npm run verify');
     expect(buildSteps.findIndex((step) => step.run === 'npm run verify'))
-      .toBeLessThan(buildSteps.findIndex((step) => step.uses === 'withastro/action@v3'));
+      .toBeLessThan(buildSteps.findIndex((step) => step.uses === 'actions/upload-pages-artifact@v3'));
     expect(deployActions).toContain('actions/deploy-pages@v4');
   });
 
