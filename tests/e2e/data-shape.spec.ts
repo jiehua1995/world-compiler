@@ -8,8 +8,11 @@ test('imports locally, previews, cleans, and downloads CSV', async ({ page }) =>
   await page.getByRole('button', { name: '清理单元格并移除空白行' }).click();
   await expect(page.locator('[data-data-table] tr')).toHaveCount(2);
   await expect(page.locator('[data-data-table]')).toContainText('Ada');
+  await page.getByRole('combobox', { name: '语言' }).selectOption('de');
+  await expect(page.locator('[data-data-table] tr')).toHaveCount(2);
+  await expect(page.getByRole('button', { name: 'Bereinigte CSV herunterladen' })).toBeEnabled();
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '下载整理后的 CSV' }).click();
+  await page.getByRole('button', { name: 'Bereinigte CSV herunterladen' }).click();
   expect((await downloadPromise).suggestedFilename()).toBe('world-compiler-cleaned.csv');
 });
 

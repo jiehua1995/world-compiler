@@ -69,7 +69,10 @@ export function mountDataShaper(root: HTMLElement, doc: Document = document, win
     link.href = url; link.download = 'world-compiler-cleaned.csv'; link.click();
     win.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
-  const onLocale = () => { if (!error.hidden && error.dataset.messageKey) error.textContent = copy()[error.dataset.messageKey as 'data.error.invalid' | 'data.error.unsupported' | 'data.error.tooLarge']; if (hasSource) parse(); else status.textContent = copy()['data.status.empty']; };
+  const onLocale = () => {
+    if (!error.hidden && error.dataset.messageKey) error.textContent = copy()[error.dataset.messageKey as 'data.error.invalid' | 'data.error.unsupported' | 'data.error.tooLarge'];
+    else status.textContent = copy()[hasSource ? 'data.status.ready' : 'data.status.empty'];
+  };
   input.addEventListener('change', onFile);
   delimiter.addEventListener('change', onDelimiter);
   clean.addEventListener('click', onClean);
