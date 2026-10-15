@@ -1,6 +1,6 @@
 <section class="simple-tool" data-data-shaper aria-labelledby="data-workbench-title">
   <div class="simple-tool__controls simple-tool__controls--single">
-    <label><span data-i18n="data.delimiter">分隔符</span><select data-delimiter><option value="," data-i18n="data.csv">逗号（CSV）</option><option value="\t" data-i18n="data.tsv">制表符（TSV）</option></select></label>
+    <label><span data-i18n="data.delimiter">分隔符</span><select data-delimiter><option value="," data-i18n="data.csv">逗号（CSV）</option><option value="tab" data-i18n="data.tsv">制表符（TSV）</option></select></label>
     <label class="file-picker"><span data-i18n="data.file">选择 CSV 或 TSV 文件</span><input type="file" accept=".csv,.tsv,text/csv,text/tab-separated-values" data-data-file /></label>
   </div>
   <p role="status" aria-live="polite" data-data-status data-i18n="data.status.empty">等待选择表格文件</p>
@@ -10,5 +10,5 @@
     <h2 id="data-workbench-title" data-i18n="data.preview">数据预览</h2>
     <div class="data-table-wrap"><table><caption class="visually-hidden" data-i18n="data.preview">数据预览</caption><tbody data-data-table></tbody></table></div>
   </section>
-  <p class="simple-tool__note" data-i18n="data.note">预览最多显示前 8 行；清理会去除单元格首尾空白并移除全空行。最大文件大小为 10 MB。</p>
+  <p class="simple-tool__note" data-i18n="data.note">预览最多显示前 8 行；清理会去除单元格首尾空白并移除全空行。最大文件大小为 10 MB，最多解析 250,000 个单元格。</p>
 </section>

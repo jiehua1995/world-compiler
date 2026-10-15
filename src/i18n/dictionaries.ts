@@ -149,12 +149,13 @@ const zhCN = {
   'data.status.empty': '等待选择表格文件',
   'data.status.ready': '表格已读取，可预览和清理。',
   'data.error.tooLarge': '文件超过 10 MB 限制。',
+  'data.error.tooComplex': '文件包含过多单元格（上限 250,000）。',
   'data.error.unsupported': '请选择 CSV 或 TSV 文件。',
   'data.error.invalid': '无法解析此文件，请检查引号和分隔符。',
   'data.clean': '清理单元格并移除空白行',
   'data.download': '下载整理后的 CSV',
   'data.preview': '数据预览',
-  'data.note': '预览最多显示前 8 行；清理会去除单元格首尾空白并移除全空行。最大文件大小为 10 MB。',
+  'data.note': '预览最多显示前 8 行；清理会去除单元格首尾空白并移除全空行。最大文件大小为 10 MB，最多解析 250,000 个单元格。',
 } as const;
 
 export type DictionaryKey = keyof typeof zhCN;
@@ -309,12 +310,13 @@ const en = {
   'data.status.empty': 'Waiting for a table file',
   'data.status.ready': 'Table loaded and ready to preview or clean.',
   'data.error.tooLarge': 'File exceeds the 10 MB limit.',
+  'data.error.tooComplex': 'File contains too many cells (limit: 250,000).',
   'data.error.unsupported': 'Choose a CSV or TSV file.',
   'data.error.invalid': 'This file could not be parsed. Check its quotes and delimiter.',
   'data.clean': 'Clean cells and remove blank rows',
   'data.download': 'Download cleaned CSV',
   'data.preview': 'Data preview',
-  'data.note': 'Preview shows up to 8 rows. Cleaning trims cells and removes fully blank rows. Maximum file size: 10 MB.',
+  'data.note': 'Preview shows up to 8 rows. Cleaning trims cells and removes fully blank rows. Maximum file size: 10 MB and 250,000 cells.',
 } satisfies Dictionary;
 
 const de = {
@@ -466,12 +468,13 @@ const de = {
   'data.status.empty': 'Warte auf eine Tabellendatei',
   'data.status.ready': 'Tabelle geladen; Vorschau und Bereinigung sind bereit.',
   'data.error.tooLarge': 'Die Datei überschreitet das Limit von 10 MB.',
+  'data.error.tooComplex': 'Die Datei enthält zu viele Zellen (Limit: 250.000).',
   'data.error.unsupported': 'Wähle eine CSV- oder TSV-Datei aus.',
   'data.error.invalid': 'Diese Datei konnte nicht gelesen werden. Prüfe Anführungszeichen und Trennzeichen.',
   'data.clean': 'Zellen bereinigen und leere Zeilen entfernen',
   'data.download': 'Bereinigte CSV herunterladen',
   'data.preview': 'Datenvorschau',
-  'data.note': 'Die Vorschau zeigt bis zu 8 Zeilen. Zellen werden getrimmt und vollständig leere Zeilen entfernt. Maximal 10 MB.',
+  'data.note': 'Die Vorschau zeigt bis zu 8 Zeilen. Zellen werden getrimmt und vollständig leere Zeilen entfernt. Maximal 10 MB und 250.000 Zellen.',
 } satisfies Dictionary;
 
 export const dictionaries: Record<Locale, Dictionary> = {

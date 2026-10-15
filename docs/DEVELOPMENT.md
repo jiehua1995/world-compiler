@@ -12,11 +12,11 @@ The project builds static output with Astro. It has no application server, datab
 
 | 路径 / Path | 职责 / Responsibility |
 | --- | --- |
-| `src/pages/` | 路由：首页目录与色觉实验室 / Routes: catalog and Color Vision Lab |
+| `src/pages/` | 路由：首页、工具目录与各工具页 / Routes: landing page, directory, and tool pages |
 | `src/layouts/BaseLayout.astro` | 文档元信息、主题预绘制、站点壳与偏好初始化 / Metadata, pre-paint theme, shared shell, preference initialization |
 | `src/components/` | Astro 展示组件与工具界面组件 / Astro presentation and tool UI components |
 | `src/data/tools.ts` | 工具目录唯一数据源 / Single source of truth for catalog entries |
-| `src/features/` | 与页面框架分离的逻辑；色觉工具使用解码、模拟、Worker、导出模块 / Framework-independent logic; Color Vision modules handle decoding, simulation, workers, and export |
+| `src/features/` | 与页面框架分离的逻辑；各工具分别实现色觉、对比度、文本分析与 CSV/TSV 处理 / Framework-independent color-vision, contrast, text-analysis, and CSV/TSV logic |
 | `src/i18n/`、`src/theme/` | 语言字典、语言选择与主题解析 / Dictionaries, locale selection, theme resolution |
 | `src/scripts/` | 浏览器端偏好与目录交互 / Browser-side preferences and catalog interactions |
 | `src/styles/` | 设计令牌、站点壳、目录和工具样式 / Design tokens, shared shell, catalog, and tool styles |
@@ -25,15 +25,15 @@ The project builds static output with Astro. It has no application server, datab
 
 ## 2. 浏览器偏好 / Browser preferences
 
-- 语言偏好保存在 `localStorage` 的 `world-compiler:locale` 键中。有效值为 `zh-CN` 和 `en`；无有效保存值时按浏览器语言选择英语或简体中文。
+- 语言偏好保存在 `localStorage` 的 `world-compiler:locale` 键中。有效值为 `zh-CN`、`en` 和 `de`；无有效保存值时按浏览器语言选择德语、英语或简体中文回退。
 - 主题偏好保存在 `world-compiler:theme` 中，值为 `system`、`light` 或 `dark`。主题脚本在页面主体绘制前运行，避免初始明暗闪烁。
 - 存储不可用时，当前页面仍可切换语言和主题，只是不持久保存。
-- 页面标题与描述在每个 Astro 页面中提供两种语言，偏好脚本切换语言时保留当前页面自己的元信息。
+- 页面标题与描述在每个 Astro 页面中提供三种语言，偏好脚本切换语言时保留当前页面自己的元信息。
 
-- Locale preference uses the `world-compiler:locale` `localStorage` key. Valid values are `zh-CN` and `en`; without a valid saved value, browser language selects English or Simplified Chinese.
+- Locale preference uses the `world-compiler:locale` `localStorage` key. Valid values are `zh-CN`, `en`, and `de`; without a saved value, German and English browser languages are detected, with Simplified Chinese as fallback.
 - Theme preference uses `world-compiler:theme` with `system`, `light`, or `dark`. Theme selection runs before the page body paints to avoid an initial flash.
 - If storage is unavailable, language and theme still work for the current page but are not persisted.
-- Each Astro page provides titles and descriptions in both languages. Locale changes preserve that page's own metadata.
+- Each Astro page provides titles and descriptions in all three languages. Locale changes preserve that page's own metadata.
 
 ## 3. 色觉实验室图片流程 / Color Vision Lab image flow
 
@@ -44,20 +44,20 @@ Supported formats are PNG, JPEG, WebP, and GIF. The browser validates the MIME t
 1. 文件选择或拖放进入同一个控制器。旧图片的解码资源会先清理。
 2. 解码后的尺寸限制为最长边不超过 16,384 像素、总量不超过 100,000,000 像素；超限图片会被拒绝。
 3. 交互预览按比例缩小到最长边 1,200 像素且总量不超过 1,200,000 像素。原图只用于最后的全尺寸导出。
-4. 预览按原图、红色盲、绿色盲、蓝色盲、全色盲顺序生成。像素矩阵计算在 Web Worker 中完成；控制器只接受当前图片请求的结果，重置或换图后迟到的结果不会再绘回画布。
-5. 放大预览使用原有模拟画布；导出使用原始图片尺寸和用户选择的模式，像素转换在 Worker 中执行，浏览器 Canvas 编码为 PNG 或 JPEG Blob，再触发本地下载。
+4. 对照原图与当前选定的模拟模式。红色弱、绿色弱、蓝黄色弱模式使用 0–100% 模拟强度；0% 为原图，100% 为相应二色视觉锚点，中间值在模型锚点间插值。强度不是临床严重程度。
+5. 像素矩阵计算在 Web Worker 中完成；控制器只接受当前图片请求的结果，重置或换图后迟到的结果不会再绘回画布。导出沿用当前模式和强度，Canvas 编码为 PNG/JPEG Blob 后触发本地下载。
 6. PNG 保留透明度；JPEG 输出为不透明像素。导出完成后复用同一个本地文件名规则，不创建服务器端副本。
 
 1. File selection and drag-and-drop enter the same controller. Resources from the previous decoded image are cleaned up first.
 2. Decoded images are limited to a 16,384-pixel maximum edge and 100,000,000 total pixels. Larger images are rejected.
 3. Interactive previews preserve aspect ratio and are bounded to a 1,200-pixel maximum edge and 1,200,000 total pixels. Full source dimensions are retained for export.
-4. Previews are produced in this order: original, protanopia, deuteranopia, tritanopia, achromatopsia. Pixel matrix calculations run in a Web Worker. The controller accepts results only for the current image request, so a late result cannot redraw a cleared or replaced image.
-5. The inspection dialog uses the existing simulated canvas. Export uses source dimensions and the selected mode; pixel conversion runs in the worker, then Canvas encodes a PNG or JPEG Blob for a local download.
+4. The workbench compares the original against the selected simulation. Protan, deutan, and tritan modes have a 0–100% model-strength control: 0% is the original, 100% is the corresponding dichromacy anchor, and intermediate values interpolate model anchors. Strength is not a clinical severity measure.
+5. Pixel matrix calculations run in a Web Worker. The controller accepts results only for the current image request, so late work cannot redraw a cleared or replaced image. Export uses the current mode and strength; Canvas encodes a PNG/JPEG Blob for local download.
 6. PNG preserves transparency. JPEG output is opaque. Export uses a local filename and does not create a server-side copy.
 
-这些矩阵是用于理解和设计审查的 sRGB 近似模拟，并不模拟个体差异，也不能用于诊断。GIF 由浏览器解码为静态图像源，当前工具不逐帧模拟动画。
+Machado 等人发布的矩阵在**线性光 RGB**中应用：浏览器读取的 sRGB 通道先解码为线性光，变换后裁剪至显示色域并重新编码为 sRGB。该流程用于理解和设计审查，不模拟个体差异，也不能用于诊断。GIF 由浏览器解码为静态图像源，当前工具不逐帧模拟动画。参考：[Machado、Oliveira 与 Fernandes (2009)](https://doi.org/10.1109/TVCG.2009.113)。
 
-The matrices are educational sRGB approximations for understanding and design review. They do not represent individual variation and are not diagnostic. GIF input is decoded as a static browser image source; animation frames are not simulated.
+The published Machado et al. matrices are applied in **linear-light RGB**: browser sRGB channels are decoded to linear light, transformed, clipped to the display gamut, then encoded back to sRGB. This is an educational approximation for design review, not a model of individual variation or a diagnostic. GIF input is decoded as a static browser image source; animation frames are not simulated. Reference: [Machado, Oliveira, and Fernandes (2009)](https://doi.org/10.1109/TVCG.2009.113).
 
 ### 隐私边界 / Privacy boundary
 
@@ -65,7 +65,21 @@ The matrices are educational sRGB approximations for understanding and design re
 
 Images flow only through the browser file input, a temporary object URL, browser canvases, and a Web Worker. The object URL is revoked when an image is reset, replaced, or the controller is destroyed. The worker belongs to the current site and has no upload path; the project does not load analytics or remote font scripts.
 
-## 4. 新增工具 / Add a tool
+## 4. 其余工具行为 / Other tool behavior
+
+**对比度透镜 / Contrast Lens** 使用前景与背景的六位/三位 HEX 值及 WCAG 相对亮度计算对比度，显示普通文字 4.5:1/7:1 与大号文字 3:1/4.5:1 的 AA/AAA 结果。无效 HEX 不进入计算；结果是设计检查提示，不是整站合规认证。
+
+**Plain Language Meter / 清晰语言仪** 按选定的分析语言独立于界面语言运行。中文显示字符/分词/句子统计但不套用英文公式；英文采用 Flesch Reading Ease，德文采用 Flesch 德语公式。音节通过本地拼写启发式估算，且至少 30 词、3 句后才显示分数。它是写作提示，不评价读者能力或法律合规。
+
+**Data Shaper / 数据塑形台** 支持本地 CSV/TSV 文件，读取前拒绝大于 10,000,000 字节的文件，解析最多 250,000 个单元格以限制极端输入的内存占用。解析器支持引号、转义引号、引号内换行、CRLF 与尾部空单元格；不匹配引号、不规范引号或超过单元格上限会给出错误。清理会 trim 单元格、删除全空行，预览限 8 行，导出规范化 CSV。内容只保存在当前页面内存。
+
+**Contrast Lens** uses foreground/background HEX colors and the WCAG relative-luminance formula, showing normal-text thresholds of 4.5:1/7:1 and large-text thresholds of 3:1/4.5:1 for AA/AAA. Invalid HEX is not calculated; this is a design aid, not a full-site compliance certification.
+
+**Plain Language Meter / Klartext-Meter** analyzes in the selected language independently of the UI locale. Chinese gets character/segmentation/sentence metrics but no English formula; English uses Flesch Reading Ease and German uses the German Flesch formula. Syllables use a local spelling heuristic, and a score appears only after at least 30 words and 3 sentences. Results are writing prompts, not judgments of reader ability or legal compliance.
+
+**Data Shaper / Datenformer** reads local CSV/TSV files and rejects files over 10,000,000 bytes before reading. Parsing is capped at 250,000 cells to bound pathological input memory use. The parser handles quoted delimiters, doubled quotes, embedded newlines, CRLF, and trailing empty cells; malformed quoting and inputs over the cell cap are rejected with a localized message. Cleaning trims cells and removes wholly blank rows, preview is limited to 8 rows, and export is normalized CSV. Content stays in current-page memory.
+
+### 新增工具 / Add a tool
 
 1. 在 `src/data/tools.ts` 添加 `ToolDefinition`：使用唯一 slug，提供中英文标题、摘要与搜索标签，分类使用现有 `ToolCategory`。
 2. 新建 `src/pages/tools/<slug>.astro`，使用 `BaseLayout`，把页面文案放进现有类型字典，复用工具页的视觉变量与公共组件。

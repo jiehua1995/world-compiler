@@ -5,9 +5,9 @@ import { transformPixel, transformPixels } from '../../src/features/color-vision
 describe('transformPixel', () => {
   it.each([
     ['original', [252, 161, 4, 128]],
-    ['protanopia', [207, 156, 0, 128]],
-    ['deuteranopia', [230, 179, 8, 128]],
-    ['tritanopia', [255, 131, 114, 128]],
+    ['protanopia', [191, 168, 0, 128]],
+    ['deuteranopia', [213, 190, 15, 128]],
+    ['tritanopia', [255, 138, 137, 128]],
     ['achromatopsia', [170, 170, 170, 128]],
   ] as const)('maps a palette pixel in %s mode', (mode, expected) => {
     expect(transformPixel(252, 161, 4, 128, mode)).toEqual(expected);
@@ -18,6 +18,10 @@ describe('transformPixel', () => {
       expect(transformPixel(0, 0, 0, 255, mode)).toEqual([0, 0, 0, 255]);
       expect(transformPixel(255, 255, 255, 255, mode)).toEqual([255, 255, 255, 255]);
     }
+  });
+
+  it('applies Machado matrices in linear light and re-encodes sRGB', () => {
+    expect(transformPixel(255, 0, 0, 255, 'protan', 100)).toEqual([109, 95, 0, 255]);
   });
 
   it('clamps channels and alpha into byte range', () => {

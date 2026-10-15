@@ -7,6 +7,9 @@ for (const entry of [
   { name: 'catalog', url: './' },
   { name: 'tool directory', url: './tools/' },
   { name: 'Color Vision Lab', url: './tools/color-vision/' },
+  { name: 'Contrast Lens', url: './tools/contrast-lens/' },
+  { name: 'Plain Language Meter', url: './tools/plain-language/' },
+  { name: 'Data Shaper', url: './tools/data-shape/' },
 ]) {
   test(`${entry.name} has one main landmark and no mobile horizontal overflow`, async ({ page }) => {
     await page.setViewportSize({ width: 390, height: 844 });

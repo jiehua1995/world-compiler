@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { cleanRows, MAX_FILE_BYTES, parseDelimitedText, serializeCsv } from '../../src/features/data-shape/csv';
+import { cleanRows, DelimitedTextError, MAX_CELLS, MAX_FILE_BYTES, parseDelimitedText, serializeCsv } from '../../src/features/data-shape/csv';
 
 describe('CSV and TSV processing', () => {
   it('parses quoted delimiters, doubled quotes, newlines, CRLF, and trailing empty cells', () => {
@@ -23,5 +23,12 @@ describe('CSV and TSV processing', () => {
 
   it('defines the 10 MB import limit', () => {
     expect(MAX_FILE_BYTES).toBe(10_000_000);
+  });
+
+  it('rejects delimited input that would allocate too many cells', () => {
+    let caught: unknown;
+    try { parseDelimitedText(','.repeat(MAX_CELLS), ','); } catch (error) { caught = error; }
+    expect(caught).toBeInstanceOf(DelimitedTextError);
+    expect(caught).toMatchObject({ code: 'too-complex' });
   });
 });

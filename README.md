@@ -6,16 +6,21 @@ An open-source browser toolkit for the public good. It turns useful but scattere
 
 ## 当前版本 / What is included
 
-- 中英文界面，可即时切换 / Chinese and English interfaces with instant switching
+- 中、英、德三语下拉切换 / Chinese, English, and German language selector
 - 浅色、深色与跟随系统主题 / Light, dark, and system themes
 - 可搜索、可分类的工具目录 / Searchable, filterable tool catalog
-- **色觉实验室 / Color Vision Lab**：本地导入图片，实时对比原图、红色盲、绿色盲、蓝色盲与全色盲模拟，并导出 PNG 或 JPEG
+- **色觉实验室 / Color Vision Lab**：本地导入图片，对照红色弱、绿色弱、蓝黄色弱等模式；三条模拟轴可调 0–100% 强度，导出 PNG/JPEG。强度是模型参数，不是临床程度判断。
+- **对比度透镜 / Contrast Lens**：按 WCAG 相对亮度公式计算文字与背景色的对比度，并显示普通/大号文字的 AA 与 AAA 阈值结果。
+- **清晰语言仪 / Plain Language Meter**：本地查看字符、词和句子统计与长句提示；英文、德文分数是拼写启发式估算，中文不显示伪精确分数。
+- **数据塑形台 / Data Shaper**：本地预览、清理 CSV/TSV 并下载 CSV；最大输入为 10 MB、最多解析 250,000 个单元格。
 - 响应式布局、键盘操作、焦点样式、减少动态效果支持 / Responsive layout, keyboard support, visible focus, and reduced-motion support
 - Astro 静态构建与 GitHub Pages 自动部署配置 / Static Astro build and GitHub Pages deployment workflow
 
-色觉模拟是帮助设计检查与理解差异的近似工具，不是医学诊断。图片不会上传到服务器。
+**Deutsch:** Die Oberfläche bietet Chinesisch, Englisch und Deutsch. Vier lokale Werkzeuge sind verfügbar: Color Vision Lab (mit einstellbarer Modellstärke), Contrast Lens (WCAG-Kontrastwerte), Plain Language Meter (ungefähre Lesbarkeitshinweise) und Data Shaper (CSV/TSV-Bereinigung bis 10 MB und 250.000 Zellen).
 
-Color-vision simulations are approximations for design review and understanding differences, not medical diagnosis. Images are never uploaded to a server.
+以上工具均在浏览器本地处理用户输入，不要求账户、不上传内容。色觉模拟是教育性近似工具，不是医学诊断；对比度和可读性结果也不构成认证或对个人能力的判断。
+
+All tools process user input locally in the browser: no account is required and content is not uploaded. Color-vision simulation is an educational approximation, not medical diagnosis; contrast and readability results are not certifications or judgments of individual ability.
 
 ## 本地开发 / Local development
 
@@ -68,17 +73,19 @@ Before the first deployment, select **GitHub Actions** in **Settings → Pages �
 
 ## 扩展工具 / Adding a tool
 
-1. 在 `src/data/tools.ts` 添加双语工具条目，slug 与页面路由保持一致。
+1. 在 `src/data/tools.ts` 添加中、英、德工具条目，slug 与页面路由保持一致。
 2. 在 `src/pages/tools/` 创建 Astro 页面，复用 `BaseLayout` 和现有工具页面结构。
-3. 将可切换的界面文案补入 `src/i18n/dictionaries.ts`；动态生成的标签也要提供中英版本。
+3. 将可切换的界面文案补入 `src/i18n/dictionaries.ts`；动态生成的标签也要提供三语版本。
 4. 把核心计算放在 `src/features/<tool>/`，为纯逻辑编写单元测试，再为完整操作流程编写浏览器测试。
 5. 如果工具需要图形资产，将成品放入 `public/assets/instrument-glyphs/`，并将生成说明与源图放入 `docs/assets/`。
 
-1. Add a bilingual tool entry to `src/data/tools.ts`; keep its slug aligned with the page route.
+1. Add a Chinese, English, and German tool entry to `src/data/tools.ts`; keep its slug aligned with the page route.
 2. Create an Astro page in `src/pages/tools/` and reuse `BaseLayout` and the existing tool-page structure.
-3. Add switchable interface copy to `src/i18n/dictionaries.ts`; dynamic labels need Chinese and English variants too.
+3. Add switchable interface copy to `src/i18n/dictionaries.ts`; dynamic labels need all three locale variants too.
 4. Put core calculations in `src/features/<tool>/`, cover pure logic with unit tests, then test the full user flow in a browser.
 5. If the tool needs artwork, put production assets in `public/assets/instrument-glyphs/` and generation notes/source sheets in `docs/assets/`.
+
+**Deutsch:** Werkzeugeinträge, Oberflächentexte und dynamische Statusmeldungen müssen Chinesisch, Englisch und Deutsch unterstützen. Reine Berechnungen gehören nach `src/features/<tool>/` und benötigen Unit- und Browsertests.
 
 详细架构、图片数据流、隐私边界和排障方法见 [开发指南 / Development guide](docs/DEVELOPMENT.md)。
 
@@ -90,7 +97,7 @@ For architecture, image data flow, privacy boundaries, and troubleshooting, see 
 src/components/       shared interface and tool components
 src/data/             catalog definitions
 src/features/         framework-independent tool logic
-src/i18n/             bilingual dictionaries and locale helpers
+src/i18n/             Chinese, English, and German dictionaries and locale helpers
 src/pages/            Astro routes
 src/styles/           visual system and responsive styles
 tests/                unit, configuration, and browser tests

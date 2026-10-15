@@ -16,6 +16,15 @@ test('imports locally, previews, cleans, and downloads CSV', async ({ page }) =>
   expect((await downloadPromise).suggestedFilename()).toBe('world-compiler-cleaned.csv');
 });
 
+test('imports TSV with the actual tab delimiter', async ({ page }) => {
+  await page.goto('./tools/data-shape/');
+  await page.getByLabel('选择 CSV 或 TSV 文件').setInputFiles({ name: 'table.tsv', mimeType: 'text/tab-separated-values', buffer: Buffer.from('name\tvalue\nAda\t1') });
+  await expect(page.locator('[data-delimiter]')).toHaveValue('tab');
+  await expect(page.locator('[data-data-table] tr')).toHaveCount(2);
+  await expect(page.locator('[data-data-table]')).toContainText('Ada');
+  await expect(page.locator('[data-data-table]')).toContainText('1');
+});
+
 test('rejects malformed and oversized files without losing an operable picker', async ({ page }) => {
   await page.goto('./tools/data-shape/');
   const input = page.getByLabel('选择 CSV 或 TSV 文件');

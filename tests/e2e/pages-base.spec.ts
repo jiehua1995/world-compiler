@@ -14,8 +14,17 @@ test('catalog links, assets, and scripts stay under the Pages base', async ({ pa
 
   expect(localUrls.length).toBeGreaterThan(0);
   expect(localUrls.every((url) => url?.startsWith('/world-compiler/'))).toBe(true);
-  await page.getByRole('link', { name: '打开色觉实验室' }).click();
-  await expect(page).toHaveURL(/\/world-compiler\/tools\/color-vision\/$/);
+  const routes = [
+    ['打开色觉实验室', 'color-vision'],
+    ['打开对比度透镜', 'contrast-lens'],
+    ['打开清晰语言仪', 'plain-language'],
+    ['打开数据塑形台', 'data-shape'],
+  ] as const;
+  for (const [name, slug] of routes) {
+    await page.getByRole('link', { name }).click();
+    await expect(page).toHaveURL(new RegExp(`/world-compiler/tools/${slug}/$`));
+    await page.goto('./tools/');
+  }
 });
 
 test('the simulation worker is emitted and loaded beneath the Pages base', async ({ page }) => {

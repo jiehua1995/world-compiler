@@ -1,5 +1,8 @@
 export const MAX_FILE_BYTES = 10_000_000;
-export class DelimitedTextError extends Error {}
+export const MAX_CELLS = 250_000;
+export class DelimitedTextError extends Error {
+  constructor(message: string, readonly code: 'invalid' | 'too-complex' = 'invalid') { super(message); }
+}
 
 export function parseDelimitedText(text: string, delimiter: ',' | '\t'): string[][] {
   if (!text) return [];
@@ -9,6 +12,11 @@ export function parseDelimitedText(text: string, delimiter: ',' | '\t'): string[
   let quoted = false;
   let afterQuote = false;
   let rowStarted = false;
+  let cellCount = 0;
+  const pushCell = () => {
+    if (cellCount >= MAX_CELLS) throw new DelimitedTextError('Input contains too many cells.', 'too-complex');
+    row.push(cell); cell = ''; cellCount += 1;
+  };
   for (let index = 0; index < text.length; index += 1) {
     const character = text[index];
     if (quoted) {
@@ -23,16 +31,16 @@ export function parseDelimitedText(text: string, delimiter: ',' | '\t'): string[
       quoted = true;
       rowStarted = true;
     } else if (character === delimiter) {
-      row.push(cell); cell = ''; afterQuote = false; rowStarted = true;
+      pushCell(); afterQuote = false; rowStarted = true;
     } else if (character === '\r' || character === '\n') {
       if (character === '\r' && text[index + 1] === '\n') index += 1;
-      row.push(cell); rows.push(row); row = []; cell = ''; afterQuote = false; rowStarted = false;
+      pushCell(); rows.push(row); row = []; afterQuote = false; rowStarted = false;
     } else {
       cell += character; rowStarted = true;
     }
   }
   if (quoted) throw new DelimitedTextError('Unclosed quoted cell.');
-  if (rowStarted || cell || row.length || afterQuote) { row.push(cell); rows.push(row); }
+  if (rowStarted || cell || row.length || afterQuote) { pushCell(); rows.push(row); }
   return rows;
 }
 

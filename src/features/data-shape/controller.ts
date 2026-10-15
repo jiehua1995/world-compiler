@@ -31,13 +31,13 @@ export function mountDataShaper(root: HTMLElement, doc: Document = document, win
     }));
   };
   const clear = () => { rows = []; cleaned = null; clean.disabled = true; download.disabled = true; preview.hidden = true; table.replaceChildren(); };
-  const showError = (key: 'data.error.tooLarge' | 'data.error.unsupported' | 'data.error.invalid') => {
+  const showError = (key: 'data.error.tooLarge' | 'data.error.tooComplex' | 'data.error.unsupported' | 'data.error.invalid') => {
     clear(); source = ''; hasSource = false; status.textContent = ''; error.hidden = false; error.dataset.messageKey = key; error.textContent = copy()[key];
   };
   const parse = () => {
     if (!hasSource) return;
     try {
-      rows = parseDelimitedText(source, delimiter.value as ',' | '\t');
+      rows = parseDelimitedText(source, delimiter.value === 'tab' ? '\t' : ',');
       cleaned = null;
       render(rows);
       preview.hidden = false;
@@ -46,7 +46,7 @@ export function mountDataShaper(root: HTMLElement, doc: Document = document, win
       error.hidden = true;
       status.textContent = copy()['data.status.ready'];
     } catch (problem) {
-      showError(problem instanceof DelimitedTextError ? 'data.error.invalid' : 'data.error.invalid');
+      showError(problem instanceof DelimitedTextError && problem.code === 'too-complex' ? 'data.error.tooComplex' : 'data.error.invalid');
     }
   };
   const onFile = async () => {
@@ -56,7 +56,7 @@ export function mountDataShaper(root: HTMLElement, doc: Document = document, win
     source = ''; hasSource = false;
     if (file.size > MAX_FILE_BYTES) { showError('data.error.tooLarge'); return; }
     if (!/\.(csv|tsv)$/iu.test(file.name)) { showError('data.error.unsupported'); return; }
-    delimiter.value = /\.tsv$/iu.test(file.name) ? '\t' : ',';
+    delimiter.value = /\.tsv$/iu.test(file.name) ? 'tab' : ',';
     try { source = await file.text(); hasSource = true; parse(); }
     catch { showError('data.error.invalid'); }
   };
@@ -70,7 +70,7 @@ export function mountDataShaper(root: HTMLElement, doc: Document = document, win
     win.setTimeout(() => URL.revokeObjectURL(url), 0);
   };
   const onLocale = () => {
-    if (!error.hidden && error.dataset.messageKey) error.textContent = copy()[error.dataset.messageKey as 'data.error.invalid' | 'data.error.unsupported' | 'data.error.tooLarge'];
+    if (!error.hidden && error.dataset.messageKey) error.textContent = copy()[error.dataset.messageKey as 'data.error.invalid' | 'data.error.unsupported' | 'data.error.tooLarge' | 'data.error.tooComplex'];
     else status.textContent = copy()[hasSource ? 'data.status.ready' : 'data.status.empty'];
   };
   input.addEventListener('change', onFile);
