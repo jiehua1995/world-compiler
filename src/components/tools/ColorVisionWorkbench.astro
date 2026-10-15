@@ -5,18 +5,19 @@ import ExportPanel from './ExportPanel.astro';
 import PreviewDialog from './PreviewDialog.astro';
 
 const modes = [
-  { mode: 'original', name: '原图', nameEn: 'Original' },
-  { mode: 'protanopia', name: '红色盲', nameEn: 'Protanopia' },
-  { mode: 'deuteranopia', name: '绿色盲', nameEn: 'Deuteranopia' },
-  { mode: 'tritanopia', name: '蓝色盲', nameEn: 'Tritanopia' },
-  { mode: 'achromatopsia', name: '全色盲', nameEn: 'Achromatopsia' },
+  { mode: 'original', key: 'cv.mode.original', zh: '原图', en: 'Original', de: 'Original' },
+  { mode: 'protan', key: 'cv.mode.protan', zh: '红色弱 / Protanomaly', en: 'Red-weak / Protanomaly', de: 'Rot-Schwäche / Protanomalie' },
+  { mode: 'deutan', key: 'cv.mode.deutan', zh: '绿色弱 / Deuteranomaly', en: 'Green-weak / Deuteranomaly', de: 'Grün-Schwäche / Deuteranomalie' },
+  { mode: 'tritan', key: 'cv.mode.tritan', zh: '蓝黄色弱 / Tritanomaly', en: 'Blue-yellow weak / Tritanomaly', de: 'Blau-Gelb-Schwäche / Tritanomalie' },
+  { mode: 'achromatopsia', key: 'cv.mode.achromatopsia', zh: '全色盲 / Achromatopsia', en: 'Achromatopsia', de: 'Achromatopsie' },
+  { mode: 'blue-cone-monochromacy', key: 'cv.mode.blueCone', zh: '蓝锥单色视 / Blue-cone monochromacy', en: 'Blue-cone monochromacy', de: 'Blauzapfen-Monochromasie' },
 ] as const;
 ---
 
 <div class="color-vision-lab" data-color-vision-lab data-state="empty">
   <section class="input-panel" aria-labelledby="input-title">
     <div>
-      <p class="section-kicker" data-copy-zh="INPUT / 本地文件" data-copy-en="INPUT / Local file">INPUT / 本地文件</p>
+      <p class="section-kicker" data-copy-zh="INPUT / 本地文件" data-copy-en="INPUT / Local file" data-copy-de="INPUT / Lokale Datei">INPUT / 本地文件</p>
       <h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2>
     </div>
     <DropZone />
@@ -25,10 +26,26 @@ const modes = [
       <p role="alert" data-workbench-error hidden></p>
       <button type="button" data-reset data-i18n="cv.reset">重置工作台</button>
     </div>
+    <div class="simulation-controls">
+      <label>
+        <span data-i18n="cv.modeLabel">色觉模拟模式</span>
+        <select data-vision-mode>
+          {modes.map(({ mode, key }) => <option value={mode} selected={mode === 'protan'} data-i18n={key}>红色弱 / Protanomaly</option>)}
+        </select>
+      </label>
+      <label data-severity-row>
+        <span data-i18n="cv.severityLabel">模拟强度</span>
+        <span data-severity-value aria-hidden="true">100%</span>
+        <input id="simulation-severity" type="range" min="0" max="100" step="1" value="100" data-severity aria-describedby="severity-help" />
+      </label>
+      <p id="severity-help" data-i18n="cv.severityHelp">0% 为原图；100% 使用对应二色视觉矩阵。这只是模型参数，不是临床程度。</p>
+    </div>
   </section>
-  <section class="comparison-section" aria-label="色觉模式对照" data-label-zh="色觉模式对照" data-label-en="Color vision mode comparison">
-    {modes.map(({ mode, name, nameEn }) => <ComparisonCard mode={mode} name={name} nameEn={nameEn} />)}
+  <section class="comparison-section" aria-label="色觉模式对照" data-label-zh="色觉模式对照" data-label-en="Color vision mode comparison" data-label-de="Vergleich der Farbsehmodi">
+    <ComparisonCard variant="original" name="原图" nameEn="Original" nameDe="Original" />
+    <ComparisonCard variant="simulation" name="红色弱 / Protanomaly" nameEn="Red-weak / Protanomaly" nameDe="Rot-Schwäche / Protanomalie" />
   </section>
+  <p class="model-note" data-i18n="cv.modelNote">红/绿/蓝黄色轴采用 Machado 等人（2009）的教育性近似。全色盲与蓝锥单色视为独立通道近似；结果不用于诊断，也不代表个体体验。</p>
   <ExportPanel />
   <PreviewDialog />
 </div>

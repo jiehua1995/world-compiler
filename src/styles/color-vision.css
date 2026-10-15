@@ -24,10 +24,17 @@
 .workbench-feedback [role='alert'] { grid-column: 1 / -1; padding: .75rem; color: #7d251c; background: color-mix(in srgb, var(--signal-coral) 14%, var(--paper-raised)); border-left: .3rem solid var(--signal-coral); }
 :root[data-theme='dark'] .workbench-feedback [role='alert'] { color: #ffb9ae; }
 .workbench-feedback button, .preview-dialog button { min-height: 2.75rem; padding: .5rem .8rem; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
+.simulation-controls { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(14rem, .7fr) minmax(18rem, 1.3fr); gap: var(--space-2) var(--space-4); padding-top: var(--space-2); border-top: 1px solid var(--line); }
+.simulation-controls label { display: grid; grid-template-columns: 1fr auto; gap: .4rem; color: var(--ink-muted); font-size: .8rem; }
+.simulation-controls [data-severity-row][hidden] { display: none; }
+.simulation-controls select, .simulation-controls input { grid-column: 1 / -1; min-height: 3rem; padding: .55rem .7rem; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.simulation-controls input[type='range'] { padding-inline: 0; }
+.simulation-controls output { color: var(--institution-blue); font: 700 .85rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; }
+.simulation-controls p { grid-column: 1 / -1; margin: 0; color: var(--ink-muted); font-size: .8rem; }
+.model-note { margin: 0; padding: var(--space-3) var(--space-4); color: var(--ink-muted); border-bottom: 1px solid var(--line); font-size: .82rem; }
 
 .comparison-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
 .comparison-card { min-width: 0; background: var(--paper-raised); }
-.comparison-card:first-child { grid-column: 1 / -1; }
 .comparison-card header { display: flex; align-items: center; gap: .8rem; min-height: 4.2rem; padding: 0 var(--space-2); border-bottom: 1px solid var(--line); }
 .comparison-card__index { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--signal-coral); }
 .comparison-card h2 { margin: 0; font-size: 1.2rem; }
@@ -55,13 +62,12 @@
 .preview-dialog canvas { max-width: 100%; height: auto; }
 
 @media (max-width: 54rem) {
-  .tool-hero__grid, .input-panel, .export-panel { grid-template-columns: 1fr; }
+  .tool-hero__grid, .input-panel, .export-panel, .simulation-controls { grid-template-columns: 1fr; }
   .comparison-section { grid-template-columns: 1fr; }
-  .comparison-card:first-child { grid-column: auto; }
   .comparison-card__viewport { min-height: 18rem; }
 }
 @media (max-width: 38rem) {
-  .tool-hero, .input-panel, .export-panel { padding-inline: var(--space-3); }
+  .tool-hero, .input-panel, .export-panel, .model-note { padding-inline: var(--space-3); }
   .workbench-feedback, .export-panel__controls { grid-template-columns: 1fr; }
   .workbench-feedback button { width: 100%; }
 }

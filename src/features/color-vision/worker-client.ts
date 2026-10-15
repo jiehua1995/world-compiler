@@ -33,6 +33,7 @@ export class SimulationWorkerClient {
     requestId: number,
     pixels: Uint8ClampedArray,
     mode: VisionMode,
+    severity = 100,
   ): Promise<Uint8ClampedArray> {
     if (this.disposed) {
       return Promise.reject(new ColorVisionError('processing-failed', 'The simulation worker is no longer available.'));
@@ -44,7 +45,7 @@ export class SimulationWorkerClient {
     const promise = new Promise<Uint8ClampedArray>((resolve, reject) => {
       this.pending = { resolve, reject };
     });
-    this.worker.postMessage({ requestId, pixels: transferablePixels, mode }, [transferablePixels.buffer]);
+    this.worker.postMessage({ requestId, pixels: transferablePixels, mode, severity }, [transferablePixels.buffer]);
     return promise;
   }
 

@@ -193,7 +193,7 @@ main:focus {
 
 .site-footer {
   display: grid;
-  grid-template-columns: 1.4fr 1fr auto;
+  grid-template-columns: 1.3fr 1fr 1.4fr auto;
   align-items: center;
   gap: var(--space-3);
   padding: var(--space-4);

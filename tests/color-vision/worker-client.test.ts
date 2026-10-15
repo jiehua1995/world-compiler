@@ -24,10 +24,11 @@ describe('SimulationWorkerClient', () => {
   it('transfers pixels and resolves the correlated result', async () => {
     const worker = new FakeWorker();
     const client = new SimulationWorkerClient(worker);
-    const pending = client.process(7, new Uint8ClampedArray([255, 0, 0, 255]), 'protanopia');
+    const pending = client.process(7, new Uint8ClampedArray([255, 0, 0, 255]), 'protan', 35);
 
     expect(worker.sent).toHaveLength(1);
     expect(worker.sent[0]?.transfer).toHaveLength(1);
+    expect(worker.sent[0]?.message).toMatchObject({ mode: 'protan', severity: 35 });
     worker.emit({ requestId: 7, pixels: new Uint8ClampedArray([144, 142, 0, 255]) });
 
     await expect(pending).resolves.toEqual(new Uint8ClampedArray([144, 142, 0, 255]));

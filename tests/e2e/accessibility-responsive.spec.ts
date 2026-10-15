@@ -67,7 +67,7 @@ test('the workbench remains operable at phone width after rendering', async ({ p
   await page.getByLabel('选择本地图片').setInputFiles(fixture);
   await expect(page.getByRole('status')).toContainText('完成');
 
-  await expect(page.getByLabel('导出模式')).toBeEnabled();
+  await expect(page.getByLabel('色觉模拟模式')).toBeEnabled();
   await expect(page.getByRole('button', { name: '导出图片' })).toBeEnabled();
   expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBeLessThanOrEqual(390);
 });

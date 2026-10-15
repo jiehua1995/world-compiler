@@ -43,12 +43,13 @@ describe('exportSimulation', () => {
 
   it('uses the asynchronous pixel processor when supplied', async () => {
     const fixture = canvasEnvironment([252, 161, 4, 40]);
-    const transform = async (pixels: Uint8ClampedArray, mode: VisionMode) => {
-      expect(mode).toBe('original');
+    const transform = async (pixels: Uint8ClampedArray, mode: VisionMode, severity: number) => {
+      expect(mode).toBe('protan');
+      expect(severity).toBe(35);
       return new Uint8ClampedArray([1, 2, 3, pixels[3]!]);
     };
 
-    await exportSimulation({} as CanvasImageSource, { width: 1, height: 1 }, 'original', { format: 'image/png' }, fixture.env, transform);
+    await exportSimulation({} as CanvasImageSource, { width: 1, height: 1 }, 'protan', { format: 'image/png' }, fixture.env, transform, 35);
 
     expect(fixture.written()).toEqual([1, 2, 3, 40]);
   });

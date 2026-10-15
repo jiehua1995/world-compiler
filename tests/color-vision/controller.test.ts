@@ -28,12 +28,10 @@ function workbench() {
       <p data-workbench-status></p>
       <div data-workbench-error hidden></div>
       <button data-reset>reset</button>
-      <canvas data-mode="original"></canvas>
-      <canvas data-mode="protanopia"></canvas>
-      <canvas data-mode="deuteranopia"></canvas>
-      <canvas data-mode="tritanopia"></canvas>
-      <canvas data-mode="achromatopsia"></canvas>
-      <select data-export-mode><option value="protanopia">p</option></select>
+      <select data-vision-mode><option value="original">original</option><option value="protan">protan</option><option value="deutan">deutan</option><option value="tritan">tritan</option><option value="achromatopsia">gray</option><option value="blue-cone-monochromacy">blue</option></select>
+      <div data-severity-row><input type="range" data-severity min="0" max="100" value="100"><output data-severity-value></output></div>
+      <canvas data-canvas="original"></canvas><h2 data-simulation-title></h2><canvas data-canvas="simulation"></canvas>
+      <button data-preview-target="original"></button><button data-preview-target="simulation"></button>
       <select data-export-format><option value="image/png">png</option></select>
       <input data-export-quality value="0.9">
       <span data-quality-row hidden></span>
@@ -49,6 +47,36 @@ function setFile(input: HTMLInputElement, file: File) {
 }
 
 describe('mountColorVisionLab', () => {
+  it('rerenders the selected axis and exports with its active severity', async () => {
+    const image: DecodedImage = { source: {} as ImageBitmap, width: 2, height: 2, cleanup: vi.fn() };
+    const render = vi.fn(async (..._args: unknown[]) => undefined);
+    const exportMode = vi.fn(async () => new Blob(['ok']));
+    const dependencies = { decode: vi.fn().mockResolvedValue(image), render, exportMode, download: vi.fn() } as unknown as ColorVisionDependencies;
+    const root = workbench();
+    const controller = mountColorVisionLab(root, dependencies);
+    setFile(root.querySelector<HTMLInputElement>('[data-image-input]')!, new File(['image'], 'image.png', { type: 'image/png' }));
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    const mode = root.querySelector<HTMLSelectElement>('[data-vision-mode]')!;
+    mode.value = 'tritan';
+    mode.dispatchEvent(new Event('change', { bubbles: true }));
+    const severity = root.querySelector<HTMLInputElement>('[data-severity]')!;
+    severity.value = '35';
+    severity.dispatchEvent(new Event('input', { bubbles: true }));
+    await Promise.resolve();
+    await Promise.resolve();
+    await Promise.resolve();
+
+    expect(render.mock.calls.at(-1)?.slice(4)).toEqual(['tritan', 35]);
+    root.querySelector<HTMLButtonElement>('[data-export]')!.click();
+    await Promise.resolve();
+    await Promise.resolve();
+    expect(exportMode).toHaveBeenCalledWith(image, 'tritan', expect.any(Object), 35);
+    controller.destroy();
+  });
+
   it('keeps only the latest selected file and cleans a stale decode', async () => {
     const first = deferred<DecodedImage>();
     const second = deferred<DecodedImage>();

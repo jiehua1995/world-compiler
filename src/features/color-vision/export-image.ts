@@ -12,7 +12,7 @@ export interface CanvasEnvironment {
   createCanvas(): HTMLCanvasElement;
 }
 
-type PixelTransformer = (pixels: Uint8ClampedArray, mode: VisionMode) => Promise<Uint8ClampedArray>;
+type PixelTransformer = (pixels: Uint8ClampedArray, mode: VisionMode, severity: number) => Promise<Uint8ClampedArray>;
 
 const browserCanvasEnvironment: CanvasEnvironment = {
   createCanvas: () => document.createElement('canvas'),
@@ -24,7 +24,8 @@ export async function exportSimulation(
   mode: VisionMode,
   options: ExportOptions,
   environment: CanvasEnvironment = browserCanvasEnvironment,
-  transform: PixelTransformer = async (pixels, visionMode) => transformPixels(pixels, visionMode),
+  transform: PixelTransformer = async (pixels, visionMode, severity) => transformPixels(pixels, visionMode, severity),
+  severity = 100,
 ): Promise<Blob> {
   try {
     assertSafeDimensions(dimensions.width, dimensions.height);
@@ -36,7 +37,7 @@ export async function exportSimulation(
 
     context.drawImage(source, 0, 0, dimensions.width, dimensions.height);
     const image = context.getImageData(0, 0, dimensions.width, dimensions.height);
-    const pixels = await transform(image.data, mode);
+    const pixels = await transform(image.data, mode, severity);
     if (options.format === 'image/jpeg') {
       for (let index = 3; index < pixels.length; index += 4) pixels[index] = 255;
     }

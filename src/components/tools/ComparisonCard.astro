@@ -1,22 +1,23 @@
 ---
-import type { VisionMode } from '../../features/color-vision/types';
-
-interface Props { mode: VisionMode; name: string; nameEn: string; }
-const { mode, name, nameEn } = Astro.props;
+interface Props { variant: 'original' | 'simulation'; name: string; nameEn: string; nameDe: string; }
+const { variant, name, nameEn, nameDe } = Astro.props;
 ---
 
-<article class="comparison-card" data-comparison-card={mode}>
+<article class="comparison-card" data-comparison-card={variant}>
   <header>
-    <span class="comparison-card__index">{String(['original','protanopia','deuteranopia','tritanopia','achromatopsia'].indexOf(mode) + 1).padStart(2, '0')}</span>
-    <h2 data-copy-zh={name} data-copy-en={nameEn}>{name}</h2>
+    <span class="comparison-card__index">{variant === 'original' ? '01' : '02'}</span>
+    <h2
+      data-copy-zh={name}
+      data-copy-en={nameEn}
+      data-copy-de={nameDe}
+      data-simulation-title={variant === 'simulation' ? true : undefined}
+    >{name}</h2>
   </header>
   <div class="comparison-card__viewport">
     <canvas
-      data-mode={mode}
+      data-canvas={variant}
       role="img"
-      data-label-zh={`${name}预览画布`}
-      data-label-en={`${nameEn} preview canvas`}
-      aria-label={`${name}预览画布`}
+      aria-label={name}
     ></canvas>
     <div class="comparison-card__waiting" data-preview-placeholder>
       <span aria-hidden="true"></span>
@@ -24,12 +25,8 @@ const { mode, name, nameEn } = Astro.props;
   </div>
   <button
     type="button"
-    data-preview-mode={mode}
-    data-name-zh={name}
-    data-name-en={nameEn}
-    data-label-zh={`放大查看 ${name}`}
-    data-label-en={`Inspect ${nameEn}`}
-    aria-label={`放大查看 ${name}`}
+    data-preview-target={variant}
+    aria-label={name}
     disabled
   >
     <span data-i18n="cv.inspect">放大查看</span><b aria-hidden="true">↗</b>
