@@ -1,6 +1,6 @@
 import type { Locale } from './types';
 
-const supportedLocales: readonly Locale[] = ['zh-CN', 'en'];
+const supportedLocales: readonly Locale[] = ['zh-CN', 'en', 'de'];
 
 export function resolveLocale(
   stored: string | null,
@@ -8,7 +8,10 @@ export function resolveLocale(
 ): Locale {
   if (supportedLocales.includes(stored as Locale)) return stored as Locale;
 
-  return browserLanguages.some((language) => language.toLowerCase().startsWith('en'))
-    ? 'en'
-    : 'zh-CN';
+  for (const value of browserLanguages) {
+    const language = value.toLowerCase();
+    if (language.startsWith('de')) return 'de';
+    if (language.startsWith('en')) return 'en';
+  }
+  return 'zh-CN';
 }

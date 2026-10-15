@@ -7,17 +7,17 @@ const fixtures: ToolDefinition[] = [
     slug: 'color-vision',
     category: 'vision',
     status: 'available',
-    title: { 'zh-CN': '色觉实验室', en: 'Color Vision Lab' },
-    summary: { 'zh-CN': '模拟不同色觉模式', en: 'Compare color perception modes' },
-    tags: { 'zh-CN': ['颜色', '无障碍'], en: ['color', 'accessibility'] },
+    title: { 'zh-CN': '色觉实验室', en: 'Color Vision Lab', de: 'Color Vision Lab' },
+    summary: { 'zh-CN': '模拟不同色觉模式', en: 'Compare color perception modes', de: 'Farbsehmodi vergleichen' },
+    tags: { 'zh-CN': ['颜色', '无障碍'], en: ['color', 'accessibility'], de: ['Farbe', 'Barrierefreiheit'] },
   },
   {
     slug: 'readability',
     category: 'text',
     status: 'planned',
-    title: { 'zh-CN': '可读性检查', en: 'Readability Check' },
-    summary: { 'zh-CN': '分析文本结构', en: 'Analyze text structure' },
-    tags: { 'zh-CN': ['文本'], en: ['writing'] },
+    title: { 'zh-CN': '可读性检查', en: 'Readability Check', de: 'Lesbarkeitsprüfung' },
+    summary: { 'zh-CN': '分析文本结构', en: 'Analyze text structure', de: 'Textstruktur analysieren' },
+    tags: { 'zh-CN': ['文本'], en: ['writing'], de: ['Schreiben'] },
   },
 ];
 

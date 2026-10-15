@@ -11,7 +11,13 @@ describe('locale resolution', () => {
   });
 
   it('selects English from browser languages', () => {
-    expect(resolveLocale(null, ['de-DE', 'en-GB'])).toBe('en');
+    expect(resolveLocale(null, ['fr-FR', 'en-GB'])).toBe('en');
+  });
+
+  it('selects German from stored and browser locale tags', () => {
+    expect(resolveLocale('de', ['en-US'])).toBe('de');
+    expect(resolveLocale(null, ['de'])).toBe('de');
+    expect(resolveLocale(null, ['de-DE'])).toBe('de');
   });
 
   it('gives a valid stored locale priority and ignores an invalid one', () => {
@@ -19,8 +25,9 @@ describe('locale resolution', () => {
     expect(resolveLocale('pirate', ['en-US'])).toBe('en');
   });
 
-  it('keeps Chinese and English dictionary keys identical', () => {
+  it('keeps all locale dictionary keys identical', () => {
     expect(Object.keys(dictionaries.en).sort()).toEqual(Object.keys(dictionaries['zh-CN']).sort());
+    expect(Object.keys(dictionaries.de).sort()).toEqual(Object.keys(dictionaries['zh-CN']).sort());
     expect(dictionary('en')['site.title']).toContain('World Compiler');
   });
 });
