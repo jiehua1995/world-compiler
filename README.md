@@ -24,7 +24,7 @@ Color-vision simulations are approximations for design review and understanding 
 Requires Node.js 22 or later and npm.
 
 ```bash
-npm install
+npm ci
 npm run dev
 ```
 
@@ -38,9 +38,17 @@ npm run test:e2e    # browser tests
 npm run verify      # all checks above
 ```
 
-默认部署子路径是 `/world-compiler`。本地开发服务器会自动使用这个路径。仓库名不同或需要部署到根路径时，可设置 `PUBLIC_BASE_PATH`；自定义正式站点地址时可设置 `PUBLIC_SITE_URL`。
+`npm run verify` 顺序执行 Astro/TypeScript 检查、单元与配置测试、静态生产构建和 Chromium 浏览器测试。首次运行浏览器测试前，请安装 Playwright 使用的 Chromium：
 
-The default deployment base path is `/world-compiler`, which is also used by the local development server. Set `PUBLIC_BASE_PATH` for another repository name or `/` for a root deployment. Set `PUBLIC_SITE_URL` when a canonical production URL is available.
+`npm run verify` runs Astro/TypeScript checks, unit and configuration tests, a static production build, and Chromium browser tests in sequence. Install Playwright's Chromium before the first browser test:
+
+```bash
+npx playwright install chromium
+```
+
+默认部署子路径是 `/world-compiler`。本地开发服务器会自动使用这个路径。GitHub 仓库名不同或需要部署到根路径时，需同时更新工作流中的 `PUBLIC_BASE_PATH`；自定义正式站点地址时可设置 `PUBLIC_SITE_URL`。
+
+The default deployment base path is `/world-compiler`, which is also used by the local development server. For a different GitHub repository name or a root deployment, update `PUBLIC_BASE_PATH` in the workflow as well as setting it locally. Set `PUBLIC_SITE_URL` when a canonical production URL is available.
 
 ```powershell
 $env:PUBLIC_BASE_PATH = "/my-repository"
@@ -66,17 +74,21 @@ The included workflow builds with the official Astro action and deploys on pushe
 
 ## 扩展工具 / Adding a tool
 
-1. 在 `src/data/tools.ts` 添加一个双语 `ToolDefinition`。
-2. 在 `src/pages/tools/` 新建工具页面，并复用现有布局与设计变量。
-3. 把双语界面文案加入 `src/i18n/dictionaries.ts`。
-4. 将核心计算保留为纯 TypeScript 模块，先写单元测试；再为用户流程补浏览器测试。
-5. 图形资产放入 `public/assets/instrument-glyphs/`，生成说明保存在 `docs/assets/`。
+1. 在 `src/data/tools.ts` 添加双语工具条目，slug 与页面路由保持一致。
+2. 在 `src/pages/tools/` 创建 Astro 页面，复用 `BaseLayout` 和现有工具页面结构。
+3. 将可切换的界面文案补入 `src/i18n/dictionaries.ts`；动态生成的标签也要提供中英版本。
+4. 把核心计算放在 `src/features/<tool>/`，为纯逻辑编写单元测试，再为完整操作流程编写浏览器测试。
+5. 如果工具需要图形资产，将成品放入 `public/assets/instrument-glyphs/`，并将生成说明与源图放入 `docs/assets/`。
 
-1. Add a bilingual `ToolDefinition` in `src/data/tools.ts`.
-2. Create the tool page in `src/pages/tools/`, reusing the shared layout and design tokens.
-3. Add bilingual interface copy to `src/i18n/dictionaries.ts`.
-4. Keep core calculations in pure TypeScript modules, cover them with unit tests first, then add a browser test for the user flow.
-5. Put production graphics in `public/assets/instrument-glyphs/` and retain generation notes in `docs/assets/`.
+1. Add a bilingual tool entry to `src/data/tools.ts`; keep its slug aligned with the page route.
+2. Create an Astro page in `src/pages/tools/` and reuse `BaseLayout` and the existing tool-page structure.
+3. Add switchable interface copy to `src/i18n/dictionaries.ts`; dynamic labels need Chinese and English variants too.
+4. Put core calculations in `src/features/<tool>/`, cover pure logic with unit tests, then test the full user flow in a browser.
+5. If the tool needs artwork, put production assets in `public/assets/instrument-glyphs/` and generation notes/source sheets in `docs/assets/`.
+
+详细架构、图片数据流、隐私边界和排障方法见 [开发指南 / Development guide](docs/DEVELOPMENT.md)。
+
+For architecture, image data flow, privacy boundaries, and troubleshooting, see the [Development guide](docs/DEVELOPMENT.md).
 
 ## 项目结构 / Project structure
 
@@ -90,6 +102,10 @@ src/styles/           visual system and responsive styles
 tests/                unit, configuration, and browser tests
 docs/assets/          visual-generation briefs and source sheets
 ```
+
+`docs/superpowers/` 保存本地设计规格与实施计划，供项目维护时参考；开发和运行网站不依赖这些文件。
+
+`docs/superpowers/` contains the local design specification and implementation plan for maintainers; the site does not depend on these files at build or runtime.
 
 配色起点来自项目方提供的参考图：`#FCA104`、`#2F6DB3`、`#E56C57`、`#5200A6`、`#CDB742`、`#45A6B2`，并扩展为适用于明暗主题的设计变量。
 
