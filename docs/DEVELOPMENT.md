@@ -101,9 +101,9 @@ Astro 以静态模式输出到 `dist/`。`PUBLIC_BASE_PATH` 默认为 `/world-co
 
 Astro writes static output to `dist/`. `PUBLIC_BASE_PATH` defaults to `/world-compiler`; for a GitHub Pages project site it must match the repository name. The workflow in `.github/workflows/deploy.yml` runs on pushes to `main` or manual dispatch. It installs dependencies and Chromium, runs `npm run verify`, then builds and publishes the Pages artifact.
 
-首次连接远端仓库时：确认 Pages base path 与仓库名一致；推送 `main`；在仓库 **Settings → Pages** 中选择 **GitHub Actions**。该仓库目前只在本地开发时，部署步骤尚未在托管 GitHub Actions 环境实测。
+仓库为 `jiehua1995/world-compiler`，线上地址是 <https://jiehua1995.github.io/world-compiler/>。工作流将 `PUBLIC_SITE_URL` 设为 `https://jiehua1995.github.io`、`PUBLIC_BASE_PATH` 设为 `/world-compiler`；项目仓库重命名时应同步修改 base path。首次部署前需在 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。之后每次向 `main` 推送都会先运行 `npm run verify`，再生成并发布静态站点；也可以从 Actions 手动触发。
 
-When the remote repository is connected: make sure the Pages base path matches the repository name, push `main`, and select **GitHub Actions** in **Settings → Pages**. While the repository remains local, the workflow has not yet been exercised in hosted GitHub Actions.
+The repository is `jiehua1995/world-compiler`, and the live URL is <https://jiehua1995.github.io/world-compiler/>. The workflow sets `PUBLIC_SITE_URL` to `https://jiehua1995.github.io` and `PUBLIC_BASE_PATH` to `/world-compiler`; update the base path if the project repository is renamed. Before the first deployment, select **GitHub Actions** under **Settings → Pages → Build and deployment → Source**. Each push to `main` then runs `npm run verify` before building and publishing the static site; the workflow can also be triggered manually from Actions.
 
 ## 7. 已知限制 / Known limitations
 

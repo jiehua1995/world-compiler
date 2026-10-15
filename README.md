@@ -46,7 +46,7 @@ npm run verify      # all checks above
 npx playwright install chromium
 ```
 
-默认部署子路径是 `/world-compiler`。本地开发服务器会自动使用这个路径。GitHub 仓库名不同或需要部署到根路径时，需同时更新工作流中的 `PUBLIC_BASE_PATH`；自定义正式站点地址时可设置 `PUBLIC_SITE_URL`。
+默认部署子路径是 `/world-compiler`。本地开发服务器会自动使用这个路径。GitHub 仓库名不同或需要部署到根路径时，需同时更新工作流中的 `PUBLIC_BASE_PATH`；当前正式站点地址为 `https://jiehua1995.github.io/world-compiler/`。
 
 The default deployment base path is `/world-compiler`, which is also used by the local development server. For a different GitHub repository name or a root deployment, update `PUBLIC_BASE_PATH` in the workflow as well as setting it locally. Set `PUBLIC_SITE_URL` when a canonical production URL is available.
 
@@ -58,19 +58,13 @@ npm run build
 
 ## GitHub Pages 部署 / GitHub Pages deployment
 
-远端仓库准备好以后：
+仓库地址：<https://github.com/jiehua1995/world-compiler>。网站地址：<https://jiehua1995.github.io/world-compiler/>。工作流 `.github/workflows/deploy.yml` 会在 `main` 有新提交时运行完整验证、构建静态站点并发布到 GitHub Pages，也可在 Actions 页面手动运行。
 
-1. 如果仓库名不是 `world-compiler`，修改 `.github/workflows/deploy.yml` 中的 `PUBLIC_BASE_PATH`。
-2. 推送 `main` 分支。
-3. 在 GitHub 仓库的 **Settings → Pages** 中，将来源设为 **GitHub Actions**。
+Repository: <https://github.com/jiehua1995/world-compiler>. Site: <https://jiehua1995.github.io/world-compiler/>. The `.github/workflows/deploy.yml` workflow runs the full verification suite, builds the static site, and deploys to GitHub Pages on every push to `main`; it can also be run manually from Actions.
 
-After the remote repository exists:
+首次部署前，请在仓库 **Settings → Pages → Build and deployment → Source** 选择 **GitHub Actions**。项目站点路径 `/world-compiler` 与仓库名一致；工作流中 `PUBLIC_SITE_URL` 为 GitHub Pages 用户站点域名，`PUBLIC_BASE_PATH` 为仓库子路径。后续推送 `main` 即自动更新网页。
 
-1. If its name is not `world-compiler`, update `PUBLIC_BASE_PATH` in `.github/workflows/deploy.yml`.
-2. Push the `main` branch.
-3. In **Settings → Pages**, choose **GitHub Actions** as the source.
-
-The included workflow builds with the official Astro action and deploys on pushes to `main` or by manual dispatch.
+Before the first deployment, select **GitHub Actions** in **Settings → Pages → Build and deployment → Source**. The project-site path `/world-compiler` matches the repository name; `PUBLIC_SITE_URL` in the workflow is the GitHub Pages user-site origin and `PUBLIC_BASE_PATH` is the repository subpath. Future pushes to `main` publish automatically.
 
 ## 扩展工具 / Adding a tool
 

@@ -16,6 +16,7 @@ concurrency:
 
 env:
   PUBLIC_BASE_PATH: /world-compiler
+  PUBLIC_SITE_URL: https://jiehua1995.github.io
 
 jobs:
   build:
