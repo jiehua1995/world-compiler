@@ -27,7 +27,7 @@ export const tools: readonly ToolDefinition[] = [
     tags: { 'zh-CN': ['颜色', '视觉', '无障碍', '图片'], en: ['color', 'vision', 'accessibility', 'image'], de: ['Farbe', 'Sehen', 'Barrierefreiheit', 'Bild'] },
   },
   {
-    slug: 'contrast-lens', category: 'vision', status: 'planned', sequence: '002',
+    slug: 'contrast-lens', category: 'vision', status: 'available', sequence: '002',
     title: { 'zh-CN': '对比度透镜', en: 'Contrast Lens', de: 'Kontrastlinse' },
     summary: { 'zh-CN': '检查界面颜色组合与文字可读性。', en: 'Inspect interface color pairs and text readability.', de: 'Farbkombinationen und Lesbarkeit von Text prüfen.' },
     tags: { 'zh-CN': ['对比度', '界面'], en: ['contrast', 'interface'], de: ['Kontrast', 'Oberfläche'] },

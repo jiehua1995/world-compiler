@@ -1,0 +1,18 @@
+<section class="simple-tool" data-contrast-lens aria-labelledby="contrast-workbench-title">
+  <div class="simple-tool__controls">
+    <label><span data-i18n="contrast.foreground">文字颜色</span><input type="color" value="#2F6DB3" data-color-picker="foreground" /></label>
+    <label><span data-i18n="contrast.foreground">文字颜色</span> HEX<input type="text" value="#2F6DB3" spellcheck="false" autocomplete="off" data-color-hex="foreground" aria-describedby="contrast-error" /></label>
+    <label><span data-i18n="contrast.background">背景颜色</span><input type="color" value="#FFFFFF" data-color-picker="background" /></label>
+    <label><span data-i18n="contrast.background">背景颜色</span> HEX<input type="text" value="#FFFFFF" spellcheck="false" autocomplete="off" data-color-hex="background" aria-describedby="contrast-error" /></label>
+  </div>
+  <p id="contrast-error" role="alert" data-contrast-error hidden data-i18n="contrast.invalid">请输入有效的 3 位或 6 位十六进制颜色。</p>
+  <div class="contrast-preview" data-contrast-preview>
+    <h2 id="contrast-workbench-title" data-i18n="contrast.preview">预览文字：清晰的信息，人人可读。</h2>
+    <p><span data-i18n="contrast.ratio">对比度</span> <strong data-contrast-ratio>—</strong></p>
+  </div>
+  <div class="contrast-results" aria-live="polite" data-contrast-results>
+    <p><span data-i18n="contrast.normal">普通文字</span> AA <b data-result="normalAA"></b> · AAA <b data-result="normalAAA"></b></p>
+    <p><span data-i18n="contrast.large">大号文字</span> AA <b data-result="largeAA"></b> · AAA <b data-result="largeAAA"></b></p>
+  </div>
+  <p class="simple-tool__note" data-i18n="contrast.note">此工具用于设计参考，不构成无障碍合规认证。</p>
+</section>

@@ -1,0 +1,17 @@
+---
+import ContrastLens from '../../components/tools/ContrastLens.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/simple-tools.css';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+---
+<BaseLayout titleKey="contrast.pageTitle" descriptionKey="contrast.pageDescription">
+  <section class="tool-hero"><a class="tool-hero__back" href={`${base}tools/`} data-i18n="contrast.back">← 返回工具目录</a><div class="tool-hero__grid"><div><p class="section-kicker" data-i18n="contrast.kicker">视觉工具 / WC—002</p><h1 data-i18n="contrast.title">对比度透镜</h1><p class="tool-hero__intro" data-i18n="contrast.intro">检查前景文字与背景颜色的对比度。</p></div><div class="tool-hero__notes"><p class="local-badge"><span aria-hidden="true"></span><b data-i18n="contrast.local">所有计算均在此浏览器本地完成。</b></p><p data-i18n="contrast.note">此工具用于设计参考，不构成无障碍合规认证。</p></div></div></section>
+  <ContrastLens />
+  <script>
+    import { mountContrastLens } from '../../features/contrast-lens/controller';
+    const root = document.querySelector<HTMLElement>('[data-contrast-lens]');
+    if (root) { const controller = mountContrastLens(root); window.addEventListener('pagehide', () => controller.destroy(), { once: true }); }
+  </script>
+</BaseLayout>
