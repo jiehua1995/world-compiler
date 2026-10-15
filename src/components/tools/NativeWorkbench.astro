@@ -65,6 +65,7 @@ Hello world
 </section>
 <style>.native-swatches{display:flex;flex-wrap:wrap;gap:.5rem}.native-swatches:empty{display:none}.lab canvas{width:100%;height:auto;max-height:250px;object-fit:contain;background:var(--paper);margin:1rem 0}.lab audio{width:100%;margin-bottom:1rem}.lab input[type=checkbox]{width:auto}</style>
 <script>
+ import {mount} from '../../features/native-tools/controller';
  const root=document.querySelector<HTMLElement>('[data-native-lab]');
- if(root) import('../../features/native-tools/controller').then(({mount})=>{const cleanup=mount(root);window.addEventListener('pagehide',cleanup,{once:true});});
+ if(root) window.addEventListener('pagehide',mount(root),{once:true});
 </script>

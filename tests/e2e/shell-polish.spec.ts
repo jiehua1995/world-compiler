@@ -1,4 +1,13 @@
 import { expect, test } from '@playwright/test';
+import { contrastRatio, parseHexColor } from '../../src/features/contrast-lens/contrast';
+
+test('clock minute hand stays distinguishable on the dark face', async ({page})=>{
+  await page.goto('./');
+  await page.locator('[data-theme-value="dark"]').click();
+  const stroke = await page.locator('.clock-hand--minute').evaluate(element=>getComputedStyle(element).stroke);
+  const [r,g,b] = stroke.match(/\d+/g)!.map(Number);
+  expect(contrastRatio({r,g,b},parseHexColor('#0d1b2b')!)).toBeGreaterThanOrEqual(3);
+});
 
 test('homepage clock tracks device time and the call to action is centered', async ({ page }) => {
   await page.clock.install({ time: new Date('2026-10-15T10:20:30') });

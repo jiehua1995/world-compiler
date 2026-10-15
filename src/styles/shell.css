@@ -288,9 +288,9 @@ main:focus {
   .site-footer__copyright,.site-footer__github { grid-column:1; grid-row:auto; }
   .install-control { grid-row:5; flex-wrap:wrap; }
   .site-header { grid-template-columns:minmax(0,1fr); }
-  .site-header__preferences { grid-row:2; grid-template-columns:auto auto; justify-content:space-between; align-items:center; gap:.5rem; padding:.65rem 1rem; }
+  .site-header__preferences { grid-row:2; display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:.5rem; padding:.65rem 1rem; min-width:0; }
   .site-nav { grid-row:3; }
-  .site-nav a { font-size:.85rem; min-width:0; }
+  .site-nav a { font-size:.85rem; min-width:0; overflow-wrap:anywhere; text-align:center; padding-inline:.5rem; }
   .preference-control--theme { gap:.1rem; }
   .preference-control--theme .preference-control__label { display:none; }
   .preference-control--theme button { padding:.25rem .5rem; }

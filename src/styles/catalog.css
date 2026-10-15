@@ -28,6 +28,7 @@
 .clock-hand { transform-origin:200px 200px; stroke-linecap:round; }
 .clock-hand--hour { stroke:var(--institution-blue); stroke-width:8; transform:rotate(var(--clock-hour,0deg)); }
 .clock-hand--minute { stroke:var(--lunar-violet); stroke-width:5; transform:rotate(var(--clock-minute,0deg)); }
+:root[data-theme='dark'] .clock-hand--minute { stroke:#bb8aee; }
 .clock-hand--second { stroke:var(--signal-coral); stroke-width:1.5; transform:rotate(var(--clock-second,0deg)); }
 .clock-readout { display:grid; justify-items:center; gap:.4rem; margin-top:-1rem; color:var(--ink-muted); font:.68rem ui-monospace,monospace; letter-spacing:.09em; }
 .clock-readout time { color:var(--ink); font-size:1.3rem; letter-spacing:.18em; }
