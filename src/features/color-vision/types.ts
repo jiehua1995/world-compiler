@@ -1,9 +1,12 @@
+export type VisionAxis = 'protan' | 'deutan' | 'tritan';
 export type VisionMode =
   | 'original'
+  | VisionAxis
+  | 'achromatopsia'
+  | 'blue-cone-monochromacy'
   | 'protanopia'
   | 'deuteranopia'
-  | 'tritanopia'
-  | 'achromatopsia';
+  | 'tritanopia';
 
 export interface Dimensions {
   width: number;

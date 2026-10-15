@@ -73,10 +73,14 @@ function createBrowserDependencies(): ColorVisionDependencies {
 
 const names: Record<VisionMode, { 'zh-CN': string; en: string }> = {
   original: { 'zh-CN': '原图', en: 'Original' },
+  protan: { 'zh-CN': '红色轴', en: 'Protan' },
+  deutan: { 'zh-CN': '绿色轴', en: 'Deutan' },
+  tritan: { 'zh-CN': '蓝黄色轴', en: 'Tritan' },
   protanopia: { 'zh-CN': '红色盲', en: 'Protanopia' },
   deuteranopia: { 'zh-CN': '绿色盲', en: 'Deuteranopia' },
   tritanopia: { 'zh-CN': '蓝色盲', en: 'Tritanopia' },
   achromatopsia: { 'zh-CN': '全色盲', en: 'Achromatopsia' },
+  'blue-cone-monochromacy': { 'zh-CN': '蓝锥单色视', en: 'Blue-cone monochromacy' },
 };
 
 const messages: Record<WorkbenchState, { 'zh-CN': string; en: string }> = {
