@@ -1,17 +1,27 @@
-<section class="simple-tool" data-plain-language>
-  <div class="simple-tool__controls simple-tool__controls--single">
-    <label><span data-i18n="plain.language">分析语言</span><select data-analysis-locale><option value="zh-CN" data-i18n="language.zh">中文</option><option value="en" data-i18n="language.en">English</option><option value="de" data-i18n="language.de">Deutsch</option></select></label>
+---
+import Copy from '../Copy.astro';
+---
+<section class="lab" data-plain-language>
+  <div class="lab-toolbar"><button type="button" data-plain-sample><Copy text={['载入示例','Load example','Beispiel laden']} /></button><button type="button" data-plain-clean><Copy text={['整理空白与换行','Clean whitespace','Leerraum bereinigen']} /></button><button type="button" data-plain-undo disabled><Copy text={['撤销清理','Undo cleanup','Bereinigung rückgängig']} /></button><button type="button" data-plain-reset><Copy text={['清空','Clear','Leeren']} /></button></div>
+  <div class="lab-grid">
+    <section class="lab-panel">
+      <header><b>01</b><Copy as="h2" text={['写作输入','Your writing','Dein Text']} /></header>
+      <label><span data-i18n="plain.language">分析语言</span><select data-analysis-locale><option value="zh-CN">中文</option><option value="en">English</option><option value="de">Deutsch</option></select></label>
+      <label><span data-i18n="plain.text">待分析文本</span><textarea data-analysis-text maxlength="100000" rows="14" data-i18n-placeholder="plain.placeholder" placeholder="在此粘贴文本…"></textarea></label>
+      <details data-plain-before-panel hidden><summary><Copy text={['对照清理前的原文','Compare original before cleanup','Original vor der Bereinigung vergleichen']} /></summary><pre class="lab-output" data-plain-before></pre></details>
+      <p class="hint" data-i18n="plain.method">音节数使用拼写启发式估算；结果仅是写作提示。</p>
+      <Copy as="p" text={['最多 100,000 个字符。点击右侧长句可在输入中定位。','Up to 100,000 characters. Select a long sentence to locate it in your input.','Bis zu 100.000 Zeichen. Lange Sätze anklicken, um sie im Text zu finden.']} />
+    </section>
+    <section class="lab-panel">
+      <header><b>02</b><Copy as="h2" text={['阅读仪表盘','Reading dashboard','Lesedashboard']} /></header>
+      <div class="stat-strip" aria-live="polite">
+        <p><span data-i18n="plain.characters">字符数</span><strong data-stat="characterCount">0</strong></p><p><span data-i18n="plain.words">词数 / 分词</span><strong data-stat="wordCount">0</strong></p><p><span data-i18n="plain.sentences">句数</span><strong data-stat="sentenceCount">0</strong></p><p><span data-i18n="plain.average">平均每句词数</span><strong data-stat="averageSentenceLength">0</strong></p><p><span data-i18n="plain.score">可读性估算</span><strong data-stat="score">—</strong></p>
+        <p><Copy text={['段落','Paragraphs','Absätze']} /><strong data-paragraphs>0</strong></p><p><Copy text={['阅读时间（分钟，估算）','Reading minutes (estimate)','Leseminuten (geschätzt)']} /><strong data-reading>0</strong></p>
+      </div>
+      <Copy as="h3" text={['原文长句标记','Long sentences in context','Lange Sätze im Kontext']} /><div class="lab-output report-preview" data-marked-text></div>
+      <h3 data-i18n="plain.longTitle">较长的句子</h3><p data-long-empty data-i18n="plain.longNone">暂未发现较长句子。</p><ol data-long-list></ol>
+      <Copy as="h3" text={['常见词（包含功能词）','Frequent words (including function words)','Häufige Wörter (einschließlich Funktionswörter)']} /><p data-frequent class="hint"></p>
+    </section>
   </div>
-  <label class="plain-input"><span data-i18n="plain.text">待分析文本</span><textarea data-analysis-text rows="10" placeholder="在此粘贴文本…" data-i18n-placeholder="plain.placeholder"></textarea></label>
-  <div class="plain-stats" aria-live="polite">
-    <p><span data-i18n="plain.characters">字符数</span><strong data-stat="characterCount">0</strong></p>
-    <p><span data-i18n="plain.words">词数 / 分词</span><strong data-stat="wordCount">0</strong></p>
-    <p><span data-i18n="plain.sentences">句数</span><strong data-stat="sentenceCount">0</strong></p>
-    <p><span data-i18n="plain.average">平均每句词数</span><strong data-stat="averageSentenceLength">0</strong></p>
-    <p><span data-i18n="plain.score">可读性估算</span><strong data-stat="score">—</strong></p>
-  </div>
-  <section class="plain-long" aria-labelledby="plain-long-title"><h2 id="plain-long-title" data-i18n="plain.longTitle">较长的句子</h2><p data-long-empty data-i18n="plain.longNone">暂未发现较长句子。</p><ol data-long-list></ol></section>
-  <p class="simple-tool__note" data-i18n="plain.method">音节数使用拼写启发式估算；结果仅是写作提示。</p>
-  <p class="simple-tool__note" data-i18n="plain.disclaimer">不评价语言质量、读者能力或法律合规性。</p>
-  <p class="local-badge"><span aria-hidden="true"></span><b data-i18n="plain.local">文本仅在当前浏览器分析，不保存、不发送。</b></p>
+  <footer class="lab-export"><p data-i18n="plain.disclaimer">不评价语言质量、读者能力或法律合规性。</p><div class="lab-actions"><button type="button" data-plain-text><Copy text={['下载文本','Download text','Text herunterladen']} /></button><button type="button" class="primary" data-plain-report><Copy text={['下载分析报告','Download analysis','Analyse herunterladen']} /></button></div></footer>
 </section>

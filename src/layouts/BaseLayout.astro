@@ -1,5 +1,6 @@
 ---
 import type { DictionaryKey } from '../i18n/dictionaries';
+import type { LocalizedText } from '../i18n/types';
 import { dictionary } from '../i18n/dictionaries';
 import SiteFooter from '../components/SiteFooter.astro';
 import SiteHeader from '../components/SiteHeader.astro';
@@ -8,12 +9,15 @@ import '../styles/global.css';
 import '../styles/shell.css';
 
 interface Props {
-  titleKey: DictionaryKey;
-  descriptionKey: DictionaryKey;
+  titleKey?: DictionaryKey;
+  descriptionKey?: DictionaryKey;
+  title?: LocalizedText;
+  description?: LocalizedText;
 }
 
-const { titleKey, descriptionKey } = Astro.props;
-const copy = dictionary('zh-CN');
+const { titleKey = 'site.title', descriptionKey = 'site.description', title, description } = Astro.props;
+const titles = title ?? { 'zh-CN': dictionary('zh-CN')[titleKey], en: dictionary('en')[titleKey], de: dictionary('de')[titleKey] };
+const descriptions = description ?? { 'zh-CN': dictionary('zh-CN')[descriptionKey], en: dictionary('en')[descriptionKey], de: dictionary('de')[descriptionKey] };
 ---
 
 <!doctype html>
@@ -24,12 +28,12 @@ const copy = dictionary('zh-CN');
     <meta name="theme-color" content="#f3f0e8" />
     <meta
       name="description"
-      content={copy[descriptionKey]}
-      data-description-zh={dictionary('zh-CN')[descriptionKey]}
-      data-description-en={dictionary('en')[descriptionKey]}
-      data-description-de={dictionary('de')[descriptionKey]}
+      content={descriptions['zh-CN']}
+      data-description-zh={descriptions['zh-CN']}
+      data-description-en={descriptions.en}
+      data-description-de={descriptions.de}
     />
-    <title data-title-zh={dictionary('zh-CN')[titleKey]} data-title-en={dictionary('en')[titleKey]} data-title-de={dictionary('de')[titleKey]}>{copy[titleKey]}</title>
+    <title data-title-zh={titles['zh-CN']} data-title-en={titles.en} data-title-de={titles.de}>{titles['zh-CN']}</title>
     <script is:inline>
       (() => {
         let preference = 'system';

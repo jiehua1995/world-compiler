@@ -1,0 +1,27 @@
+---
+import ImageStudio from './ImageStudio.astro';
+import TextDiff from './TextDiff.astro';
+import QrStudio from './QrStudio.astro';
+import JsonStudio from './JsonStudio.astro';
+import TimeBridge from './TimeBridge.astro';
+import CodecLab from './CodecLab.astro';
+const components={'image-studio':ImageStudio,'text-diff':TextDiff,'qr-studio':QrStudio,'json-studio':JsonStudio,'time-bridge':TimeBridge,'codec-lab':CodecLab};
+const {slug}=Astro.props as {slug:keyof typeof components};
+const Workbench=components[slug];
+---
+<Workbench />
+<script>
+  const root=document.querySelector<HTMLElement>('[data-lab]');
+  if(root){
+    const modules={
+      'image-studio':()=>import('../../features/utilities/image'),
+      'text-diff':()=>import('../../features/utilities/diff'),
+      'qr-studio':()=>import('../../features/utilities/qr'),
+      'json-studio':()=>import('../../features/utilities/json'),
+      'time-bridge':()=>import('../../features/utilities/time'),
+      'codec-lab':()=>import('../../features/utilities/codec'),
+    };
+    const load=modules[root.dataset.lab as keyof typeof modules];
+    if(load) load().then(({mount})=>{const cleanup=mount(root);window.addEventListener('pagehide',cleanup,{once:true});});
+  }
+</script>

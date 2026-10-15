@@ -1,0 +1,378 @@
+@import "./color-vision.css";
+.workbench-hero h1 {
+  max-width: 18ch;
+  font-size: clamp(3rem, 6.5vw, 6.5rem);
+  overflow-wrap: anywhere;
+}
+.instrument-identity {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+.instrument-identity > div > p:last-child {
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+.lab {
+  --accent: var(--institution-blue);
+}
+.lab[data-lab="text-diff"],
+[data-plain-language] {
+  --accent: var(--lunar-violet);
+}
+.lab[data-lab="qr-studio"],
+[data-data-shaper] {
+  --accent: var(--observatory-cyan);
+}
+.lab-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1rem var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper-raised);
+}
+.lab-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  border-bottom: 1px solid var(--line);
+}
+.lab-panel {
+  min-width: 0;
+  padding: var(--space-4);
+  background: var(--paper-raised);
+}
+.lab-panel + .lab-panel {
+  border-left: 1px solid var(--line);
+}
+.lab-panel > header {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+.lab-panel > header > b {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  aspect-ratio: 1;
+  background: var(--signal-amber);
+  color: #101a27;
+  font:
+    700 0.85rem ui-monospace,
+    monospace;
+}
+.lab h2,
+.lab h3 {
+  margin: 0 0 1rem;
+  letter-spacing: -0.025em;
+}
+.lab-panel > header h2 {
+  margin: 0;
+  font-size: 1.4rem;
+}
+.lab label {
+  display: grid;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+}
+.lab input:not([type="checkbox"]):not([type="range"]),
+.lab textarea,
+.lab select {
+  min-width: 0;
+  width: 100%;
+  min-height: 2.9rem;
+  padding: 0.7rem 0.8rem;
+  color: var(--ink);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  background: var(--paper);
+  font: inherit;
+}
+.lab textarea {
+  min-height: 18rem;
+  resize: vertical;
+  line-height: 1.65;
+}
+.lab input[type="color"] {
+  padding: 0.3rem !important;
+  min-height: 3.5rem !important;
+}
+.lab input[type="range"] {
+  width: 100%;
+  min-height: 2rem;
+  accent-color: var(--institution-blue);
+}
+.lab input[type="checkbox"] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--institution-blue);
+}
+.lab label.check {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin: 0.7rem 0;
+}
+.lab button,
+.lab .button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 2.85rem;
+  padding: 0.6rem 1rem;
+  color: var(--ink);
+  background: var(--paper-raised);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.85rem;
+}
+.lab button.primary {
+  background: #265f9e;
+  color: white;
+  border-color: #265f9e;
+}
+.lab button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.lab-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.7rem;
+}
+.lab-export {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 1rem;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--line);
+  background: var(--paper);
+}
+.lab-export p {
+  margin: 0;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  max-width: 42rem;
+}
+.lab-output {
+  min-height: 18rem;
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+  font:
+    0.88rem/1.7 ui-monospace,
+    monospace;
+}
+.lab pre {
+  max-height: 40rem;
+  overflow: auto;
+}
+.lab .field-pair {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+.lab .stat-strip {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(7rem, 1fr));
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+  margin: 1rem 0;
+}
+.lab .stat-strip p {
+  padding: 1rem;
+  margin: 0;
+  display: grid;
+  gap: 0.5rem;
+  background: var(--paper-raised);
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+.lab .stat-strip strong {
+  color: var(--ink);
+  font:
+    700 1.5rem ui-monospace,
+    monospace;
+  overflow-wrap: anywhere;
+}
+.lab [role="alert"] {
+  color: var(--ink);
+  border-left: 3px solid var(--signal-coral);
+  background: color-mix(in srgb, var(--signal-coral) 12%, var(--paper));
+  padding: 0.75rem;
+}
+.lab [hidden] {
+  display: none !important;
+}
+.lab .hint {
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  line-height: 1.6;
+}
+.lab .image-stage {
+  min-height: 23rem;
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  padding: 1.5rem;
+  border: 1px solid var(--line);
+  background: repeating-conic-gradient(
+      var(--paper) 0% 25%,
+      var(--paper-raised) 0% 50%
+    )
+    50%/24px 24px;
+}
+.lab canvas,
+.lab .image-stage img {
+  display: block;
+  max-width: 100%;
+  max-height: 32rem;
+  object-fit: contain;
+}
+.lab .image-stage canvas[width="0"] {
+  display: none;
+}
+.lab mark {
+  background: color-mix(in srgb, var(--signal-amber) 35%, var(--paper));
+  color: var(--ink);
+  padding: 0.1rem;
+}
+.lab .diff-add {
+  background: color-mix(in srgb, var(--observatory-cyan) 20%, var(--paper));
+  border-left: 3px solid var(--observatory-cyan);
+}
+.lab .diff-remove {
+  background: color-mix(in srgb, var(--signal-coral) 20%, var(--paper));
+  border-left: 3px solid var(--signal-coral);
+}
+.lab .diff-part {
+  display: block;
+  padding: 0.15rem 0.5rem;
+  white-space: pre-wrap;
+}
+.lab details {
+  border-left: 1px solid var(--line);
+  padding-left: 1rem;
+}
+.lab summary {
+  padding: 0.3rem;
+  cursor: pointer;
+  overflow-wrap: anywhere;
+}
+.lab .suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+}
+.lab .contrast-preview {
+  min-width: 0;
+  min-height: 17rem;
+  padding: 2rem;
+  border: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  overflow-wrap: anywhere;
+}
+.lab .contrast-preview h2 {
+  font-size: inherit;
+}
+.lab .contrast-ratio {
+  margin: 1.5rem 0;
+  font:
+    700 clamp(2.5rem, 6vw, 5rem) ui-monospace,
+    monospace;
+  letter-spacing: -0.06em;
+}
+.lab .contrast-results {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1px;
+  border: 1px solid var(--line);
+  background: var(--line);
+}
+.lab .contrast-results p {
+  padding: 1rem;
+  margin: 0;
+  background: var(--paper-raised);
+}
+.lab .data-table-wrap {
+  overflow: auto;
+  max-height: 30rem;
+  border: 1px solid var(--line);
+}
+.lab table {
+  border-collapse: collapse;
+  min-width: 100%;
+}
+.lab th,
+.lab td {
+  padding: 0.65rem;
+  border-bottom: 1px solid var(--line);
+  text-align: start;
+  max-width: 20rem;
+  overflow-wrap: anywhere;
+}
+.lab th {
+  position: sticky;
+  top: 0;
+  background: var(--paper);
+}
+.lab ol {
+  padding-left: 1.5rem;
+}
+.lab li {
+  margin-block: 0.6rem;
+}
+.lab .report-preview {
+  white-space: pre-wrap;
+  line-height: 1.8;
+  max-height: 25rem;
+  overflow: auto;
+}
+@media (max-width: 900px) {
+  .lab-grid {
+    grid-template-columns: 1fr;
+  }
+  .lab-panel + .lab-panel {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+  .lab-export {
+    align-items: start;
+    flex-direction: column;
+  }
+}
+@media (max-width: 480px) {
+  .lab .field-pair {
+    grid-template-columns: 1fr;
+  }
+  .instrument-identity {
+    gap: 0.8rem;
+    padding: 1rem;
+  }
+  .instrument-identity .instrument-glyph {
+    width: 4.5rem;
+  }
+  .lab-panel {
+    padding: 1.25rem;
+  }
+}

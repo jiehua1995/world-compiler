@@ -1,4 +1,5 @@
 import type { Locale, LocalizedText } from '../i18n/types';
+import { extraTools } from './extra-tools';
 
 export type ToolCategory = 'vision' | 'text' | 'data' | 'media';
 export type ToolStatus = 'available' | 'planned';
@@ -12,6 +13,7 @@ export interface ToolDefinition {
   tags: Record<Locale, string[]>;
   sequence?: string;
   asset?: string;
+  glyph?: number;
 }
 
 export const tools: readonly ToolDefinition[] = [
@@ -27,21 +29,22 @@ export const tools: readonly ToolDefinition[] = [
     tags: { 'zh-CN': ['颜色', '视觉', '无障碍', '图片'], en: ['color', 'vision', 'accessibility', 'image'], de: ['Farbe', 'Sehen', 'Barrierefreiheit', 'Bild'] },
   },
   {
-    slug: 'contrast-lens', category: 'vision', status: 'available', sequence: '002',
+    slug: 'contrast-lens', category: 'vision', status: 'available', sequence: '002', glyph: 20,
     title: { 'zh-CN': '对比度透镜', en: 'Contrast Lens', de: 'Kontrastlinse' },
     summary: { 'zh-CN': '检查界面颜色组合与文字可读性。', en: 'Inspect interface color pairs and text readability.', de: 'Farbkombinationen und Lesbarkeit von Text prüfen.' },
     tags: { 'zh-CN': ['对比度', '界面'], en: ['contrast', 'interface'], de: ['Kontrast', 'Oberfläche'] },
   },
   {
-    slug: 'plain-language', category: 'text', status: 'available', sequence: '003',
+    slug: 'plain-language', category: 'text', status: 'available', sequence: '003', glyph: 16,
     title: { 'zh-CN': '清晰语言仪', en: 'Plain Language Meter', de: 'Klartext-Meter' },
     summary: { 'zh-CN': '发现复杂表达，帮助公共信息更容易理解。', en: 'Find dense wording and make public information easier to understand.', de: 'Komplexe Formulierungen erkennen und öffentliche Informationen verständlicher machen.' },
     tags: { 'zh-CN': ['文本', '可读性'], en: ['text', 'readability'], de: ['Text', 'Lesbarkeit'] },
   },
   {
-    slug: 'data-shape', category: 'data', status: 'available', sequence: '004',
+    slug: 'data-shape', category: 'data', status: 'available', sequence: '004', glyph: 15,
     title: { 'zh-CN': '数据塑形台', en: 'Data Shaper', de: 'Datenformer' },
     summary: { 'zh-CN': '在本地整理轻量表格并检查常见结构问题。', en: 'Reshape small tables locally and inspect common structural issues.', de: 'Kleine Tabellen lokal bereinigen und auf typische Strukturprobleme prüfen.' },
     tags: { 'zh-CN': ['数据', '表格'], en: ['data', 'table'], de: ['Daten', 'Tabelle'] },
   },
+  ...extraTools,
 ];

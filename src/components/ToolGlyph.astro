@@ -1,0 +1,11 @@
+---
+interface Props { index: number; }
+const { index } = Astro.props;
+const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
+---
+<span class="instrument-glyph" aria-hidden="true" style={`--glyph-sheet:url('${base}assets/instrument-glyphs/contact-sheet.png');--glyph-position:${((index % 6 + .05) / 5.1) * 100}% ${((Math.floor(index / 6) + .05) / 5.1) * 100}%`}></span>
+<style is:global>
+.instrument-glyph { position:relative; display:inline-block; flex:none; width:7rem; aspect-ratio:1; border-radius:.8rem; background-color:#fffdf8; overflow:hidden; }
+.instrument-glyph::after { content:''; position:absolute; inset:8%; background-image:var(--glyph-sheet); background-position:var(--glyph-position); background-size:666.6667% 666.6667%; }
+.tool-card__visual .instrument-glyph { width:min(80%, 8rem); }
+</style>

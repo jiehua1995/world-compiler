@@ -1,0 +1,10 @@
+---
+import { extraTools } from '../../data/extra-tools';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import ToolHeading from '../../components/ToolHeading.astro';
+import UtilityWorkbench from '../../components/tools/UtilityWorkbench.astro';
+import '../../styles/workbench.css';
+export function getStaticPaths() { return extraTools.map(tool=>({params:{slug:tool.slug},props:{tool}})); }
+const {tool}=Astro.props;
+---
+<BaseLayout title={tool.title} description={tool.summary}><ToolHeading tool={tool} /><UtilityWorkbench slug={tool.slug} /></BaseLayout>

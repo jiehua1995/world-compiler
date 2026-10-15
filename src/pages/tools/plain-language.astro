@@ -1,17 +1,17 @@
 ---
 import PlainLanguageMeter from '../../components/tools/PlainLanguageMeter.astro';
+import ToolHeading from '../../components/ToolHeading.astro';
 import BaseLayout from '../../layouts/BaseLayout.astro';
-import '../../styles/simple-tools.css';
-
-const rawBase = import.meta.env.BASE_URL;
-const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+import { tools } from '../../data/tools';
+import '../../styles/workbench.css';
+const tool = tools.find(tool => tool.slug === 'plain-language')!;
 ---
-<BaseLayout titleKey="plain.pageTitle" descriptionKey="plain.pageDescription">
-  <section class="tool-hero"><a class="tool-hero__back" href={`${base}tools/`} data-i18n="plain.back">← 返回工具目录</a><div class="tool-hero__grid"><div><p class="section-kicker" data-i18n="plain.kicker">文本工具 / WC—003</p><h1 data-i18n="plain.title">清晰语言仪</h1><p class="tool-hero__intro" data-i18n="plain.intro">粘贴文本，在本地查看长度、句子和写作提示。</p></div><div class="tool-hero__notes"><p class="local-badge"><span aria-hidden="true"></span><b data-i18n="plain.local">文本仅在当前浏览器分析，不保存、不发送。</b></p><p data-i18n="plain.disclaimer">不评价语言质量、读者能力或法律合规性。</p></div></div></section>
+<BaseLayout title={tool.title} description={tool.summary}>
+  <ToolHeading tool={tool} />
   <PlainLanguageMeter />
   <script>
     import { mountPlainLanguageMeter } from '../../features/plain-language/controller';
     const root = document.querySelector<HTMLElement>('[data-plain-language]');
-    if (root) { const controller = mountPlainLanguageMeter(root); window.addEventListener('pagehide', () => controller.destroy(), { once: true }); }
+    if (root) { const controller = mountPlainLanguageMeter(root); window.addEventListener('pagehide', () => controller.destroy(), { once:true }); }
   </script>
 </BaseLayout>

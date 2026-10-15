@@ -1,18 +1,32 @@
-<section class="simple-tool" data-contrast-lens aria-labelledby="contrast-workbench-title">
-  <div class="simple-tool__controls">
-    <label><span data-i18n="contrast.foreground">文字颜色</span><input type="color" value="#2F6DB3" data-color-picker="foreground" /></label>
-    <label><span data-i18n="contrast.foreground">文字颜色</span> HEX<input type="text" value="#2F6DB3" spellcheck="false" autocomplete="off" data-color-hex="foreground" aria-describedby="contrast-error" /></label>
-    <label><span data-i18n="contrast.background">背景颜色</span><input type="color" value="#FFFFFF" data-color-picker="background" /></label>
-    <label><span data-i18n="contrast.background">背景颜色</span> HEX<input type="text" value="#FFFFFF" spellcheck="false" autocomplete="off" data-color-hex="background" aria-describedby="contrast-error" /></label>
+---
+import Copy from '../Copy.astro';
+---
+<section class="lab" data-contrast-lens>
+  <div class="lab-toolbar"><Copy text={['配色预设','Color presets','Farbvorlagen']} />{[['#2F6DB3','#FFFFFF','蓝 / Blue'],['#101A27','#FCA104','琥珀 / Amber'],['#FFFFFF','#5200A6','紫 / Violet']].map(([fg,bg,name]) => <button type="button" data-preset-fg={fg} data-preset-bg={bg} aria-label={`${fg} / ${bg}`} style={`border-bottom:4px solid ${fg}`}>{name.split(' / ')[1]}</button>)}<button type="button" data-swap><Copy text={['交换颜色 ⇄','Swap colors ⇄','Farben tauschen ⇄']} /></button></div>
+  <div class="lab-grid">
+    <section class="lab-panel">
+      <header><b>01</b><Copy as="h2" text={['颜色与排版','Colors & typography','Farben & Typografie']} /></header>
+      <div class="field-pair">
+        <label><span data-i18n="contrast.foreground">文字颜色</span><input type="color" value="#2F6DB3" data-color-picker="foreground" /></label>
+        <label><span data-i18n="contrast.foreground">文字颜色</span> HEX<input type="text" value="#2F6DB3" data-color-hex="foreground" aria-describedby="contrast-error" spellcheck="false" /></label>
+        <label><span data-i18n="contrast.background">背景颜色</span><input type="color" value="#FFFFFF" data-color-picker="background" /></label>
+        <label><span data-i18n="contrast.background">背景颜色</span> HEX<input type="text" value="#FFFFFF" data-color-hex="background" aria-describedby="contrast-error" spellcheck="false" /></label>
+      </div>
+      <p id="contrast-error" role="alert" data-contrast-error hidden data-i18n="contrast.invalid">请输入有效的 3 位或 6 位十六进制颜色。</p>
+      <label><Copy text={['预览文字','Preview text','Vorschautext']} /><input type="text" data-preview-text maxlength="300" value="Aa — The world, made clearer." /></label>
+      <div class="field-pair"><label><Copy text={['字号（像素）','Font size (px)','Schriftgröße (px)']} /><input type="range" min="12" max="64" value="24" data-font-size /></label><label><Copy text={['字重','Font weight','Schriftstärke']} /><select data-font-weight><option value="400">400</option><option value="700">700</option></select></label></div>
+      <Copy as="h3" text={['改善文字颜色','Improve text color','Textfarbe verbessern']} />
+      <div class="suggestions"><button type="button" data-suggest="4.5">AA ≥ 4.5:1</button><button type="button" data-suggest="7">AAA ≥ 7:1</button></div>
+      <p class="hint" data-suggestion-status></p>
+      <Copy as="p" text={['建议会向黑或白调整当前文字颜色，选择变化较小的可用结果。','Suggestions move the text color toward black or white, choosing the smaller valid change.','Vorschläge passen die Textfarbe in Richtung Schwarz oder Weiß mit möglichst kleiner Änderung an.']} />
+    </section>
+    <section class="lab-panel">
+      <header><b>02</b><Copy as="h2" text={['实时效果与标准','Live preview & thresholds','Vorschau & Grenzwerte']} /></header>
+      <div class="contrast-preview" data-contrast-preview><h2 data-preview-heading>Aa — The world, made clearer.</h2><p>ABCDEFGHIJKLMNOPQRSTUVWXYZ<br />0123456789 · 世界编译局</p></div>
+      <p class="contrast-ratio" data-contrast-ratio>—</p>
+      <div class="contrast-results" aria-live="polite" data-contrast-results><p><span data-i18n="contrast.normal">普通文字</span><br />AA <b data-result="normalAA"></b> · AAA <b data-result="normalAAA"></b></p><p><span data-i18n="contrast.large">大号文字</span><br />AA <b data-result="largeAA"></b> · AAA <b data-result="largeAAA"></b></p></div>
+      <p class="hint" data-i18n="contrast.note">此工具用于设计参考，不构成无障碍合规认证。</p>
+    </section>
   </div>
-  <p id="contrast-error" role="alert" data-contrast-error hidden data-i18n="contrast.invalid">请输入有效的 3 位或 6 位十六进制颜色。</p>
-  <div class="contrast-preview" data-contrast-preview>
-    <h2 id="contrast-workbench-title" data-i18n="contrast.preview">预览文字：清晰的信息，人人可读。</h2>
-    <p><span data-i18n="contrast.ratio">对比度</span> <strong data-contrast-ratio>—</strong></p>
-  </div>
-  <div class="contrast-results" aria-live="polite" data-contrast-results>
-    <p><span data-i18n="contrast.normal">普通文字</span> AA <b data-result="normalAA"></b> · AAA <b data-result="normalAAA"></b></p>
-    <p><span data-i18n="contrast.large">大号文字</span> AA <b data-result="largeAA"></b> · AAA <b data-result="largeAAA"></b></p>
-  </div>
-  <p class="simple-tool__note" data-i18n="contrast.note">此工具用于设计参考，不构成无障碍合规认证。</p>
+  <footer class="lab-export"><Copy as="p" text={['保留颜色、对比度与阈值结果，方便交付设计。','Keep colors, ratios and threshold results with your design handoff.','Farben, Verhältnisse und Grenzwerte für die Designübergabe speichern.']} /><button type="button" class="primary" data-contrast-download><Copy text={['下载配色报告','Download color report','Farbbericht herunterladen']} /></button></footer>
 </section>

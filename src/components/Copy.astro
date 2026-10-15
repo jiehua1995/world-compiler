@@ -1,0 +1,5 @@
+---
+interface Props { text: readonly [string, string, string]; as?: 'span' | 'h2' | 'h3' | 'p' | 'b'; }
+const { text, as: Tag = 'span', ...rest } = Astro.props;
+---
+<Tag data-copy-zh={text[0]} data-copy-en={text[1]} data-copy-de={text[2]} {...rest}>{text[0]}</Tag>

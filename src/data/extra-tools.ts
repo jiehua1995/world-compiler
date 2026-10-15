@@ -1,0 +1,111 @@
+import type { ToolDefinition } from "./tools";
+export const extraTools: readonly ToolDefinition[] = [
+  {
+    slug: "image-studio",
+    category: "media",
+    status: "available",
+    sequence: "005",
+    glyph: 13,
+    title: { "zh-CN": "图像工坊", en: "Image Studio", de: "Bildwerkstatt" },
+    summary: {
+      "zh-CN": "调整尺寸、裁剪、旋转与转换格式，预览后导出图片。",
+      en: "Resize, crop, rotate and convert images with a live export preview.",
+      de: "Bilder skalieren, zuschneiden, drehen und mit Vorschau konvertieren.",
+    },
+    tags: {
+      "zh-CN": ["图片", "压缩", "裁剪", "转换"],
+      en: ["image", "resize", "compress", "crop"],
+      de: ["Bild", "Größe", "komprimieren", "Zuschnitt"],
+    },
+  },
+  {
+    slug: "text-diff",
+    category: "text",
+    status: "available",
+    sequence: "006",
+    glyph: 19,
+    title: { "zh-CN": "文本对照镜", en: "Text Diff", de: "Textvergleich" },
+    summary: {
+      "zh-CN": "并排比较两段文本，逐行或逐词检查修改。",
+      en: "Compare two texts side by side, by line or by word.",
+      de: "Zwei Texte nebeneinander zeilen- oder wortweise vergleichen.",
+    },
+    tags: {
+      "zh-CN": ["比较", "差异", "文本"],
+      en: ["compare", "diff", "text"],
+      de: ["Vergleich", "Unterschied", "Text"],
+    },
+  },
+  {
+    slug: "qr-studio",
+    category: "media",
+    status: "available",
+    sequence: "007",
+    glyph: 12,
+    title: { "zh-CN": "二维码工作台", en: "QR Studio", de: "QR-Werkstatt" },
+    summary: {
+      "zh-CN": "为文本、网址和 Wi-Fi 生成二维码，导出 PNG 或 SVG。",
+      en: "Create text, URL and Wi-Fi QR codes; export PNG or SVG.",
+      de: "QR-Codes für Text, URLs und WLAN als PNG oder SVG erzeugen.",
+    },
+    tags: {
+      "zh-CN": ["二维码", "网址", "WiFi"],
+      en: ["qr", "wifi", "url"],
+      de: ["QR", "WLAN", "URL"],
+    },
+  },
+  {
+    slug: "json-studio",
+    category: "data",
+    status: "available",
+    sequence: "008",
+    glyph: 9,
+    title: { "zh-CN": "JSON 工作台", en: "JSON Studio", de: "JSON-Werkstatt" },
+    summary: {
+      "zh-CN": "校验、格式化、压缩和浏览 JSON，定位语法错误。",
+      en: "Validate, format, minify and explore JSON with syntax feedback.",
+      de: "JSON validieren, formatieren, komprimieren und strukturiert ansehen.",
+    },
+    tags: {
+      "zh-CN": ["JSON", "格式化", "校验"],
+      en: ["json", "format", "validate"],
+      de: ["JSON", "formatieren", "prüfen"],
+    },
+  },
+  {
+    slug: "time-bridge",
+    category: "data",
+    status: "available",
+    sequence: "009",
+    glyph: 14,
+    title: { "zh-CN": "时间桥", en: "Time Bridge", de: "Zeitbrücke" },
+    summary: {
+      "zh-CN": "在 Unix 时间戳、日期和世界时区之间转换。",
+      en: "Convert Unix timestamps and dates across world time zones.",
+      de: "Unix-Zeitstempel und Datum zwischen Weltzeitzonen umrechnen.",
+    },
+    tags: {
+      "zh-CN": ["时间", "日期", "时区"],
+      en: ["time", "date", "timestamp", "timezone"],
+      de: ["Zeit", "Datum", "Zeitstempel", "Zeitzone"],
+    },
+  },
+  {
+    slug: "codec-lab",
+    category: "text",
+    status: "available",
+    sequence: "010",
+    glyph: 17,
+    title: { "zh-CN": "编码实验室", en: "Codec Lab", de: "Kodierungslabor" },
+    summary: {
+      "zh-CN": "转换 Base64、URL 与 HTML 实体，计算文本或文件的 SHA-256。",
+      en: "Convert Base64, URL and HTML entities; hash text or files with SHA-256.",
+      de: "Base64, URLs und HTML-Entitäten umwandeln; SHA-256 für Text oder Dateien berechnen.",
+    },
+    tags: {
+      "zh-CN": ["编码", "Base64", "URL", "哈希"],
+      en: ["base64", "url", "encode", "hash"],
+      de: ["Base64", "URL", "kodieren", "Hash"],
+    },
+  },
+];

@@ -6,9 +6,9 @@ This guide supplements the [project README](../README.md). It documents current 
 
 ## 1. 技术结构 / Technical structure
 
-项目以 Astro 静态输出构建，不运行应用服务器，也没有数据库或 API。Astro 页面负责服务端生成 HTML；交互由轻量 TypeScript 模块挂载，不使用前端框架。
+项目以 Astro 静态输出构建，不运行应用服务器，也没有数据库或 API。Astro 页面负责构建时生成 HTML；交互由 TypeScript 模块挂载，不使用前端框架。二维码编码使用 MIT 许可的 qrcode，文本差异使用 BSD-3-Clause 许可的 diff，均随站点打包并按需加载。
 
-The project builds static output with Astro. It has no application server, database, or API. Astro generates the HTML; small TypeScript modules provide browser interactions without a frontend framework.
+The project builds static output with Astro. It has no application server, database, or API. Astro generates the HTML at build time; TypeScript modules provide browser interactions without a frontend framework. QR encoding uses qrcode (MIT), and text comparison uses diff (BSD-3-Clause). Both are bundled locally and loaded on demand.
 
 | 路径 / Path | 职责 / Responsibility |
 | --- | --- |
@@ -71,24 +71,43 @@ Images flow only through the browser file input, a temporary object URL, browser
 
 **Plain Language Meter / 清晰语言仪** 按选定的分析语言独立于界面语言运行。中文显示字符/分词/句子统计但不套用英文公式；英文采用 Flesch Reading Ease，德文采用 Flesch 德语公式。音节通过本地拼写启发式估算，且至少 30 词、3 句后才显示分数。它是写作提示，不评价读者能力或法律合规。
 
-**Data Shaper / 数据塑形台** 支持本地 CSV/TSV 文件，读取前拒绝大于 10,000,000 字节的文件，解析最多 250,000 个单元格以限制极端输入的内存占用。解析器支持引号、转义引号、引号内换行、CRLF 与尾部空单元格；不匹配引号、不规范引号或超过单元格上限会给出错误。清理会 trim 单元格、删除全空行，预览限 8 行，导出规范化 CSV。内容只保存在当前页面内存。
+**Data Shaper / 数据塑形台** 支持本地 CSV/TSV 文件（最多 10,000,000 字节 / 250,000 单元格）和粘贴输入（最多 1,000,000 字符）。支持严格引号解析、重排列、表头命名、自然排序、去重与空值统计。首行视作表头；转换始终从原数据计算，预览前 8 行、30 列。导出 CSV/TSV 或保留表头的二维数组 JSON。可选择为公式样式单元格添加单引号，这会改变文本值；不勾选时保持原值。内容仅保存在当前页面内存。
 
 **Contrast Lens** uses foreground/background HEX colors and the WCAG relative-luminance formula, showing normal-text thresholds of 4.5:1/7:1 and large-text thresholds of 3:1/4.5:1 for AA/AAA. Invalid HEX is not calculated; this is a design aid, not a full-site compliance certification.
 
 **Plain Language Meter / Klartext-Meter** analyzes in the selected language independently of the UI locale. Chinese gets character/segmentation/sentence metrics but no English formula; English uses Flesch Reading Ease and German uses the German Flesch formula. Syllables use a local spelling heuristic, and a score appears only after at least 30 words and 3 sentences. Results are writing prompts, not judgments of reader ability or legal compliance.
 
-**Data Shaper / Datenformer** reads local CSV/TSV files and rejects files over 10,000,000 bytes before reading. Parsing is capped at 250,000 cells to bound pathological input memory use. The parser handles quoted delimiters, doubled quotes, embedded newlines, CRLF, and trailing empty cells; malformed quoting and inputs over the cell cap are rejected with a localized message. Cleaning trims cells and removes wholly blank rows, preview is limited to 8 rows, and export is normalized CSV. Content stays in current-page memory.
+**Data Shaper / Datenformer** imports local CSV/TSV files (10,000,000 bytes / 250,000 cells) or pasted text (1,000,000 characters). It supports strict quoted-field parsing, column reordering, header renaming, natural sorting, deduplication and empty-cell counts. The first row is a header. Transforms always start from original rows; preview shows the first 8 rows and 30 columns. Export CSV, TSV, or JSON as arrays of arrays including the header. Optional apostrophe-prefixing changes formula-like values for spreadsheet use; the default preserves values. Content stays in current-page memory.
+
+### 工作台与新增工具 / Workbenches and new tools
+
+`ToolHeading.astro`、`ToolGlyph.astro` 和 `workbench.css` 复用色觉实验室的分区视觉。现有 36 枚图标以静态拼图和 CSS 位置复用；只发布一份拼图。新增工具从 `extra-tools.ts` 生成静态路由 `[slug].astro`，控制器通过动态 import 按工具加载。`Copy.astro` 为静态短文案提供中英德三语；动态结果使用 `workbench/browser.ts`，语言切换保留用户输入。
+
+Shared heading, glyph and workbench styling follow the Color Vision Lab layout. The original 36-glyph contact sheet is reused through CSS positioning. New tool routes are generated statically from `extra-tools.ts`; controllers are dynamically imported per tool. `Copy.astro` provides three-language static copy, and `workbench/browser.ts` handles dynamic copy and local downloads. Locale changes preserve user input.
+
+| Tool | Behavior and limits |
+| --- | --- |
+| Image Studio / 图像工坊 | Single static PNG/JPEG/WebP; 20 MB / 32 MP input, 16 MP output with max edge 8192 px. Center crop, resize, rotate, flip, quality/format controls. PNG transparency, white JPEG background. Canvas re-encoding does not copy source EXIF. Browser format fallback is rejected rather than mislabeled. |
+| Text Diff / 文本对照镜 | Line/word comparison; 50,000 characters per side, 1-second / 3,000-edit computation budget. Normalized output when ignoring case/line-edge whitespace. Editing invalidates exports. Text is rendered using textContent. |
+| QR Studio / 二维码工作台 | UTF-8 text/URL or escaped Wi-Fi payload; up to 1,500 text characters, correction L/M/Q/H, margin 4–12 modules and 512 px PNG/SVG exports. Minimum color contrast 4.5:1; content may exceed QR capacity at high correction. Test actual scanning before distributing. |
+| JSON Studio / JSON 工作台 | Up to 1 MB text/file, 20,000 nodes and depth 32. Validation/indent/minify, safe text output and a tree limited to 300 nodes / depth 8. JavaScript number semantics can round integers outside the safe range. |
+| Time Bridge / 时间桥 | Unix seconds/milliseconds, explicit-offset ISO calendar validation and Intl time-zone display. Millisecond resolution; ISO input requires a time-zone offset. |
+| Codec Lab / 编码实验室 | Up to 200,000 text characters; UTF-8 Base64, URL and common HTML/numeric entities. Text/file SHA-256 with a 64 MB file limit. Base64 decode rejects invalid UTF-8. |
+
+Contrast suggestions move toward black or white and use full-precision WCAG contrast for threshold decisions; display values are rounded to two decimals. Plain Language Meter adds safe long-sentence highlighting, selection, paragraphs, approximate reading minutes, word frequencies including function words, whitespace cleanup and text/JSON reports. Its spelling-based readability model remains a heuristic.
+
+**Deutsch:** Alle zehn Werkzeuge arbeiten lokal. Eingaben bleiben beim Sprachwechsel erhalten. Größenlimits und Modellgrenzen stehen in den jeweiligen Oberflächen. Bildexporte sind statisch; JSON verwendet JavaScript-Zahlen; Lesbarkeitswerte und Lesezeit sind Schätzungen.
 
 ### 新增工具 / Add a tool
 
-1. 在 `src/data/tools.ts` 添加 `ToolDefinition`：使用唯一 slug，提供中英文标题、摘要与搜索标签，分类使用现有 `ToolCategory`。
+1. 在 `src/data/tools.ts` 或 `src/data/extra-tools.ts` 添加 `ToolDefinition`：使用唯一 slug，提供中英德文标题、摘要与搜索标签，分类使用现有 `ToolCategory`。
 2. 新建 `src/pages/tools/<slug>.astro`，使用 `BaseLayout`，把页面文案放进现有类型字典，复用工具页的视觉变量与公共组件。
 3. 交互组件放在 `src/components/`；纯计算、输入校验和浏览器资源生命周期放在 `src/features/<slug>/`。不要把像素、文件或业务计算塞进模板。
 4. 在 `tests/<feature>/` 覆盖核心逻辑、错误路径和资源清理；在 `tests/e2e/` 覆盖实际用户操作、键盘路径、窄屏和本地隐私行为。
 5. 如需图形资产，发布文件放入 `public/assets/`；生成说明或源图保存在 `docs/assets/`，不要把未使用的大批生成图放进发布目录。
 6. 完成后运行 `npm run verify`。若更改 Pages base path，还要检查页面链接、静态资产与 Worker 路径都以该 base 开头。
 
-1. Add a `ToolDefinition` to `src/data/tools.ts`: use a unique slug, provide Chinese and English titles, summaries, and search tags, and choose an existing `ToolCategory`.
+1. Add a `ToolDefinition` to `src/data/tools.ts` or `src/data/extra-tools.ts`: use a unique slug, provide Chinese, English and German titles, summaries, and search tags, and choose an existing `ToolCategory`.
 2. Create `src/pages/tools/<slug>.astro`, use `BaseLayout`, put interface copy in the typed dictionaries, and reuse the tool-page tokens and shared components.
 3. Put interactive UI in `src/components/`; keep calculations, input validation, and browser resource lifetimes in `src/features/<slug>/`. Avoid embedding pixel, file, or business logic in templates.
 4. Cover core logic, failure paths, and resource cleanup in `tests/<feature>/`; cover real user actions, keyboard paths, narrow screens, and local privacy behavior in `tests/e2e/`.

@@ -16,7 +16,7 @@ test('filters the bilingual catalog and announces result counts', async ({ page 
   await expect(textCategory).toBeFocused();
 
   await page.getByRole('button', { name: '重置筛选' }).click();
-  await expect(page.getByRole('article')).toHaveCount(4);
+  await expect(page.getByRole('article')).toHaveCount(10);
 });
 
 test('searches English content after language switching', async ({ page }) => {

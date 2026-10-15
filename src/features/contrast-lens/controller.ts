@@ -1,45 +1,144 @@
-import { dictionary } from '../../i18n/dictionaries';
-import type { Locale } from '../../i18n/types';
-import { evaluateContrast, parseHexColor } from './contrast';
+import { dictionary } from "../../i18n/dictionaries";
+import { locale, say, downloadBlob } from "../workbench/browser";
+import {
+  evaluateContrast,
+  parseHexColor,
+  suggestForeground,
+  toHex,
+} from "./contrast";
 
-export function mountContrastLens(root: HTMLElement, doc: Document = document): { destroy: () => void } {
-  const preview = root.querySelector<HTMLElement>('[data-contrast-preview]');
-  const ratio = root.querySelector<HTMLElement>('[data-contrast-ratio]');
-  const error = root.querySelector<HTMLElement>('[data-contrast-error]');
-  const resultNodes = [...root.querySelectorAll<HTMLElement>('[data-result]')];
-  if (!preview || !ratio || !error || resultNodes.length !== 4) return { destroy() {} };
-
+export function mountContrastLens(
+  root: HTMLElement,
+  doc: Document = document,
+): { destroy: () => void } {
+  const field = (name: string) =>
+    root.querySelector<HTMLInputElement>(`[data-color-hex="${name}"]`)!;
+  const preview = root.querySelector<HTMLElement>("[data-contrast-preview]")!;
+  const ratio = root.querySelector<HTMLElement>("[data-contrast-ratio]")!;
+  const error = root.querySelector<HTMLElement>("[data-contrast-error]")!;
+  const report = root.querySelector<HTMLButtonElement>(
+    "[data-contrast-download]",
+  )!;
   const update = () => {
-    const colors = (['foreground', 'background'] as const).map((name) => {
-      const field = root.querySelector<HTMLInputElement>(`[data-color-hex="${name}"]`)!;
-      return { field, color: parseHexColor(field.value) };
+    const colors = ["foreground", "background"].map((name) => {
+      const input = field(name),
+        color = parseHexColor(input.value);
+      input.setAttribute("aria-invalid", String(!color));
+      if (color)
+        root.querySelector<HTMLInputElement>(
+          `[data-color-picker="${name}"]`,
+        )!.value = toHex(color);
+      return color;
     });
-    const valid = colors.every(({ color }) => color !== null);
+    const valid = colors.every(Boolean);
     error.hidden = valid;
-    colors.forEach(({ field, color }) => {
-      field.setAttribute('aria-invalid', String(!color));
-      if (color) root.querySelector<HTMLInputElement>(`[data-color-picker="${field.dataset.colorHex}"]`)!.value = `#${[color.r, color.g, color.b].map((channel) => channel.toString(16).padStart(2, '0')).join('')}`;
-    });
-    if (!valid) { ratio.textContent = '—'; resultNodes.forEach((node) => { node.textContent = '—'; }); return; }
-    const [foreground, background] = colors.map(({ color }) => color!);
-    preview.style.color = `rgb(${foreground.r} ${foreground.g} ${foreground.b})`;
-    preview.style.backgroundColor = `rgb(${background.r} ${background.g} ${background.b})`;
-    const evaluation = evaluateContrast(foreground, background);
-    ratio.textContent = `${evaluation.ratio}:1`;
-    const copy = dictionary((doc.documentElement.lang || 'zh-CN') as Locale);
-    resultNodes.forEach((node) => { node.textContent = evaluation[node.dataset.result as keyof typeof evaluation] ? copy['contrast.pass'] : copy['contrast.fail']; });
+    report.disabled = !valid;
+    if (!valid) {
+      ratio.textContent = "—";
+      root
+        .querySelectorAll("[data-result]")
+        .forEach((el) => (el.textContent = "—"));
+      return;
+    }
+    const [fg, bg] = colors;
+    preview.style.color = toHex(fg!);
+    preview.style.backgroundColor = toHex(bg!);
+    preview.style.fontSize =
+      root.querySelector<HTMLInputElement>("[data-font-size]")!.value + "px";
+    preview.style.fontWeight =
+      root.querySelector<HTMLSelectElement>("[data-font-weight]")!.value;
+    root.querySelector("[data-preview-heading]")!.textContent =
+      root.querySelector<HTMLInputElement>("[data-preview-text]")!.value;
+    const result = evaluateContrast(fg!, bg!);
+    ratio.textContent = result.ratio + ":1";
+    root
+      .querySelectorAll<HTMLElement>("[data-result]")
+      .forEach(
+        (el) =>
+          (el.textContent =
+            dictionary(locale())[
+              result[el.dataset.result as "normalAA"]
+                ? "contrast.pass"
+                : "contrast.fail"
+            ]),
+      );
   };
-  const syncPicker = (event: Event) => {
-    const picker = event.currentTarget as HTMLInputElement;
-    root.querySelector<HTMLInputElement>(`[data-color-hex="${picker.dataset.colorPicker}"]`)!.value = picker.value;
+  const onInput = (event: Event) => {
+    const el = event.target as HTMLInputElement;
+    if (el.dataset.colorPicker) field(el.dataset.colorPicker).value = el.value;
     update();
   };
-  const onChange = () => update();
-  const pickers = [...root.querySelectorAll<HTMLInputElement>('[data-color-picker]')];
-  const fields = [...root.querySelectorAll<HTMLInputElement>('[data-color-hex]')];
-  pickers.forEach((input) => input.addEventListener('input', syncPicker));
-  fields.forEach((input) => input.addEventListener('input', onChange));
-  doc.addEventListener('worldcompiler:localechange', update);
+  const onClick = (event: Event) => {
+    const button = (event.target as Element).closest<HTMLButtonElement>(
+      "button",
+    );
+    if (!button) return;
+    if (button.hasAttribute("data-swap"))
+      [field("foreground").value, field("background").value] = [
+        field("background").value,
+        field("foreground").value,
+      ];
+    if (button.dataset.presetFg) {
+      field("foreground").value = button.dataset.presetFg;
+      field("background").value = button.dataset.presetBg!;
+    }
+    if (button.dataset.suggest) {
+      const fg = parseHexColor(field("foreground").value),
+        bg = parseHexColor(field("background").value);
+      if (fg && bg) {
+        const suggestion = suggestForeground(
+          fg,
+          bg,
+          Number(button.dataset.suggest),
+        );
+        if (suggestion) field("foreground").value = toHex(suggestion);
+        root.querySelector("[data-suggestion-status]")!.textContent = suggestion
+          ? say([
+              "已应用颜色建议",
+              "Color suggestion applied",
+              "Farbvorschlag angewendet",
+            ])
+          : say([
+              "此背景无法达到目标，请调整背景。",
+              "This background cannot meet the target. Adjust it first.",
+              "Mit diesem Hintergrund ist das Ziel nicht erreichbar. Hintergrund anpassen.",
+            ]);
+      }
+    }
+    if (button === report)
+      downloadBlob(
+        new Blob(
+          [
+            JSON.stringify(
+              {
+                foreground: field("foreground").value,
+                background: field("background").value,
+                ...evaluateContrast(
+                  parseHexColor(field("foreground").value)!,
+                  parseHexColor(field("background").value)!,
+                ),
+              },
+              null,
+              2,
+            ),
+          ],
+          { type: "application/json" },
+        ),
+        "world-compiler-contrast.json",
+      );
+    update();
+  };
+  root.addEventListener("input", onInput);
+  root.addEventListener("change", update);
+  root.addEventListener("click", onClick);
+  doc.addEventListener("worldcompiler:localechange", update);
   update();
-  return { destroy() { pickers.forEach((input) => input.removeEventListener('input', syncPicker)); fields.forEach((input) => input.removeEventListener('input', onChange)); doc.removeEventListener('worldcompiler:localechange', update); } };
+  return {
+    destroy() {
+      root.removeEventListener("input", onInput);
+      root.removeEventListener("change", update);
+      root.removeEventListener("click", onClick);
+      doc.removeEventListener("worldcompiler:localechange", update);
+    },
+  };
 }
