@@ -17,14 +17,29 @@ test('offers a keyboard-visible skip link and Chinese shell by default', async (
 test('switches the full document to English with the keyboard', async ({ page }) => {
   await page.goto('./');
 
-  const english = page.getByRole('button', { name: 'English' });
-  await english.focus();
+  const language = page.getByRole('combobox', { name: '语言' });
+  const english = page.getByRole('combobox', { name: 'Language' });
+  await language.focus();
+  await page.keyboard.press('ArrowDown');
   await page.keyboard.press('Enter');
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');
   await expect(page).toHaveTitle(/^World Compiler/);
   await expect(page.getByText('Language', { exact: true })).toBeVisible();
-  await expect(english).toHaveAttribute('aria-pressed', 'true');
+  await expect(english).toHaveValue('en');
+});
+
+test('selects German and persists the native language choice after reload', async ({ page }) => {
+  await page.goto('./');
+  const language = page.getByRole('combobox', { name: '语言' });
+  await language.selectOption('de');
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await expect(page).toHaveTitle(/Weltkompilierungsbüro/);
+  await expect(page.getByText('Sprache', { exact: true })).toBeVisible();
+
+  await page.reload();
+  await expect(page.locator('html')).toHaveAttribute('lang', 'de');
+  await expect(page.getByRole('combobox', { name: 'Sprache' })).toHaveValue('de');
 });
 
 test('persists explicit theme choices and exposes system mode', async ({ page }) => {
@@ -51,7 +66,7 @@ test('remains interactive when local storage is denied', async ({ page }) => {
   });
   await page.goto('./');
 
-  await page.getByRole('button', { name: 'English' }).click();
+  await page.getByRole('combobox', { name: '语言' }).selectOption('en');
   await page.getByRole('button', { name: 'Dark' }).click();
 
   await expect(page.locator('html')).toHaveAttribute('lang', 'en');

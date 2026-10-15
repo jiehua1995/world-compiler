@@ -27,8 +27,9 @@ const copy = dictionary('zh-CN');
       content={copy[descriptionKey]}
       data-description-zh={dictionary('zh-CN')[descriptionKey]}
       data-description-en={dictionary('en')[descriptionKey]}
+      data-description-de={dictionary('de')[descriptionKey]}
     />
-    <title data-title-zh={dictionary('zh-CN')[titleKey]} data-title-en={dictionary('en')[titleKey]}>{copy[titleKey]}</title>
+    <title data-title-zh={dictionary('zh-CN')[titleKey]} data-title-en={dictionary('en')[titleKey]} data-title-de={dictionary('de')[titleKey]}>{copy[titleKey]}</title>
     <script is:inline>
       (() => {
         let preference = 'system';
@@ -60,11 +61,6 @@ const copy = dictionary('zh-CN');
       document.addEventListener('click', (event) => {
         const target = event.target;
         if (!(target instanceof Element)) return;
-
-        const localeControl = target.closest<HTMLElement>('[data-locale]');
-        if (localeControl?.dataset.locale === 'zh-CN' || localeControl?.dataset.locale === 'en') {
-          preferences.setLocale(localeControl.dataset.locale);
-        }
 
         const themeControl = target.closest<HTMLElement>('[data-theme-value]');
         const nextTheme = themeControl?.dataset.themeValue;

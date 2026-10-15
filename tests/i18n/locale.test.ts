@@ -60,4 +60,28 @@ describe('safe preferences', () => {
     preferences.destroy();
     localStorage.clear();
   });
+
+  it('synchronizes the native language select, document copy, metadata, and persistence', () => {
+    document.head.innerHTML = '<title data-title-zh="标题" data-title-en="Title" data-title-de="Titel"></title><meta name="description" data-description-zh="说明" data-description-en="Description" data-description-de="Beschreibung">';
+    document.body.innerHTML = '<label for="locale">Language</label><select id="locale" data-locale-select><option value="zh-CN">中文</option><option value="en">English</option><option value="de">Deutsch</option></select><span data-i18n="language.label"></span>';
+    localStorage.setItem('world-compiler:locale', 'de');
+
+    let preferences = initializePreferences(document, window);
+    const select = document.querySelector<HTMLSelectElement>('[data-locale-select]')!;
+    expect(select.value).toBe('de');
+    expect(document.documentElement.lang).toBe('de');
+    expect(document.title).toBe('Titel');
+    expect(document.querySelector('[data-i18n]')?.textContent).toBe('Sprache');
+
+    select.value = 'en';
+    select.dispatchEvent(new Event('change', { bubbles: true }));
+    expect(document.documentElement.lang).toBe('en');
+    expect(localStorage.getItem('world-compiler:locale')).toBe('en');
+    preferences.destroy();
+
+    preferences = initializePreferences(document, window);
+    expect(select.value).toBe('en');
+    preferences.destroy();
+    localStorage.clear();
+  });
 });

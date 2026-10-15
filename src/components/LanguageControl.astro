@@ -1,7 +1,8 @@
-<div class="preference-control preference-control--language" role="group" aria-labelledby="language-label">
-  <span id="language-label" class="preference-control__label" data-i18n="language.label">语言</span>
-  <div class="preference-control__options">
-    <button type="button" data-locale="zh-CN" aria-pressed="true" data-i18n="language.zh">中文</button>
-    <button type="button" data-locale="en" aria-pressed="false" data-i18n="language.en">English</button>
-  </div>
+<div class="preference-control preference-control--language">
+  <label id="language-label" class="preference-control__label" for="language-select" data-i18n="language.label">语言</label>
+  <select id="language-select" data-locale-select aria-labelledby="language-label">
+    <option value="zh-CN" data-i18n="language.zh">中文</option>
+    <option value="en" data-i18n="language.en">English</option>
+    <option value="de" data-i18n="language.de">Deutsch</option>
+  </select>
 </div>

@@ -48,12 +48,10 @@ function translateDocument(doc: Document, locale: Locale): void {
   const copy = dictionary(locale);
   doc.documentElement.lang = locale;
   const title = doc.querySelector<HTMLTitleElement>('title');
-  doc.title = locale === 'en' ? title?.dataset.titleEn ?? copy['site.title'] : title?.dataset.titleZh ?? copy['site.title'];
+  doc.title = title?.dataset[`title${locale === 'zh-CN' ? 'Zh' : locale === 'de' ? 'De' : 'En'}`] ?? copy['site.title'];
 
   const description = doc.querySelector<HTMLMetaElement>('meta[name="description"]');
-  if (description) description.content = locale === 'en'
-    ? description.dataset.descriptionEn ?? copy['site.description']
-    : description.dataset.descriptionZh ?? copy['site.description'];
+  if (description) description.content = description.dataset[`description${locale === 'zh-CN' ? 'Zh' : locale === 'de' ? 'De' : 'En'}`] ?? copy['site.description'];
 
   doc.querySelectorAll<HTMLElement>('[data-i18n]').forEach((element) => {
     const key = element.dataset.i18n as DictionaryKey | undefined;
@@ -66,19 +64,17 @@ function translateDocument(doc: Document, locale: Locale): void {
   });
 
   doc.querySelectorAll<HTMLElement>('[data-copy-zh][data-copy-en]').forEach((element) => {
-    element.textContent = locale === 'en' ? element.dataset.copyEn ?? '' : element.dataset.copyZh ?? '';
+    element.textContent = locale === 'en' ? element.dataset.copyEn ?? '' : locale === 'de' ? element.dataset.copyDe ?? element.dataset.copyZh ?? '' : element.dataset.copyZh ?? '';
   });
 
   doc.querySelectorAll<HTMLElement>('[data-label-zh][data-label-en]').forEach((element) => {
     element.setAttribute(
       'aria-label',
-      locale === 'en' ? element.dataset.labelEn ?? '' : element.dataset.labelZh ?? '',
+      locale === 'en' ? element.dataset.labelEn ?? '' : locale === 'de' ? element.dataset.labelDe ?? element.dataset.labelZh ?? '' : element.dataset.labelZh ?? '',
     );
   });
 
-  doc.querySelectorAll<HTMLElement>('[data-locale]').forEach((control) => {
-    control.setAttribute('aria-pressed', String(control.dataset.locale === locale));
-  });
+  doc.querySelectorAll<HTMLSelectElement>('[data-locale-select]').forEach((control) => { control.value = locale; });
 }
 
 export function initializePreferences(doc: Document, win: Window) {
@@ -86,6 +82,18 @@ export function initializePreferences(doc: Document, win: Window) {
   const media = win.matchMedia?.('(prefers-color-scheme: dark)');
   let locale = resolveLocale(storage.get(localeKey), win.navigator.languages);
   let themePreference = resolveThemePreference(storage.get(themeKey));
+  const setLocale = (nextLocale: Locale) => {
+    locale = nextLocale;
+    storage.set(localeKey, locale);
+    translateDocument(doc, locale);
+    doc.dispatchEvent(new CustomEvent('worldcompiler:localechange', { detail: { locale } }));
+  };
+  const onLocaleChange = (event: Event) => {
+    const control = event.target;
+    if (control instanceof HTMLSelectElement && control.matches('[data-locale-select]') && ['zh-CN', 'en', 'de'].includes(control.value)) {
+      setLocale(control.value as Locale);
+    }
+  };
 
   const applyTheme = () => {
     doc.documentElement.dataset.theme = resolveTheme(themePreference, media?.matches ?? false);
@@ -103,17 +111,13 @@ export function initializePreferences(doc: Document, win: Window) {
   };
 
   translateDocument(doc, locale);
+  doc.addEventListener('change', onLocaleChange);
   applyTheme();
   doc.dispatchEvent(new CustomEvent('worldcompiler:localechange', { detail: { locale } }));
   media?.addEventListener?.('change', onSystemThemeChange);
 
   return {
-    setLocale(nextLocale: Locale) {
-      locale = nextLocale;
-      storage.set(localeKey, locale);
-      translateDocument(doc, locale);
-      doc.dispatchEvent(new CustomEvent('worldcompiler:localechange', { detail: { locale } }));
-    },
+    setLocale,
     setTheme(nextTheme: ThemePreference) {
       themePreference = nextTheme;
       storage.set(themeKey, themePreference);
@@ -121,6 +125,7 @@ export function initializePreferences(doc: Document, win: Window) {
     },
     destroy() {
       media?.removeEventListener?.('change', onSystemThemeChange);
+      doc.removeEventListener('change', onLocaleChange);
     },
   };
 }
