@@ -1,8 +1,16 @@
 .simple-tool { display: grid; gap: var(--space-3); max-width: 76rem; margin: 0 auto var(--space-7); padding: clamp(1rem, 3vw, 2rem); border: 1px solid var(--line); border-radius: var(--radius-lg); background: var(--surface); }
 .simple-tool__controls { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 1rem; }
+.simple-tool__controls--single { grid-template-columns: minmax(12rem, 20rem); }
 .simple-tool__controls label { display: grid; gap: .45rem; color: var(--ink-muted); font-size: .86rem; }
 .simple-tool input[type="color"] { width: 100%; min-height: 3rem; padding: .3rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); background: var(--surface); }
 .simple-tool input[type="text"], .simple-tool textarea, .simple-tool select { width: 100%; min-height: 2.8rem; padding: .65rem .75rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); background: var(--surface); font: inherit; }
+.simple-tool textarea { resize: vertical; min-height: 14rem; }
+.plain-input { display: grid; gap: .5rem; color: var(--ink-muted); font-size: .86rem; }
+.plain-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(9rem, 1fr)); gap: .75rem; }
+.plain-stats p { display: grid; gap: .4rem; margin: 0; padding: 1rem; border: 1px solid var(--line); border-radius: var(--radius-sm); color: var(--ink-muted); }
+.plain-stats strong { color: var(--ink); font-size: 1.25rem; }
+.plain-long h2 { font-size: 1.1rem; }
+.plain-long li { margin-block: .5rem; }
 .contrast-preview { min-height: 10rem; display: grid; align-content: center; gap: .5rem; padding: 2rem; border-radius: var(--radius-md); }
 .contrast-preview h2 { margin: 0; font-size: clamp(1.2rem, 3vw, 2rem); }
 .contrast-preview p { margin: 0; }

@@ -33,7 +33,7 @@ export const tools: readonly ToolDefinition[] = [
     tags: { 'zh-CN': ['对比度', '界面'], en: ['contrast', 'interface'], de: ['Kontrast', 'Oberfläche'] },
   },
   {
-    slug: 'plain-language', category: 'text', status: 'planned', sequence: '003',
+    slug: 'plain-language', category: 'text', status: 'available', sequence: '003',
     title: { 'zh-CN': '清晰语言仪', en: 'Plain Language Meter', de: 'Klartext-Meter' },
     summary: { 'zh-CN': '发现复杂表达，帮助公共信息更容易理解。', en: 'Find dense wording and make public information easier to understand.', de: 'Komplexe Formulierungen erkennen und öffentliche Informationen verständlicher machen.' },
     tags: { 'zh-CN': ['文本', '可读性'], en: ['text', 'readability'], de: ['Text', 'Lesbarkeit'] },

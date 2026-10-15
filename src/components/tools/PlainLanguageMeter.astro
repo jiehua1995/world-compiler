@@ -1,0 +1,17 @@
+<section class="simple-tool" data-plain-language>
+  <div class="simple-tool__controls simple-tool__controls--single">
+    <label><span data-i18n="plain.language">分析语言</span><select data-analysis-locale><option value="zh-CN" data-i18n="language.zh">中文</option><option value="en" data-i18n="language.en">English</option><option value="de" data-i18n="language.de">Deutsch</option></select></label>
+  </div>
+  <label class="plain-input"><span data-i18n="plain.text">待分析文本</span><textarea data-analysis-text rows="10" placeholder="在此粘贴文本…" data-i18n-placeholder="plain.placeholder"></textarea></label>
+  <div class="plain-stats" aria-live="polite">
+    <p><span data-i18n="plain.characters">字符数</span><strong data-stat="characterCount">0</strong></p>
+    <p><span data-i18n="plain.words">词数 / 分词</span><strong data-stat="wordCount">0</strong></p>
+    <p><span data-i18n="plain.sentences">句数</span><strong data-stat="sentenceCount">0</strong></p>
+    <p><span data-i18n="plain.average">平均每句词数</span><strong data-stat="averageSentenceLength">0</strong></p>
+    <p><span data-i18n="plain.score">可读性估算</span><strong data-stat="score">—</strong></p>
+  </div>
+  <section class="plain-long" aria-labelledby="plain-long-title"><h2 id="plain-long-title" data-i18n="plain.longTitle">较长的句子</h2><p data-long-empty data-i18n="plain.longNone">暂未发现较长句子。</p><ol data-long-list></ol></section>
+  <p class="simple-tool__note" data-i18n="plain.method">音节数使用拼写启发式估算；结果仅是写作提示。</p>
+  <p class="simple-tool__note" data-i18n="plain.disclaimer">不评价语言质量、读者能力或法律合规性。</p>
+  <p class="local-badge"><span aria-hidden="true"></span><b data-i18n="plain.local">文本仅在当前浏览器分析，不保存、不发送。</b></p>
+</section>
