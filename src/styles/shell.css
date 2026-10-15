@@ -104,6 +104,23 @@
   font-size: 0.74rem;
 }
 
+.preference-control--theme button {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  padding: 0.25rem 0.7rem;
+  color: var(--ink-muted);
+  background: transparent;
+  border: 0;
+  border-radius: 999px;
+  cursor: pointer;
+  font-size: 0.74rem;
+}
+
+.preference-control--theme button[aria-pressed='true'] {
+  color: var(--paper-raised);
+  background: var(--institution-blue);
+}
+
 main:focus {
   outline: none;
 }
