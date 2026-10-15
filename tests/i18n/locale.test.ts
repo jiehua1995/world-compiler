@@ -71,6 +71,7 @@ describe('safe preferences', () => {
     expect(select.value).toBe('de');
     expect(document.documentElement.lang).toBe('de');
     expect(document.title).toBe('Titel');
+    expect(document.querySelector<HTMLMetaElement>('meta[name="description"]')?.content).toBe('Beschreibung');
     expect(document.querySelector('[data-i18n]')?.textContent).toBe('Sprache');
 
     select.value = 'en';

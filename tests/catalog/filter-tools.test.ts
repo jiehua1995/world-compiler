@@ -33,6 +33,12 @@ describe('filterTools', () => {
     expect(filterTools(fixtures, '文本', 'all', 'zh-CN')[0]?.slug).toBe('readability');
   });
 
+  it('matches German titles and tags', () => {
+    expect(filterTools(fixtures, 'Barrierefreiheit', 'all', 'de').map((tool) => tool.slug)).toEqual([
+      'color-vision',
+    ]);
+  });
+
   it('intersects the query with the selected category', () => {
     expect(filterTools(fixtures, 'check', 'vision', 'en')).toEqual([]);
     expect(filterTools(fixtures, '', 'text', 'en').map((tool) => tool.slug)).toEqual([

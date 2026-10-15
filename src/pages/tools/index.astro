@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import CatalogControls from '../../components/CatalogControls.astro';
+import ToolCard from '../../components/ToolCard.astro';
+import { tools } from '../../data/tools';
+import '../../styles/catalog.css';
+---
+
+<BaseLayout titleKey="catalog.title" descriptionKey="catalog.intro">
+  <section class="catalog-section catalog-section--page" data-catalog aria-labelledby="catalog-title">
+    <div class="catalog-section__heading">
+      <div>
+        <p class="section-kicker" data-i18n="catalog.kicker">工具索引 / Instruments</p>
+        <h1 id="catalog-title" data-i18n="catalog.title">选择一个工作台</h1>
+      </div>
+      <p data-i18n="catalog.intro">按分类浏览，或直接搜索任务。所有已发布工具都在当前设备完成计算。</p>
+    </div>
+    <CatalogControls />
+    <p class="catalog-status" role="status" aria-live="polite" data-catalog-status>找到 4 个工具</p>
+    <div class="tool-grid">{tools.map((tool) => <ToolCard tool={tool} />)}</div>
+    <div class="catalog-empty" data-catalog-empty hidden>
+      <h2 data-i18n="catalog.empty">没有匹配的工具</h2>
+      <p data-i18n="catalog.emptyHint">换一个关键词或清除分类筛选。</p>
+      <button type="button" data-catalog-reset data-i18n="catalog.reset">重置筛选</button>
+    </div>
+  </section>
+  <script>
+    import { initializeCatalog } from '../../scripts/catalog';
+    const catalog = initializeCatalog(document);
+    window.addEventListener('pagehide', () => catalog.destroy(), { once: true });
+  </script>
+</BaseLayout>

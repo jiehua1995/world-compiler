@@ -2,7 +2,7 @@ import { tools, type ToolCategory } from '../data/tools';
 import { filterTools } from '../features/catalog/filter-tools';
 import type { Locale } from '../i18n/types';
 
-const localeFromDocument = (doc: Document): Locale => doc.documentElement.lang === 'en' ? 'en' : 'zh-CN';
+const localeFromDocument = (doc: Document): Locale => doc.documentElement.lang === 'de' ? 'de' : doc.documentElement.lang === 'en' ? 'en' : 'zh-CN';
 
 export function initializeCatalog(doc: Document) {
   const root = doc.querySelector<HTMLElement>('[data-catalog]');
@@ -18,10 +18,10 @@ export function initializeCatalog(doc: Document) {
 
   const localize = (locale: Locale) => {
     root.querySelectorAll<HTMLElement>('[data-copy-zh][data-copy-en]').forEach((element) => {
-      element.textContent = locale === 'en' ? element.dataset.copyEn ?? '' : element.dataset.copyZh ?? '';
+      element.textContent = locale === 'en' ? element.dataset.copyEn ?? '' : locale === 'de' ? element.dataset.copyDe ?? element.dataset.copyZh ?? '' : element.dataset.copyZh ?? '';
     });
     root.querySelectorAll<HTMLElement>('[data-label-zh][data-label-en]').forEach((element) => {
-      element.setAttribute('aria-label', locale === 'en' ? element.dataset.labelEn ?? '' : element.dataset.labelZh ?? '');
+      element.setAttribute('aria-label', locale === 'en' ? element.dataset.labelEn ?? '' : locale === 'de' ? element.dataset.labelDe ?? element.dataset.labelZh ?? '' : element.dataset.labelZh ?? '');
     });
   };
 
@@ -31,7 +31,7 @@ export function initializeCatalog(doc: Document) {
     const visibleSlugs = new Set(results.map((tool) => tool.slug));
     cards.forEach((card) => { card.hidden = !visibleSlugs.has(card.dataset.toolSlug ?? ''); });
     categoryButtons.forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.category === category)));
-    status.textContent = locale === 'en' ? `${results.length} tools found` : `找到 ${results.length} 个工具`;
+    status.textContent = locale === 'en' ? `${results.length} tools found` : locale === 'de' ? `${results.length} Werkzeuge gefunden` : `找到 ${results.length} 个工具`;
     empty.hidden = results.length > 0;
     localize(locale);
   };

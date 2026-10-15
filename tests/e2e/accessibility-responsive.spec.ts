@@ -5,6 +5,7 @@ const fixture = path.resolve('tests/fixtures/color-grid.png');
 
 for (const entry of [
   { name: 'catalog', url: './' },
+  { name: 'tool directory', url: './tools/' },
   { name: 'Color Vision Lab', url: './tools/color-vision/' },
 ]) {
   test(`${entry.name} has one main landmark and no mobile horizontal overflow`, async ({ page }) => {
@@ -23,7 +24,7 @@ for (const entry of [
 
 test('keyboard focus is visible and compact controls meet practical target size', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
-  await page.goto('./');
+  await page.goto('./tools/');
   await page.keyboard.press('Tab');
 
   const skipLink = page.getByRole('link', { name: '跳到主要内容' });
@@ -31,7 +32,7 @@ test('keyboard focus is visible and compact controls meet practical target size'
   expect(await skipLink.evaluate((element) => getComputedStyle(element).outlineWidth)).not.toBe('0px');
 
   for (const control of [
-    page.getByRole('button', { name: 'English' }),
+    page.getByRole('combobox', { name: '语言' }),
     page.getByRole('button', { name: '深色' }),
     page.getByRole('button', { name: '视觉' }),
   ]) {

@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 const fixture = path.resolve('tests/fixtures/color-grid.png');
 
 test('catalog links, assets, and scripts stay under the Pages base', async ({ page }) => {
-  await page.goto('./');
+  await page.goto('./tools/');
 
   const localUrls = await page.evaluate(() => [
     ...Array.from(document.querySelectorAll<HTMLAnchorElement>('a[href^="/"]'), (node) => node.getAttribute('href')),

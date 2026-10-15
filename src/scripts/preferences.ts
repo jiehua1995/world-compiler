@@ -58,6 +58,11 @@ function translateDocument(doc: Document, locale: Locale): void {
     if (key && key in copy) element.textContent = copy[key];
   });
 
+  doc.querySelectorAll<HTMLElement>('[data-i18n-aria-label]').forEach((element) => {
+    const key = element.dataset.i18nAriaLabel as DictionaryKey | undefined;
+    if (key && key in copy) element.setAttribute('aria-label', copy[key]);
+  });
+
   doc.querySelectorAll<HTMLInputElement>('[data-i18n-placeholder]').forEach((element) => {
     const key = element.dataset.i18nPlaceholder as DictionaryKey | undefined;
     if (key && key in copy) element.placeholder = copy[key];
