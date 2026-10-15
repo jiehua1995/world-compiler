@@ -54,9 +54,9 @@ test('keeps error text localized after switching language', async ({ page }) => 
   await page.goto('./tools/color-vision/');
   await page.getByRole('combobox', { name: '语言' }).selectOption('en');
   await page.getByLabel('Choose a local image').setInputFiles(corruptFixture);
-  await expect(page.getByRole('alert')).toContainText('could not be decoded');
+  await expect(page.getByRole('alert')).toContainText('Cannot read this file');
   await page.getByRole('combobox', { name: 'Language' }).selectOption('zh-CN');
-  await expect(page.getByRole('alert')).toContainText('无法解码');
+  await expect(page.getByRole('alert')).toContainText('无法读取');
 });
 
 test('imports locally and renders original and selected comparisons without uploads', async ({ page }) => {
@@ -157,7 +157,7 @@ test('recovers from a corrupt image and remains keyboard operable', async ({ pag
   await page.goto('./tools/color-vision/');
   const input = page.getByLabel('选择本地图片');
   await input.setInputFiles(corruptFixture);
-  await expect(page.getByRole('alert')).toContainText('无法解码');
+  await expect(page.getByRole('alert')).toContainText('无法读取');
 
   await page.getByRole('button', { name: '重置工作台' }).focus();
   await page.keyboard.press('Enter');

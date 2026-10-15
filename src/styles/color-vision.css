@@ -11,6 +11,13 @@
 
 .input-panel { display: grid; grid-template-columns: .55fr 1fr; gap: var(--space-4); padding: var(--space-4); border-bottom: 1px solid var(--line); }
 .input-panel h2, .export-panel h2 { margin: 0; font-size: clamp(2rem, 4vw, 3.5rem); line-height: 1; }
+.pdf-controls { grid-column:1/-1; display:flex; flex-wrap:wrap; align-items:end; gap:1rem; padding:1rem; border:1px solid var(--line); background:var(--paper-raised); }
+.pdf-controls[hidden] { display:none; }
+.pdf-controls label { display:grid; gap:.5rem; color:var(--ink-muted); }
+.pdf-controls input { width:8rem; min-height:2.8rem; padding:.5rem; color:var(--ink); background:var(--paper); border:1px solid var(--line-strong); border-radius:var(--radius-sm); }
+.pdf-controls button { min-height:2.8rem; padding:.5rem 1rem; color:white; background:#265f9e; border:0; border-radius:var(--radius-sm); cursor:pointer; }
+.pdf-controls button:disabled { opacity:.5; cursor:wait; }
+.input-format-note { grid-column:1/-1; margin:0; color:var(--ink-muted); font-size:.8rem; line-height:1.7; }
 .drop-zone { position: relative; min-height: 15rem; background: var(--paper-raised); border: 1px dashed var(--line-strong); transition: background 160ms ease, border-color 160ms ease; }
 .drop-zone.is-dragging { background: color-mix(in srgb, var(--observatory-cyan) 14%, var(--paper-raised)); border-color: var(--observatory-cyan); }
 .drop-zone label { display: grid; place-items: center; align-content: center; gap: .45rem; min-height: 15rem; padding: var(--space-3); text-align: center; cursor: pointer; }

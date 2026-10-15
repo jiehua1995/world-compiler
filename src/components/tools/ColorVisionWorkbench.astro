@@ -21,6 +21,12 @@ const modes = [
       <h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2>
     </div>
     <DropZone />
+    <form class="pdf-controls" data-pdf-controls data-pdf-page-form hidden>
+      <label><span data-copy-zh="PDF 页码" data-copy-en="PDF page" data-copy-de="PDF-Seite">PDF 页码</span><input type="number" min="1" step="1" value="1" required data-pdf-page /></label>
+      <span data-pdf-count></span>
+      <button type="submit" data-pdf-render data-copy-zh="显示此页" data-copy-en="Show page" data-copy-de="Seite anzeigen">显示此页</button>
+    </form>
+    <p class="input-format-note" data-copy-zh="SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为最长边 4096 像素、最多 16 MP 的静态图像，再模拟并导出 PNG/JPEG。SVG 外部资源和交互内容会移除，PDF 可选择页码。" data-copy-en="SVG up to 5 MB; PDF up to 32 MB. Both are rasterized to a static image (max edge 4096 px / 16 MP) for simulation and PNG/JPEG export. SVG external resources and interactive content are removed; PDF supports page selection." data-copy-de="SVG bis 5 MB; PDF bis 32 MB. Beide werden als statisches Rasterbild (maximal 4096 px / 16 MP) simuliert und als PNG/JPEG exportiert. Externe und interaktive SVG-Inhalte werden entfernt; bei PDFs ist eine Seitenauswahl möglich.">SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为最长边 4096 像素、最多 16 MP 的静态图像，再模拟并导出 PNG/JPEG。SVG 外部资源和交互内容会移除，PDF 可选择页码。</p>
     <div class="workbench-feedback">
       <p role="status" aria-live="polite" data-workbench-status data-i18n="cv.status.empty">等待导入图片</p>
       <p role="alert" data-workbench-error hidden></p>

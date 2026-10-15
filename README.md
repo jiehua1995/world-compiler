@@ -9,7 +9,7 @@ An open-source browser toolkit for the public good. It turns useful but scattere
 - 中、英、德三语下拉切换 / Chinese, English, and German language selector
 - 浅色、深色与跟随系统主题 / Light, dark, and system themes
 - 可搜索、可分类的工具目录 / Searchable, filterable tool catalog
-- **色觉实验室 / Color Vision Lab**：本地导入图片，对照红色弱、绿色弱、蓝黄色弱等模式；三条模拟轴可调 0–100% 强度，导出 PNG/JPEG。强度是模型参数，不是临床程度判断。
+- **色觉实验室 / Color Vision Lab**：本地导入 PNG/JPEG/WebP/GIF、SVG（最多 5 MB）或 PDF（最多 32 MB，可选页码），对照多种色觉模式。三条模拟轴可调 0–100% 强度，导出 PNG/JPEG。SVG/PDF 会先栅格化（最长边 4096 像素、最多 16 MP）；强度是模型参数，不是临床程度判断。
 - **对比度透镜 / Contrast Lens**：文字排版预览、配色预设、交换颜色、AA/AAA 颜色改善建议与 JSON 报告；阈值使用未四舍五入的对比度计算。
 - **清晰语言仪 / Plain Language Meter**：长句原文高亮与定位、字符/词/句/段落统计、阅读时间、词频、空白清理和报告导出。英文、德文分数为拼写启发式估算；中文提供统计。
 - **数据塑形台 / Data Shaper**：导入或粘贴 CSV/TSV，重排列、命名表头、排序、去重、检查空值，导出 CSV/TSV/JSON。文件上限 10 MB、250,000 个单元格；可显式选择公式样式文本转义。
@@ -24,7 +24,11 @@ An open-source browser toolkit for the public good. It turns useful but scattere
 
 **English:** Ten local tools share a responsive input/preview/export workbench: Color Vision Lab, Contrast Lens, Plain Language Meter, Data Shaper, Image Studio, Text Diff, QR Studio, JSON Studio, Time Bridge, and Codec Lab. The original 36-glyph artwork supplies distinct tool identities; no remote assets or processing are required.
 
+Color Vision Lab also accepts SVG (5 MB) and PDF (32 MB, with page selection). Both are rasterized to at most 4096 px per edge / 16 MP, then simulated and exported as PNG/JPEG. SVG scripts, interactive content and external references are removed. Unlock password-protected PDFs before import. PDF.js, its worker, fonts, CMaps, ICC profiles and decoders ship with the site.
+
 **Deutsch:** Zehn lokale Werkzeuge mit responsiven Eingabe-, Vorschau- und Exportbereichen: Color Vision Lab, Kontrastlinse, Klartext-Meter, Datenformer, Bildwerkstatt, Textvergleich, QR-Werkstatt, JSON-Werkstatt, Zeitbrücke und Kodierungslabor. Alle Oberflächen unterstützen Chinesisch, Englisch und Deutsch.
+
+Color Vision Lab unterstützt SVG (5 MB) und PDF (32 MB, mit Seitenauswahl). Beide werden als Rasterbild mit maximal 4096 px / 16 MP simuliert und als PNG/JPEG exportiert. Externe und interaktive SVG-Inhalte werden entfernt. Passwortgeschützte PDFs vor dem Import entsperren.
 
 以上工具均在浏览器本地处理用户输入，不要求账户、不上传内容。色觉模拟是教育性近似工具，不是医学诊断；对比度和可读性结果也不构成认证或对个人能力的判断。
 

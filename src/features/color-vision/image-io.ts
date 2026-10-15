@@ -1,12 +1,15 @@
 import { assertSafeDimensions } from './dimensions';
 import { ColorVisionError } from './errors';
+import { MAX_SVG_BYTES,prepareSvg } from './vector-io';
 
-const supportedTypes = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif']);
+const supportedTypes = new Set(['image/png', 'image/jpeg', 'image/webp', 'image/gif', 'image/svg+xml']);
 
 export interface DecodedImage {
-  source: ImageBitmap | HTMLImageElement;
+  source: ImageBitmap | HTMLImageElement | HTMLCanvasElement;
   width: number;
   height: number;
+  pageCount?: number;
+  pageNumber?: number;
   cleanup(): void;
 }
 
@@ -17,7 +20,7 @@ export interface DecodeEnvironment {
 }
 
 async function browserDecode(file: File, objectUrl: string): Promise<ImageBitmap | HTMLImageElement> {
-  if ('createImageBitmap' in globalThis) return globalThis.createImageBitmap(file);
+  if (file.type !== 'image/svg+xml' && 'createImageBitmap' in globalThis) return globalThis.createImageBitmap(file);
 
   return new Promise<HTMLImageElement>((resolve, reject) => {
     const image = new Image();
@@ -43,8 +46,14 @@ export async function decodeLocalImage(
   file: File,
   environment: DecodeEnvironment = browserEnvironment,
 ): Promise<DecodedImage> {
+  const svgFile = file.type === 'image/svg+xml' || /\.svg$/iu.test(file.name);
+  if (svgFile) {
+    if (file.size > MAX_SVG_BYTES) throw new ColorVisionError('too-large', 'SVG exceeds 5 MB.');
+    const prepared = prepareSvg(await file.text());
+    file = new File([prepared.svg], file.name, { type: 'image/svg+xml' });
+  }
   if (!supportedTypes.has(file.type)) {
-    throw new ColorVisionError('unsupported-type', 'Select a PNG, JPEG, WebP, or GIF image.');
+    throw new ColorVisionError('unsupported-type', 'Select a PNG, JPEG, WebP, GIF, or SVG image.');
   }
 
   const objectUrl = environment.createObjectURL(file);

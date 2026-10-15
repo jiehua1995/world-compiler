@@ -22,11 +22,11 @@ export const tools: readonly ToolDefinition[] = [
     asset: 'assets/instrument-glyphs/color-vision.png',
     title: { 'zh-CN': '色觉实验室', en: 'Color Vision Lab', de: 'Color Vision Lab' },
     summary: {
-      'zh-CN': '在本地导入图片，对照不同色觉模式并导出模拟结果。',
-      en: 'Import an image locally, compare color-vision modes, and export a simulation.',
-      de: 'Bild lokal importieren, Farbsehmodi vergleichen und eine Simulation exportieren.',
+      'zh-CN': '导入图片、SVG 或 PDF 页面，对照不同色觉模式并导出模拟结果。',
+      en: 'Import an image, SVG, or PDF page, compare color-vision modes, and export a simulation.',
+      de: 'Bild, SVG oder PDF-Seite importieren, Farbsehmodi vergleichen und Simulationen exportieren.',
     },
-    tags: { 'zh-CN': ['颜色', '视觉', '无障碍', '图片'], en: ['color', 'vision', 'accessibility', 'image'], de: ['Farbe', 'Sehen', 'Barrierefreiheit', 'Bild'] },
+    tags: { 'zh-CN': ['颜色', '视觉', '无障碍', '图片', 'SVG', 'PDF'], en: ['color', 'vision', 'accessibility', 'image', 'svg', 'pdf'], de: ['Farbe', 'Sehen', 'Barrierefreiheit', 'Bild', 'SVG', 'PDF'] },
   },
   {
     slug: 'contrast-lens', category: 'vision', status: 'available', sequence: '002', glyph: 20,

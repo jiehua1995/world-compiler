@@ -7,6 +7,8 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "predev": "node scripts/copy-pdf-assets.mjs",
+    "prebuild": "node scripts/copy-pdf-assets.mjs",
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
@@ -19,6 +21,7 @@
   "dependencies": {
     "astro": "7.3.8",
     "diff": "^9.0.0",
+    "pdfjs-dist": "^6.4.299",
     "qrcode": "^1.5.4"
   },
   "devDependencies": {

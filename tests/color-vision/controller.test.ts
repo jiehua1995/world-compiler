@@ -170,6 +170,22 @@ describe('mountColorVisionLab', () => {
     controller.destroy();
   });
 
+  it('does not download a completed export after reset', async () => {
+    const exportResult = deferred<Blob>();
+    const image: DecodedImage = { source: {} as ImageBitmap, width: 2, height: 2, cleanup: vi.fn() };
+    const dependencies = { decode: vi.fn().mockResolvedValue(image), render: vi.fn(async () => undefined), exportMode: vi.fn(() => exportResult.promise), download: vi.fn() } as unknown as ColorVisionDependencies;
+    const root = workbench();
+    const controller = mountColorVisionLab(root, dependencies);
+    setFile(root.querySelector<HTMLInputElement>('[data-image-input]')!, new File(['image'], 'image.png', { type: 'image/png' }));
+    await vi.waitFor(() => expect(root.dataset.state).toBe('ready'));
+    root.querySelector<HTMLButtonElement>('[data-export]')!.click();
+    root.querySelector<HTMLButtonElement>('[data-reset]')!.click();
+    exportResult.resolve(new Blob(['image']));
+    await Promise.resolve(); await Promise.resolve();
+    expect(dependencies.download).not.toHaveBeenCalled();
+    controller.destroy();
+  });
+
   it('does not show a stale export error after reset', async () => {
     const exportResult = deferred<Blob>();
     const image: DecodedImage = { source: {} as ImageBitmap, width: 2, height: 2, cleanup: vi.fn() };

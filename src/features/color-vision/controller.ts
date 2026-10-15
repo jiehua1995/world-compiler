@@ -1,7 +1,8 @@
 import { fitWithin } from './dimensions';
 import { ColorVisionError } from './errors';
 import { exportSimulation, type ExportOptions } from './export-image';
-import { decodeLocalImage, type DecodedImage } from './image-io';
+import type { DecodedImage } from './image-io';
+import { decodeVisionFile } from './document-io';
 import { SimulationWorkerClient } from './worker-client';
 import type { Locale } from '../../i18n/types';
 import type { VisionMode } from './types';
@@ -12,7 +13,7 @@ const axisModes = new Set<VisionMode>(['protan', 'deutan', 'tritan']);
 const selectableModes = new Set<VisionMode>(['original', 'protan', 'deutan', 'tritan', 'achromatopsia', 'blue-cone-monochromacy']);
 
 export interface ColorVisionDependencies {
-  decode(file: File): Promise<DecodedImage>;
+  decode(file: File, page?: number, signal?: AbortSignal): Promise<DecodedImage>;
   render(decoded: DecodedImage, canvases: Map<CanvasSlot, HTMLCanvasElement>, requestId: number, isCurrent: () => boolean, mode: VisionMode, severity: number): Promise<void>;
   exportMode(decoded: DecodedImage, mode: VisionMode, options: ExportOptions, severity: number): Promise<Blob>;
   download(blob: Blob, filename: string): void;
@@ -25,7 +26,7 @@ function createBrowserDependencies(): ColorVisionDependencies {
   let exportRequestId = 0;
 
   return {
-    decode: decodeLocalImage,
+    decode: decodeVisionFile,
     async render(decoded, canvases, requestId, isCurrent, mode, severity) {
       const dimensions = fitWithin(decoded.width, decoded.height, 1200, 1_200_000);
       const sourceCanvas = document.createElement('canvas');
@@ -96,10 +97,12 @@ const messages: Record<WorkbenchState, Record<Locale, string>> = {
 };
 
 const errorMessages: Record<ColorVisionError['code'], Record<Locale, string>> = {
-  'unsupported-type': { 'zh-CN': '请选择 PNG、JPEG、WebP 或 GIF 图片。', en: 'Choose a PNG, JPEG, WebP, or GIF image.', de: 'Wähle ein PNG-, JPEG-, WebP- oder GIF-Bild.' },
-  'decode-failed': { 'zh-CN': '无法解码这张图片，请确认文件未损坏。', en: 'This image could not be decoded. Check that the file is intact.', de: 'Das Bild konnte nicht gelesen werden. Prüfe, ob die Datei intakt ist.' },
+  'unsupported-type': { 'zh-CN': '请选择 PNG、JPEG、WebP、GIF、SVG 或 PDF 文件。', en: 'Choose a PNG, JPEG, WebP, GIF, SVG, or PDF file.', de: 'Wähle eine PNG-, JPEG-, WebP-, GIF-, SVG- oder PDF-Datei.' },
+  'invalid-page': { 'zh-CN': '页码无效，请选择 PDF 中存在的页面。', en: 'Invalid page number. Select a page in this PDF.', de: 'Ungültige Seitennummer. Wähle eine vorhandene PDF-Seite.' },
+  'pdf-password': { 'zh-CN': '此 PDF 需要密码，请先解锁后重新导入。', en: 'This PDF requires a password. Unlock it before importing.', de: 'Diese PDF benötigt ein Passwort. Vor dem Import entsperren.' },
+  'decode-failed': { 'zh-CN': '无法读取此文件，请检查是否损坏；SVG 需包含有效尺寸，且不支持实体声明。', en: 'Cannot read this file. Check for corruption; SVG needs valid dimensions and cannot contain entity declarations.', de: 'Datei nicht lesbar. Auf Beschädigung prüfen; SVG benötigt gültige Maße und darf keine Entitätsdeklarationen enthalten.' },
   'invalid-dimensions': { 'zh-CN': '图片尺寸无效，请选择其他图片。', en: 'This image has invalid dimensions. Choose another image.', de: 'Die Bildmaße sind ungültig. Wähle ein anderes Bild.' },
-  'too-large': { 'zh-CN': '图片尺寸超过浏览器安全处理范围，请选择较小的图片。', en: 'This image exceeds safe browser processing limits. Choose a smaller image.', de: 'Das Bild überschreitet die sichere Verarbeitungsgröße. Wähle ein kleineres Bild.' },
+  'too-large': { 'zh-CN': '文件或尺寸过大，请选择较小的文件。SVG 上限 5 MB、50,000 个元素，PDF 上限 32 MB；位图最长边 16,384 像素、总量 100 MP。', en: 'File or dimensions too large. Choose a smaller file. SVG: 5 MB / 50,000 elements; PDF: 32 MB; raster: 16,384 px per edge / 100 MP.', de: 'Datei oder Abmessungen zu groß. Wähle eine kleinere Datei. SVG: 5 MB / 50.000 Elemente; PDF: 32 MB; Raster: 16.384 px pro Kante / 100 MP.' },
   'processing-failed': { 'zh-CN': '无法生成预览，请重试或选择其他图片。', en: 'Previews could not be generated. Try again or choose another image.', de: 'Die Vorschau konnte nicht erstellt werden. Versuche es erneut oder wähle ein anderes Bild.' },
   'export-failed': { 'zh-CN': '无法导出图片，请重试或更换格式。', en: 'The image could not be exported. Try again or change the format.', de: 'Das Bild konnte nicht exportiert werden. Versuche es erneut oder ändere das Format.' },
 };
@@ -118,6 +121,11 @@ export function mountColorVisionLab(
   const severityControl = root.querySelector<HTMLInputElement>('[data-severity]');
   const severityRow = root.querySelector<HTMLElement>('[data-severity-row]');
   const severityValue = root.querySelector<HTMLElement>('[data-severity-value]');
+  const pdfControls = root.querySelector<HTMLElement>('[data-pdf-controls]');
+  const pdfPage = root.querySelector<HTMLInputElement>('[data-pdf-page]');
+  const pdfCount = root.querySelector<HTMLElement>('[data-pdf-count]');
+  const pdfRender = root.querySelector<HTMLButtonElement>('[data-pdf-render]');
+  const pdfForm = root.querySelector<HTMLFormElement>('[data-pdf-page-form]');
   const exportFormat = root.querySelector<HTMLSelectElement>('[data-export-format]');
   const exportQuality = root.querySelector<HTMLInputElement>('[data-export-quality]');
   const qualityRow = root.querySelector<HTMLElement>('[data-quality-row]');
@@ -145,6 +153,8 @@ export function mountColorVisionLab(
   let mode = selectableModes.has(modeControl.value as VisionMode) ? modeControl.value as VisionMode : 'protan';
   let severity = Number(severityControl.value) || 100;
   let destroyed = false;
+  let selectedFile: File | null = null;
+  let decodeAbort: AbortController | null = null;
 
   const locale = (): Locale => root.ownerDocument.documentElement.lang === 'de' ? 'de' : root.ownerDocument.documentElement.lang === 'en' ? 'en' : 'zh-CN';
   const previewLabel = (name: string, activeLocale: Locale) => activeLocale === 'en' ? `Inspect ${name}` : activeLocale === 'de' ? `${name} vergrößern` : `放大查看 ${name}`;
@@ -170,6 +180,8 @@ export function mountColorVisionLab(
     root.querySelectorAll<HTMLElement>('[data-copy-zh][data-copy-en][data-copy-de]').forEach((element) => {
       element.textContent = activeLocale === 'en' ? element.dataset.copyEn ?? '' : activeLocale === 'de' ? element.dataset.copyDe ?? '' : element.dataset.copyZh ?? '';
     });
+    if (pdfControls) pdfControls.hidden = !activeImage?.pageCount;
+    if (pdfCount) pdfCount.textContent = activeImage?.pageCount ? (activeLocale === 'en' ? 'of ' : activeLocale === 'de' ? 'von ' : '共 ') + activeImage.pageCount + (activeLocale === 'zh-CN' ? ' 页' : '') : '';
   };
 
   const setState = (next: WorkbenchState, problem?: unknown) => {
@@ -180,6 +192,7 @@ export function mountColorVisionLab(
     const ready = next === 'ready';
     previewButtons.forEach((button) => { button.disabled = !ready; });
     [exportFormat, exportQuality, exportButton].forEach((control) => { control.disabled = !ready; });
+    if (pdfRender) pdfRender.disabled = next === 'decoding' || next === 'processing';
     localizeDynamic();
   };
 
@@ -206,6 +219,9 @@ export function mountColorVisionLab(
 
   const resetWorkbench = () => {
     requestId += 1;
+    decodeAbort?.abort();
+    decodeAbort = null;
+    selectedFile = null;
     activeImage?.cleanup();
     activeImage = null;
     input.value = '';
@@ -214,17 +230,21 @@ export function mountColorVisionLab(
     setState('empty');
   };
 
-  const loadFile = async (file?: File) => {
+  const loadFile = async (file?: File, page = 1) => {
     if (!file || destroyed) return;
     const currentRequest = ++requestId;
+    decodeAbort?.abort();
+    decodeAbort = new AbortController();
+    selectedFile = file;
     activeImage?.cleanup();
     activeImage = null;
     clearCanvases();
     setState('decoding');
     try {
-      const decoded = await dependencies.decode(file);
+      const decoded = await dependencies.decode(file, page, decodeAbort.signal);
       if (destroyed || currentRequest !== requestId) { decoded.cleanup(); return; }
       activeImage = decoded;
+      if (pdfPage) { pdfPage.value = String(decoded.pageNumber ?? 1); pdfPage.max = String(decoded.pageCount ?? 1); }
       await renderImage(decoded, currentRequest);
     } catch (problem) {
       if (currentRequest === requestId && !destroyed) setState('error', problem);
@@ -237,6 +257,7 @@ export function mountColorVisionLab(
     else localizeDynamic();
   };
   const onInput = () => void loadFile(input.files?.[0]);
+  const onPdfPage = (event: Event) => { event.preventDefault(); if (selectedFile && pdfPage) void loadFile(selectedFile, Number(pdfPage.value)); };
   const onDragOver = (event: DragEvent) => { event.preventDefault(); dropZone.classList.add('is-dragging'); };
   const onDragLeave = () => dropZone.classList.remove('is-dragging');
   const onDrop = (event: DragEvent) => { event.preventDefault(); dropZone.classList.remove('is-dragging'); void loadFile(event.dataTransfer?.files[0]); };
@@ -256,8 +277,10 @@ export function mountColorVisionLab(
     exportButton.disabled = true;
     try {
       const blob = await dependencies.exportMode(exportingImage, exportMode, { format, quality: Number(exportQuality.value) }, exportSeverity);
+      if (destroyed || activeImage !== exportingImage) return;
       const strength = axisModes.has(exportMode) ? `-${exportSeverity}` : '';
-      dependencies.download(blob, `world-compiler-${exportMode}${strength}.${format === 'image/jpeg' ? 'jpg' : 'png'}`);
+      const page = exportingImage.pageNumber ? `page-${exportingImage.pageNumber}-` : '';
+      dependencies.download(blob, `world-compiler-${page}${exportMode}${strength}.${format === 'image/jpeg' ? 'jpg' : 'png'}`);
     } catch (problem) {
       if (activeImage === exportingImage && !destroyed) setState('error', problem);
     } finally {
@@ -284,6 +307,7 @@ export function mountColorVisionLab(
   const onLocale = () => localizeDynamic();
 
   input.addEventListener('change', onInput);
+  pdfForm?.addEventListener('submit', onPdfPage);
   dropZone.addEventListener('dragover', onDragOver);
   dropZone.addEventListener('dragleave', onDragLeave);
   dropZone.addEventListener('drop', onDrop);
@@ -302,9 +326,11 @@ export function mountColorVisionLab(
     if (destroyed) return;
     destroyed = true;
     requestId += 1;
+    decodeAbort?.abort();
     activeImage?.cleanup();
     dependencies.dispose?.();
     input.removeEventListener('change', onInput);
+    pdfForm?.removeEventListener('submit', onPdfPage);
     dropZone.removeEventListener('dragover', onDragOver);
     dropZone.removeEventListener('dragleave', onDragLeave);
     dropZone.removeEventListener('drop', onDrop);

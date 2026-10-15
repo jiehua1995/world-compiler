@@ -37,9 +37,9 @@ The project builds static output with Astro. It has no application server, datab
 
 ## 3. 色觉实验室图片流程 / Color Vision Lab image flow
 
-支持 PNG、JPEG、WebP 和 GIF。浏览器先校验 MIME 类型，使用 `createImageBitmap` 解码；不支持该 API 时回退至 `HTMLImageElement`。工具允许单张图片，不保留上传队列，也不将图片内容发送到网络。
+支持 PNG、JPEG、WebP、GIF、SVG 和 PDF。位图使用 `createImageBitmap`（无此 API 时使用 `HTMLImageElement`）；SVG 经静态化后以 `HTMLImageElement` 图像上下文解码；PDF 由按需加载的 PDF.js 在本地 Worker 中读取所选页面。只保留当前文件与页面，不上传内容。
 
-Supported formats are PNG, JPEG, WebP, and GIF. The browser validates the MIME type and decodes with `createImageBitmap`, falling back to `HTMLImageElement` when needed. The workbench handles one image at a time and never sends image content over the network.
+Supported formats are PNG, JPEG, WebP, GIF, SVG and PDF. Raster files use `createImageBitmap` with an `HTMLImageElement` fallback; SVG is normalized and decoded in an image context; dynamically loaded PDF.js renders a selected page in a local worker. Only the current file/page is retained, and no content is uploaded.
 
 1. 文件选择或拖放进入同一个控制器。旧图片的解码资源会先清理。
 2. 解码后的尺寸限制为最长边不超过 16,384 像素、总量不超过 100,000,000 像素；超限图片会被拒绝。
@@ -60,6 +60,14 @@ Machado 等人发布的矩阵在**线性光 RGB**中应用：浏览器读取的 
 The published Machado et al. matrices are applied in **linear-light RGB**: browser sRGB channels are decoded to linear light, transformed, clipped to the display gamut, then encoded back to sRGB. This is an educational approximation for design review, not a model of individual variation or a diagnostic. GIF input is decoded as a static browser image source; animation frames are not simulated. Reference: [Machado, Oliveira, and Fernandes (2009)](https://doi.org/10.1109/TVCG.2009.113).
 
 ### 隐私边界 / Privacy boundary
+
+SVG 上限 5 MB / 50,000 个元素，拒绝 DOCTYPE/实体声明和非法根命名空间。保留本地样式、渐变与内部引用，移除脚本、事件、foreignObject、动画与外部资源；data URL 只允许内嵌 PNG/JPEG/WebP/GIF。SVG 从不插入页面 DOM。SVG 与 PDF 栅格化限制为最长边 4096、最多 16 MP；PDF 默认按 144 DPI 渲染并在超限时缩小。PDF 上限 32 MB，支持选页；需先解锁加密文件。PDF 页码写入导出文件名。重置、换图、换页和销毁会取消读取并释放文档/画布，过期任务不能触发下载。
+
+SVG input is capped at 5 MB / 50,000 elements. DOCTYPE/entity declarations and invalid namespaces are rejected. Local styles, gradients and fragment references are retained; scripts, events, foreignObject, animation and external references are removed. Data URLs allow embedded raster images only. SVG is never inserted into the live DOM. SVG/PDF rasterization is capped at 4096 px / 16 MP; PDF renders at up to 144 DPI. PDF input is limited to 32 MB with page selection; unlock encrypted PDFs first. Export filenames include the page number. Reset/replacement/disposal abort PDF work and release resources; stale exports are discarded.
+
+`scripts/copy-pdf-assets.mjs` 在 `predev`/`prebuild` 将 PDF.js 的 CMaps、ICC profiles、标准字体、WASM 解码器及许可复制到忽略跟踪的 `public/vendor/pdfjs/`。Worker 由 Vite 输出到 Pages base 下。所有辅助资源来自同一站点，无 CDN 依赖。相关控制器为 `document-io.ts`、`pdf-io.ts`、`vector-io.ts`；Image Studio 继续只接受其界面列出的位图格式。
+
+The predev/prebuild asset script copies PDF.js CMaps, ICC profiles, standard fonts, WASM decoders and licenses into ignored `public/vendor/pdfjs/`. Vite emits the PDF worker under the Pages base. All auxiliary files are same-origin and no CDN is used. The new document/vector modules are specific to Color Vision Lab; Image Studio keeps its documented raster formats.
 
 图片只通过浏览器文件输入、临时对象 URL、浏览器画布和 Web Worker 流转。对象 URL 在图片被重置、替换或控制器销毁时撤销。Worker 与页面同属当前站点，没有网络上传逻辑；本项目也不加载分析或远程字体脚本。
 

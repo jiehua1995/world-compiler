@@ -2,6 +2,8 @@ export type ColorVisionErrorCode =
   | 'unsupported-type'
   | 'decode-failed'
   | 'invalid-dimensions'
+  | 'invalid-page'
+  | 'pdf-password'
   | 'too-large'
   | 'processing-failed'
   | 'export-failed';

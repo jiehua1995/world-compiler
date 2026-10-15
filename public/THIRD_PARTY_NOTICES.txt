@@ -1,5 +1,11 @@
 World Compiler — third-party notices
 
+PDF.js (pdfjs-dist) — https://mozilla.github.io/pdf.js/
+Copyright Mozilla Foundation and individual contributors.
+Licensed under the Apache License, Version 2.0.
+Full license: vendor/pdfjs/LICENSE (included in this static distribution).
+Additional font, CMap, ICC and decoder licenses accompany their files in vendor/pdfjs/.
+
 qrcode 1.5.4 — https://github.com/soldair/node-qrcode
 The MIT License (MIT)
 Copyright (c) 2012 Ryan Day
