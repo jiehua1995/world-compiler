@@ -39,7 +39,7 @@ export const tools: readonly ToolDefinition[] = [
     tags: { 'zh-CN': ['文本', '可读性'], en: ['text', 'readability'], de: ['Text', 'Lesbarkeit'] },
   },
   {
-    slug: 'data-shape', category: 'data', status: 'planned', sequence: '004',
+    slug: 'data-shape', category: 'data', status: 'available', sequence: '004',
     title: { 'zh-CN': '数据塑形台', en: 'Data Shaper', de: 'Datenformer' },
     summary: { 'zh-CN': '在本地整理轻量表格并检查常见结构问题。', en: 'Reshape small tables locally and inspect common structural issues.', de: 'Kleine Tabellen lokal bereinigen und auf typische Strukturprobleme prüfen.' },
     tags: { 'zh-CN': ['数据', '表格'], en: ['data', 'table'], de: ['Daten', 'Tabelle'] },

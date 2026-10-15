@@ -11,6 +11,15 @@
 .plain-stats strong { color: var(--ink); font-size: 1.25rem; }
 .plain-long h2 { font-size: 1.1rem; }
 .plain-long li { margin-block: .5rem; }
+.file-picker input { margin-top: .5rem; max-width: 100%; }
+.data-actions { display: flex; flex-wrap: wrap; gap: .75rem; }
+.data-actions button { min-height: 2.8rem; padding: .65rem 1rem; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); color: var(--ink); background: var(--surface-raised); font: inherit; cursor: pointer; }
+.data-actions button:disabled { opacity: .55; cursor: not-allowed; }
+.data-table-wrap { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); border-radius: var(--radius-sm); }
+.data-table-wrap table { min-width: 100%; border-collapse: collapse; }
+.data-table-wrap th, .data-table-wrap td { max-width: 26rem; padding: .65rem .8rem; border-bottom: 1px solid var(--line); text-align: start; white-space: pre-wrap; overflow-wrap: anywhere; }
+.data-table-wrap th { background: var(--surface-raised); }
+.visually-hidden { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
 .contrast-preview { min-height: 10rem; display: grid; align-content: center; gap: .5rem; padding: 2rem; border-radius: var(--radius-md); }
 .contrast-preview h2 { margin: 0; font-size: clamp(1.2rem, 3vw, 2rem); }
 .contrast-preview p { margin: 0; }

@@ -1,0 +1,17 @@
+---
+import DataShaper from '../../components/tools/DataShaper.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import '../../styles/simple-tools.css';
+
+const rawBase = import.meta.env.BASE_URL;
+const base = rawBase.endsWith('/') ? rawBase : `${rawBase}/`;
+---
+<BaseLayout titleKey="data.pageTitle" descriptionKey="data.pageDescription">
+  <section class="tool-hero"><a class="tool-hero__back" href={`${base}tools/`} data-i18n="data.back">← 返回工具目录</a><div class="tool-hero__grid"><div><p class="section-kicker" data-i18n="data.kicker">数据工具 / WC—004</p><h1 data-i18n="data.title">数据塑形台</h1><p class="tool-hero__intro" data-i18n="data.intro">在本地导入 CSV 或 TSV，清理单元格并导出整理后的 CSV。</p></div><div class="tool-hero__notes"><p class="local-badge"><span aria-hidden="true"></span><b data-i18n="data.local">文件仅在当前浏览器处理，不会上传。</b></p></div></div></section>
+  <DataShaper />
+  <script>
+    import { mountDataShaper } from '../../features/data-shape/controller';
+    const root = document.querySelector<HTMLElement>('[data-data-shaper]');
+    if (root) { const controller = mountDataShaper(root); window.addEventListener('pagehide', () => controller.destroy(), { once: true }); }
+  </script>
+</BaseLayout>
