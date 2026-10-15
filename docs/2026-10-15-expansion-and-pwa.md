@@ -1,4 +1,4 @@
-# World Compiler: layout, 22 tools and offline installation
+# World Compiler: layout, 43 tools and offline installation
 
 ## Scope
 

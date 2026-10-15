@@ -2,6 +2,7 @@ import type { Locale, LocalizedText } from '../i18n/types';
 import { extraTools } from './extra-tools';
 import { nativeTools } from './native-tools';
 import { mediaTools } from './media-tools';
+import { proTools } from './pro-tools';
 
 export type ToolCategory = 'vision' | 'text' | 'data' | 'media';
 export type ToolStatus = 'available' | 'planned';
@@ -16,6 +17,7 @@ export interface ToolDefinition {
   sequence?: string;
   asset?: string;
   glyph?: number;
+  icon?: string;
 }
 
 export const tools: readonly ToolDefinition[] = [
@@ -51,4 +53,5 @@ export const tools: readonly ToolDefinition[] = [
   ...extraTools,
   ...nativeTools,
   ...mediaTools,
+  ...proTools,
 ];

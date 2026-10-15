@@ -2,14 +2,16 @@
 import { extraTools } from '../../data/extra-tools';
 import { nativeTools } from '../../data/native-tools';
 import { mediaTools } from '../../data/media-tools';
+import { proTools } from '../../data/pro-tools';
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import ToolHeading from '../../components/ToolHeading.astro';
 import UtilityWorkbench from '../../components/tools/UtilityWorkbench.astro';
 import NativeWorkbench from '../../components/tools/NativeWorkbench.astro';
 import MediaWorkbench from '../../components/tools/MediaWorkbench.astro';
+import ProWorkbench from '../../components/tools/ProWorkbench.astro';
 import '../../styles/workbench.css';
-export function getStaticPaths() { return [...extraTools,...nativeTools,...mediaTools].map(tool=>({params:{slug:tool.slug},props:{tool}})); }
+export function getStaticPaths() { return [...extraTools,...nativeTools,...mediaTools,...proTools].map(tool=>({params:{slug:tool.slug},props:{tool}})); }
 const {tool}=Astro.props;
-const Workbench = nativeTools.some(t=>t.slug===tool.slug) ? NativeWorkbench : mediaTools.some(t=>t.slug===tool.slug) ? MediaWorkbench : UtilityWorkbench;
+const Workbench = proTools.some(t=>t.slug===tool.slug) ? ProWorkbench : nativeTools.some(t=>t.slug===tool.slug) ? NativeWorkbench : mediaTools.some(t=>t.slug===tool.slug) ? MediaWorkbench : UtilityWorkbench;
 ---
 <BaseLayout title={tool.title} description={tool.summary}><ToolHeading tool={tool} /><Workbench slug={tool.slug} /></BaseLayout>

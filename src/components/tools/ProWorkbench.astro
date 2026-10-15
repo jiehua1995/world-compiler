@@ -1,0 +1,68 @@
+---
+import Copy from '../Copy.astro';
+const { slug } = Astro.props as { slug: string };
+const defaults: Record<string,string> = {
+ 'markdown-studio':'# Project notes\n\nA short **local-first** tool.\n\n## Details\n\nSee [the guide](https://example.org).',
+ 'yaml-json':'name: World Compiler\nlanguages:\n  - zh-CN\n  - en\n  - de\nlocal: true',
+ 'xml-studio':'<?xml version="1.0"?>\n<catalog><item id="1">Example</item></catalog>',
+ 'css-studio':'.card { color: #2f6db3; padding: 1rem; }',
+ 'csv-json':'name,category,local\nColor Vision Lab,vision,true\nJSON Studio,data,true',
+ 'color-converter':'#2F6DB3',
+ 'cron-planner':'*/15 9-17 * * 1-5',
+ 'subnet-calculator':'192.168.1.22/24',
+ 'date-math':'2026-10-15',
+ 'html-entities':'<p>World & Compiler</p>',
+ 'svg-optimizer':'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#2f6db3"/></svg>',
+ 'text-format':'  Hello, WORLD!  ',
+ 'markdown-table':'name,category\nColor Vision Lab,vision\nJSON Studio,data',
+};
+const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
+---
+<section class="lab pro-lab" data-pro-lab={slug}>
+ <div class="lab-toolbar"><Copy text={t('本地运行 · 输入不会上传','Runs locally · your input is never uploaded','Läuft lokal · Eingaben werden nicht hochgeladen')} /></div>
+ <div class="lab-grid"><div class="lab-panel">
+  <header><b>01</b><Copy as="h2" text={t('输入与参数','Input & settings','Eingabe & Einstellungen')} /></header>
+  {slug==='random-forge' && <>
+   <label><Copy text={t('生成类型','Generator','Generator')} /><select data-mode><option value="passphrase" data-copy-zh="密码" data-copy-en="Password" data-copy-de="Passwort">密码</option><option value="phrase" data-copy-zh="易记短语（非账号密码）" data-copy-en="Memorable phrase (not an account password)" data-copy-de="Merkphrase (kein Kontopasswort)">易记短语</option><option value="lottery" data-copy-zh="抽奖号码（不重复）" data-copy-en="Lottery numbers (unique)" data-copy-de="Gewinnzahlen (ohne Duplikate)">抽奖号码（不重复）</option><option value="dice" data-copy-zh="骰子" data-copy-en="Dice" data-copy-de="Würfel">骰子</option><option value="lorem" data-copy-zh="占位文本" data-copy-en="Placeholder text" data-copy-de="Platzhaltertext">占位文本</option><option value="greeting" data-copy-zh="祝福语" data-copy-en="Greetings" data-copy-de="Grüße">祝福语</option></select></label>
+   <div class="field-pair"><label><Copy text={t('数量（1–100）','Count (1–100)','Anzahl (1–100)')} /><input data-count type="number" min="1" max="100" value="5" /></label><label><Copy text={t('每个号码最小值','Minimum number','Mindestzahl')} /><input data-min type="number" value="1" /></label></div>
+   <label><Copy text={t('每个号码最大值','Maximum number','Höchstzahl')} /><input data-max type="number" value="49" /></label>
+   <p class="hint"><Copy text={t('密码使用设备加密随机源。易记短语来自小型词库，仅供灵感，不应用作账号密码。抽奖号码不重复。祝福语从本地短句库抽取。','Passwords use cryptographic randomness. Memorable phrases use a small word set for inspiration and are not for account security. Lottery picks are unique; greetings are selected locally.','Passwörter verwenden kryptografischen Zufall. Merkphrasen stammen aus einem kleinen Wortschatz und sind nicht für Konten geeignet. Gewinnzahlen sind eindeutig; Grüße werden lokal ausgewählt.')} /></p>
+  </>}
+  {slug==='gradient-studio' && <div class="field-pair"><label><Copy text={t('起始颜色','Start color','Startfarbe')} /><input data-color-a type="color" value="#2f6db3" /></label><label><Copy text={t('结束颜色','End color','Endfarbe')} /><input data-color-b type="color" value="#e56c57" /></label><label><Copy text={t('角度（度）','Angle (degrees)','Winkel (Grad)')} /><input data-angle type="number" min="0" max="360" value="135" /></label></div>}
+  {slug==='cron-planner' && <label><Copy text={t('五段 Cron 表达式（按 UTC）','Five-field cron expression (UTC)','Cron-Ausdruck mit fünf Feldern (UTC)')} /><textarea data-input rows="4">*/15 9-17 * * 1-5</textarea></label>}
+  {slug==='subnet-calculator' && <label><Copy text={t('IPv4 CIDR 地址','IPv4 CIDR address','IPv4-CIDR-Adresse')} /><input data-input value="192.168.1.22/24" /></label>}
+  {slug==='date-math' && <><label><Copy text={t('ISO 日期（YYYY-MM-DD）','ISO date (YYYY-MM-DD)','ISO-Datum (JJJJ-MM-TT)')} /><input data-input value="2026-10-15" /></label><label><Copy text={t('偏移天数（可为负）','Offset in days (negative allowed)','Tagesverschiebung (auch negativ)')} /><input data-days type="number" value="30" /></label></>}
+  {slug==='hash-studio' && <><label><Copy text={t('文本或选择一个文件','Text or choose a file','Text oder Datei auswählen')} /><textarea data-input rows="8">World Compiler</textarea></label><label><input data-file type="file" /><span><Copy text={t('文件最大 64 MB','Files up to 64 MB','Dateien bis 64 MB')} /></span></label><label><Copy text={t('算法','Algorithmus','Algorithmus')} /><select data-algorithm><option>SHA-256</option><option>SHA-1</option><option>SHA-384</option><option>SHA-512</option></select></label></>}
+  {slug==='uuid-studio' && <><label><Copy text={t('UUID（留空则生成 v4）','UUID (leave empty to generate v4)','UUID (leer lassen für v4)')} /><input data-input placeholder="550e8400-e29b-41d4-a716-446655440000" /></label></>}
+  {slug==='color-converter' && <label><Copy text={t('HEX 或 RGB 颜色','HEX or RGB color','HEX- oder RGB-Farbe')} /><input data-input value="#2F6DB3" /></label>}
+  {slug==='password-audit' && <label><Copy text={t('待检查密码（仅本地计算）','Password to inspect (processed locally)','Zu prüfendes Passwort (lokal verarbeitet)')} /><input data-input type="password" autocomplete="off" /></label>}
+  {slug==='image-converter' && <><label><Copy text={t('选择本地图片（最大 30 MB / 16 MP）','Choose a local image (30 MB / 16 MP maximum)','Lokales Bild wählen (max. 30 MB / 16 MP)')} /><input data-file type="file" accept="image/*" /></label><label><Copy text={t('输出格式','Output format','Ausgabeformat')} /><select data-format><option value="image/png">PNG</option><option value="image/jpeg">JPEG</option><option value="image/webp">WebP</option></select></label><label><Copy text={t('JPEG / WebP 质量','JPEG / WebP quality','JPEG- / WebP-Qualität')} /><input data-quality type="range" min="0.4" max="1" step="0.05" value="0.9" /></label><p class="hint"><Copy text={t('输入格式取决于浏览器解码器；动画图片仅处理第一帧。','Input support depends on the browser decoder; animated images use the first frame only.','Eingabeformate hängen vom Browser ab; Animationen verwenden nur das erste Bild.')} /></p></>}
+  {slug==='image-metadata' && <label><Copy text={t('选择本地图片','Choose a local image','Lokales Bild auswählen')} /><input data-file type="file" accept="image/*" /></label>}
+  {slug==='favicon-studio' && <><label><Copy text={t('图标字符（最多 3 个）','Icon glyph (up to 3 characters)','Icon-Zeichen (bis zu 3 Zeichen)')} /><input data-mark value="WC" maxlength="3" /></label><div class="field-pair"><label><Copy text={t('背景','Background','Hintergrund')} /><input data-color-a type="color" value="#2f6db3" /></label><label><Copy text={t('前景','Foreground','Vordergrund')} /><input data-color-b type="color" value="#ffffff" /></label></div></>}
+  {slug==='random-forge' && <textarea hidden data-input></textarea>}
+  {!['random-forge','gradient-studio','cron-planner','subnet-calculator','date-math','hash-studio','uuid-studio','color-converter','password-audit','image-converter','image-metadata','favicon-studio'].includes(slug) && <>
+   {slug==='yaml-json' && <label><Copy text={t('转换方向','Conversion direction','Konvertierungsrichtung')} /><select data-mode><option value="yaml-json">YAML → JSON</option><option value="json-yaml">JSON → YAML</option></select></label>}
+   {slug==='csv-json' && <label><Copy text={t('转换方向','Conversion direction','Konvertierungsrichtung')} /><select data-mode><option value="csv-json">CSV → JSON</option><option value="json-csv">JSON → CSV</option></select></label>}
+   {slug==='csv-json' && <><label class="check"><input data-formula-safe type="checkbox" checked /><Copy text={t('CSV 导出时转义电子表格公式','Escape spreadsheet formulas in CSV exports','Tabellenformeln beim CSV-Export entschärfen')} /></label><p class="hint"><Copy text={t('默认在以 =、+、- 或 @ 开头的字段前加单引号；取消勾选会保留原值。','By default, prefix cells beginning with =, +, - or @ with an apostrophe; uncheck to preserve values.','Standardmäßig werden Zellen mit =, +, - oder @ mit einem Apostroph entschärft; deaktivieren, um Werte zu erhalten.')} /></p></>}
+   {slug==='html-entities' && <label><Copy text={t('操作','Operation','Aktion')} /><select data-mode><option value="encode">编码 / Encode</option><option value="decode">解码 / Decode</option></select></label>}
+   {slug==='text-format' && <label><Copy text={t('整理方式','Format','Format')} /><select data-mode><option value="slug">URL slug</option><option value="title">标题格式 / Title case</option><option value="sentence">句首格式 / Sentence case</option><option value="trim">修剪空白 / Trim whitespace</option><option value="dedupe">去重行 / Deduplicate lines</option></select></label>}
+   {slug==='css-studio' && <label><Copy text={t('操作','Operation','Aktion')} /><select data-mode><option value="format">规范化 / Normalize</option><option value="minify">压缩 / Minify</option></select></label>}
+   {slug==='markdown-table' && <label><Copy text={t('输入分隔符','Input delimiter','Eingabetrennzeichen')} /><select data-mode><option value=",">CSV</option><option value="tab">TSV</option></select></label>}
+   {slug!=='markdown-table' && <label><Copy text={slug==='markdown-studio'?t('Markdown 文档', 'Markdown document','Markdown-Dokument'):slug==='xml-studio'?t('XML 文档','XML document','XML-Dokument'):slug==='css-studio'?t('CSS 样式表','CSS stylesheet','CSS-Stylesheet'):slug==='csv-json'?t('CSV 或 JSON','CSV or JSON','CSV oder JSON'):slug==='yaml-json'?t('YAML 或 JSON','YAML or JSON','YAML oder JSON'):t('输入文本','Input text','Eingabetext')} /><textarea data-input rows="14" maxlength={slug==='svg-optimizer'?5000000:1000000}>{defaults[slug] ?? ''}</textarea></label>}
+   {slug==='markdown-table' && <label><Copy text={t('CSV 或 TSV 数据','CSV or TSV data','CSV- oder TSV-Daten')} /><textarea data-input rows="14" maxlength="1000000">{defaults[slug]}</textarea></label>}
+  </>}
+  <button data-run class="primary" type="button"><Copy text={t('处理并生成结果','Process and generate result','Verarbeiten und Ergebnis erzeugen')} /></button>
+ </div><div class="lab-panel">
+  <header><b>02</b><Copy as="h2" text={t('结果与导出','Result & export','Ergebnis & Export')} /></header>
+  <label><span class="output-caption"><Copy text={t('处理结果','Processed result','Verarbeitetes Ergebnis')} /></span><textarea data-output rows="16" readonly></textarea></label>
+  {['color-converter','gradient-studio','favicon-studio'].includes(slug) && <div data-preview class="pro-preview" role="img" aria-label="结果预览" data-label-zh="结果预览" data-label-en="Result preview" data-label-de="Ergebnisvorschau" hidden></div>}
+  <div class="lab-actions"><button data-copy type="button" disabled><Copy text={t('复制','Copy','Kopieren')} /></button><button data-download type="button" disabled><Copy text={t('下载结果','Download result','Ergebnis herunterladen')} /></button></div>
+  <p data-status role="status" aria-live="polite"></p>
+ </div></div>
+</section>
+<style>.pro-lab .lab-panel>header{margin-bottom:1.5rem}.pro-lab textarea[hidden]{display:none}.pro-lab input[type=file]{min-height:3rem}.pro-lab input[type=password]{font-family:ui-monospace,monospace}.pro-lab .hint{max-width:50rem}.pro-preview{min-height:10rem;margin-block:1rem;border:1px solid var(--line);border-radius:var(--radius-sm);background-position:center;background-size:cover}.pro-preview img{display:block;width:8rem;height:8rem;margin:1rem auto}</style>
+<script>
+ import { mount } from '../../features/pro-tools/controller';
+ const root=document.querySelector<HTMLElement>('[data-pro-lab]');
+ if(root){const cleanup=mount(root);window.addEventListener('pagehide',cleanup,{once:true});}
+</script>

@@ -31,16 +31,37 @@ An open-source browser toolkit for the public good. It turns useful but scattere
 - **PDF 整理台 / PDF Desk**：调整文件顺序、合并、按页码范围提取；最多 20 文件、64 MB、2000 页。不支持加密文件，书签、表单与签名可能丢失，请保留原件。
 - **PDF 文本提取 / PDF Text Extractor**：提取已有文字层、保留分页标记并导出 TXT；扫描件请用 OCR。
 - **图片转 PDF / Images to PDF**：PNG/JPEG 排序，A4、Letter 或原图尺寸，每页一图等比居中。
+- **随机工坊 / Random Forge**：批量生成加密随机密码、易记短语、无重复抽奖号码、骰子点数、占位文本和中英德祝福语。小型短语词库只用于灵感，不适合作为账号密码。
+- **Markdown 文档诊断 / Markdown Studio**：扫描标题层级、一级标题、链接、段落和篇幅，自动生成目录建议。
+- **YAML / JSON 转换**：完整解析并转换 YAML 与 JSON，检查重复键、别名和语法。
+- **XML 整理台 / XML Studio**：浏览器解析 XML、拒绝 DTD/实体声明并规范化序列化。
+- **CSS 工坊 / CSS Studio**：调用浏览器 CSSOM 检查并规范化规则，或压缩可识别的样式表。
+- **CSV / JSON 桥**：在带引号 CSV 与对象数组 JSON 间转换，检查重复表头和行宽；CSV 导出默认转义公式样式值。
+- **颜色格式转换 / Color Converter**：HEX 与 RGB 输入，计算 HSL 并展示对应颜色。
+- **渐变配方台 / Gradient Studio**：配置颜色端点和角度，预览 CSS 线性渐变并导出样式。
+- **Cron 计划器 / Cron Planner**：校验标准五段表达式，解释字段并显示未来五次 UTC 时间（不包含时区扩展语法）。
+- **IPv4 子网计算器**：解析 CIDR，给出掩码、网络、广播、可用主机范围和地址数量；不处理 IPv6。
+- **日期计算台 / Date Math**：校验 ISO 日期，计算天数偏移、年内日序和 UTC 星期。
+- **摘要与校验实验室 / Hash Studio**：对文本或最大64MB文件计算浏览器 Web Crypto 支持的 SHA-1/256/384/512。
+- **UUID 工作台 / UUID Studio**：生成 UUID v4，验证 UUID 语法并查看版本与变体字段。
+- **HTML 实体转换 / HTML Entities**：编码 HTML 特殊字符，或解码常见命名实体和十进制/十六进制字符引用。
+- **SVG 安全整理 / SVG Optimizer**：移除脚本、事件处理器与外部引用，限制元素/尺寸并导出安全静态 SVG（5MB）。
+- **图像格式转换 / Image Converter**：将浏览器可解码图片转为其实际支持的 PNG/JPEG/WebP；动画只处理第一帧，文件30MB、16MP以内，JPEG透明区域转白底。
+- **Favicon Studio**：用字符和配色生成 SVG 网站图标，并提供 HTML 引用片段。
+- **图像属性检查 / Image Metadata**：读取本地 MIME、文件大小、像素尺寸和宽高比；不声称提取浏览器不可见的完整 EXIF。
+- **密码强度检查 / Password Audit**：本地展示长度、字符类别与粗略字符池熵估算；不是泄露库检查或破解时间预测。
+- **文本整理器 / Text Formatter**：生成 URL slug、标题/句首格式，或修剪空白、去重行。
+- **Markdown 表格构造器 / Markdown Table Builder**：从 CSV/TSV 生成 Markdown 表格，检查列数并转义单元格竖线。
 - 独立关于页、设备本地时间观测钟、自动统计工具数量、GitHub 与 MIT 版权链接。
 - 可安装 PWA，缓存应用页面与静态资源；工具内容不保存。PDF/OCR 资源需先在线下载。
 - 响应式布局、键盘操作、焦点样式、减少动态效果支持 / Responsive layout, keyboard support, visible focus, and reduced-motion support
 - Astro 静态构建与 GitHub Pages 自动部署配置 / Static Astro build and GitHub Pages deployment workflow
 
-**English:** Twenty-two local tools share responsive input/result/export workbenches. New additions cover audio/WAV, image palettes, regular expressions, URL inspection, units, secure random generation, text cleanup, M3U8 transport streams, offline OCR, PDF merging/extraction, PDF text and images-to-PDF. The original 36-glyph artwork supplies distinct identities. Processing stays on-device; streams are fetched directly from their source with CORS permission. OCR engine/language assets require an initial download from this site.
+**English:** Forty-three local tools share responsive input/result/export workbenches. The latest 21 add random content, Markdown, YAML/JSON, XML, CSS, CSV/JSON, color and gradient utilities, cron and subnet calculations, date math, multi-algorithm hashes, UUID, HTML entities, safe SVG cleanup, image conversion/inspection, favicon creation, password estimation, and text formatting. Processing stays on-device; browser-native image codec support varies, and the product reports the actual output type. Streams are fetched directly from their source with CORS permission. OCR engine/language assets require an initial download from this site.
 
 Color Vision Lab also accepts SVG (5 MB) and PDF (32 MB, with page selection). Both are rasterized to at most 4096 px per edge / 16 MP, then simulated and exported as PNG/JPEG. SVG scripts, interactive content and external references are removed. Unlock password-protected PDFs before import. PDF.js, its worker, fonts, CMaps, ICC profiles and decoders ship with the site.
 
-**Deutsch:** Zweiundzwanzig lokale Werkzeuge mit responsiven Eingabe-, Ergebnis- und Exportbereichen, darunter Audio/WAV, Farbpaletten, Regex, URLs, Einheiten, sichere Zufallswerte, Textbereinigung, M3U8, Offline-OCR sowie PDF-Verarbeitung. Alle Oberflächen unterstützen Chinesisch, Englisch und Deutsch. Streams benötigen CORS-Freigabe; OCR-Engine und Sprachdateien werden beim ersten Gebrauch von dieser Website geladen.
+**Deutsch:** Dreiundvierzig lokale Werkzeuge mit responsiven Eingabe-, Ergebnis- und Exportbereichen. Die neuesten 21 ergänzen Zufallsgeneratoren, Markdown, YAML/JSON, XML, CSS, CSV/JSON, Farben, Cron, IPv4, Datumsrechnung, Hashes, UUID, HTML-Entitäten, SVG-Bereinigung und Bildwerkzeuge. Die Bildcodec-Unterstützung hängt vom Browser ab; das tatsächliche Ausgabeformat wird geprüft. Streams benötigen CORS-Freigabe; OCR-Engine und Sprachdateien werden beim ersten Gebrauch von dieser Website geladen.
 
 Color Vision Lab unterstützt SVG (5 MB) und PDF (32 MB, mit Seitenauswahl). Beide werden als Rasterbild mit maximal 4096 px / 16 MP simuliert und als PNG/JPEG exportiert. Externe und interaktive SVG-Inhalte werden entfernt. Passwortgeschützte PDFs vor dem Import entsperren.
 
