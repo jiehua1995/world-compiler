@@ -102,13 +102,17 @@ test("image studio batch-exports a bounded local image queue", async ({
     { name: "second.png", mimeType: "image/png", buffer: await readFile(path.resolve("tests/fixtures/color-grid.png")) },
   ]);
   await expect(page.locator("[data-image-queue] li")).toHaveCount(2);
+  await page.locator("[data-image-item-width]").nth(1).fill("80");
+  await page.locator("[data-image-item-height]").nth(1).fill("60");
   await expect(page.locator("[data-image-batch-download]")).toBeEnabled();
   const downloads: string[] = [];
   page.on("download", (download) => downloads.push(download.suggestedFilename()));
   await page.locator("[data-image-batch-download]").click();
   await expect.poll(() => downloads.length).toBe(2);
   expect(downloads).toEqual(["first-1-compiled.webp", "second-2-compiled.webp"]);
-  await expect(page.locator("[data-image-queue]")).toContainText("已导出");
+  await expect(page.locator("[data-image-queue] li").nth(0)).toContainText("已导出");
+  await expect(page.locator("[data-image-queue] li").nth(1)).toContainText("80 × 60 px");
+  await expect(page.locator("[data-image-queue] li").nth(1)).toContainText("已导出");
   const fixture = await readFile(path.resolve("tests/fixtures/color-grid.png"));
   await page.locator("[data-image-file]").setInputFiles(Array.from({ length: 11 }, (_, index) => ({
     name: `image-${index}.png`, mimeType: "image/png", buffer: fixture,

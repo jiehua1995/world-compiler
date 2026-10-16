@@ -150,7 +150,28 @@ export function mount(root: HTMLElement): () => void {
     queue.replaceChildren();
     for (const item of sourceFiles) {
       const row = document.createElement("li");
-      row.textContent = `${item.name} · ${(item.size / 1000).toFixed(1)} KB`;
+      const name = document.createElement("span"),
+        settings = document.createElement("span"),
+        result = document.createElement("small");
+      name.textContent = `${item.name} · ${(item.size / 1000).toFixed(1)} KB`;
+      settings.className = "image-queue__settings";
+      for (const [key, value, label] of [
+        ["width", width.value, ["宽度", "Width", "Breite"]],
+        ["height", height.value, ["高度", "Height", "Höhe"]],
+      ] as const) {
+        const input = document.createElement("input");
+        input.type = "number";
+        input.min = "1";
+        input.max = "8192";
+        input.value = value;
+        input.setAttribute("data-image-item-setting", "");
+        input.setAttribute(`data-image-item-${key}`, "");
+        input.setAttribute("aria-label", say(label));
+        settings.append(input);
+      }
+      result.textContent = say(["待处理", "Ready", "Bereit"]);
+      result.setAttribute("data-image-item-result", "");
+      row.append(name, settings, result);
       queue.append(row);
     }
     batchDownload.disabled = sourceFiles.length < 2 || sourceFiles.length > 10;
@@ -180,6 +201,11 @@ export function mount(root: HTMLElement): () => void {
       const scale = Math.min(1, 2000 / Math.max(image.width, image.height));
       width.value = String(Math.max(1, Math.round(image.width * scale)));
       height.value = String(Math.max(1, Math.round(image.height * scale)));
+      const firstRow = queue.querySelector("li");
+      if (firstRow) {
+        firstRow.querySelector<HTMLInputElement>("[data-image-item-width]")!.value = width.value;
+        firstRow.querySelector<HTMLInputElement>("[data-image-item-height]")!.value = height.value;
+      }
       get("image-source").textContent =
         (selected.size / 1000).toFixed(1) + " KB";
       await render();
@@ -190,6 +216,7 @@ export function mount(root: HTMLElement): () => void {
   const input = (event: Event) => {
     if (!image || event.target === file) return;
     const el = event.target as HTMLElement;
+    if (el.hasAttribute("data-image-item-setting")) return;
     if (get<HTMLInputElement>("image-lock").checked) {
       if (el === height)
         width.value = String(
@@ -228,22 +255,29 @@ export function mount(root: HTMLElement): () => void {
     controls.forEach((control) => (control.disabled = true));
     const selectedImage = image;
     const selectedFile = sourceFile;
+    const selectedWidth = width.value,
+      selectedHeight = height.value;
     const rows = [...queue.children];
     let failed = false;
     try {
       for (let index = 0; index < sourceFiles.length; index++) {
         const item = sourceFiles[index]!;
-        rows[index]!.textContent = `${item.name} · ${say(["处理中…", "Processing…", "Wird verarbeitet…"])}`;
+        const itemWidth = rows[index]!.querySelector<HTMLInputElement>("[data-image-item-width]")!,
+          itemHeight = rows[index]!.querySelector<HTMLInputElement>("[data-image-item-height]")!,
+          result = rows[index]!.querySelector<HTMLElement>("[data-image-item-result]")!;
+        result.textContent = say(["处理中…", "Processing…", "Wird verarbeitet…"]);
         const decoded = await decodeLocalImage(item);
         try {
           if (decoded.width * decoded.height > 32000000) throw new Error("Too large");
           image = decoded;
           sourceFile = item;
+          width.value = itemWidth.value;
+          height.value = itemHeight.value;
           await render();
           if (!blob) throw new Error("Could not encode image");
           const ext = blob.type === "image/jpeg" ? "jpg" : blob.type.split("/")[1];
           downloadBlob(blob, `${item.name.replace(/\.[^.]+$/u, "")}-${index + 1}-compiled.${ext}`);
-          rows[index]!.textContent = `${item.name} · ${say(["已导出", "Exported", "Exportiert"])}`;
+          result.textContent = `${decoded.width} × ${decoded.height} px → ${width.value} × ${height.value} px · ${(blob.size / 1000).toFixed(1)} KB · ${say(["已导出", "Exported", "Exportiert"])}`;
         } finally {
           decoded.cleanup();
         }
@@ -254,6 +288,8 @@ export function mount(root: HTMLElement): () => void {
     } finally {
       image = selectedImage;
       sourceFile = selectedFile;
+      width.value = selectedWidth;
+      height.value = selectedHeight;
       batching = false;
       controls.forEach((control) => (control.disabled = false));
       file.disabled = false;

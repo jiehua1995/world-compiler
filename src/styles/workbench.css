@@ -292,6 +292,22 @@
   font-size: 0.8rem;
   overflow-wrap: anywhere;
 }
+.lab .image-queue li {
+  display: grid;
+  gap: 0.3rem;
+  min-width: 0;
+}
+.lab .image-queue__settings {
+  display: flex;
+  gap: 0.35rem;
+}
+.lab .image-queue__settings input {
+  width: 6rem;
+  min-width: 0;
+}
+.lab .image-queue li small {
+  overflow-wrap: anywhere;
+}
 .lab canvas,
 .lab .image-stage img {
   display: block;
