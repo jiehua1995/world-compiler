@@ -43,7 +43,7 @@
 .comparison-card { min-width: 0; background: var(--paper-raised); }
 .comparison-card header { display: flex; align-items: center; gap: .8rem; min-height: 4.2rem; padding: 0 var(--space-2); border-bottom: 1px solid var(--line); }
 .comparison-card__index { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--signal-coral); }
-.comparison-card h2 { margin: 0; font-size: 1.2rem; }
+.comparison-card h2 { min-width: 0; margin: 0; overflow-wrap: anywhere; font-size: 1.2rem; }
 .comparison-card__viewport { position: relative; display: grid; place-items: center; min-height: 15rem; padding: var(--space-2); overflow: hidden; background-image: linear-gradient(45deg, var(--grid) 25%, transparent 25%), linear-gradient(-45deg, var(--grid) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--grid) 75%), linear-gradient(-45deg, transparent 75%, var(--grid) 75%); background-size: 2rem 2rem; background-position: 0 0, 0 1rem, 1rem -1rem, -1rem 0; }
 .comparison-card canvas { display: block; max-width: 100%; max-height: 36rem; object-fit: contain; }
 .comparison-card__waiting { position: absolute; inset: 0; display: grid; place-items: center; }
