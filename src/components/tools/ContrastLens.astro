@@ -1,5 +1,6 @@
 ---
 import Copy from '../Copy.astro';
+const palette = [['Amber', '#FCA104'], ['Blue', '#2F6DB3'], ['Coral', '#E56C57'], ['Violet', '#5200A6'], ['Gold', '#CDB742'], ['Teal', '#45A6B2']];
 ---
 <section class="lab" data-contrast-lens>
   <div class="lab-toolbar"><Copy text={['配色预设','Color presets','Farbvorlagen']} />{[['#2F6DB3','#FFFFFF','蓝 / Blue'],['#101A27','#FCA104','琥珀 / Amber'],['#FFFFFF','#5200A6','紫 / Violet']].map(([fg,bg,name]) => <button type="button" data-preset-fg={fg} data-preset-bg={bg} aria-label={`${fg} / ${bg}`} style={`border-bottom:4px solid ${fg}`}>{name.split(' / ')[1]}</button>)}<button type="button" data-swap><Copy text={['交换颜色 ⇄','Swap colors ⇄','Farben tauschen ⇄']} /></button></div>
@@ -28,5 +29,27 @@ import Copy from '../Copy.astro';
       <p class="hint" data-i18n="contrast.note">此工具用于设计参考，不构成无障碍合规认证。</p>
     </section>
   </div>
+  <section class="lab-panel contrast-audit" data-palette-audit>
+    <header><b>03</b><div><Copy as="h2" text={['色板审查','Palette audit','Palettenprüfung']} /><Copy as="p" text={['逐对检查 2–12 个设计令牌，并查看文字、图标与控件示例。','Audit every pair in a 2–12 token palette with text, icon and control samples.','Alle Paare einer Palette mit 2–12 Farben samt Text-, Symbol- und Steuerelementbeispielen prüfen.']} /></div></header>
+    <div class="contrast-audit-toolbar"><p data-palette-count aria-live="polite">6 个颜色 · 15 组配对</p><div><button type="button" data-token-add data-copy-zh="＋ 添加颜色" data-copy-en="＋ Add color" data-copy-de="＋ Farbe hinzufügen">＋ 添加颜色</button><button type="button" data-palette-export="json" data-copy-zh="导出 JSON" data-copy-en="Export JSON" data-copy-de="JSON exportieren">导出 JSON</button><button type="button" data-palette-export="html" data-copy-zh="导出 HTML 报告" data-copy-en="Export HTML report" data-copy-de="HTML-Bericht exportieren">导出 HTML 报告</button></div></div>
+    <div class="contrast-token-list" data-token-list>
+      {palette.map(([name, hex], index) => <div class="contrast-token" data-palette-token data-token-id={index}>
+        <label><span data-copy-zh="令牌名称" data-copy-en="Token name" data-copy-de="Tokenname">令牌名称</span><input type="text" data-token-name value={name} maxlength="32" /></label>
+        <label><span data-copy-zh="颜色" data-copy-en="Color" data-copy-de="Farbe">颜色</span><input type="color" data-token-picker value={hex} /></label>
+        <label><span>HEX</span><input type="text" data-token-hex value={hex} maxlength="7" spellcheck="false" /></label>
+        <button type="button" data-token-remove data-copy-zh="移除" data-copy-en="Remove" data-copy-de="Entfernen">移除</button>
+      </div>)}
+    </div>
+    <template data-token-template><div class="contrast-token" data-palette-token>
+      <label><span data-copy-zh="令牌名称" data-copy-en="Token name" data-copy-de="Tokenname">令牌名称</span><input type="text" data-token-name maxlength="32" /></label>
+      <label><span data-copy-zh="颜色" data-copy-en="Color" data-copy-de="Farbe">颜色</span><input type="color" data-token-picker value="#2F6DB3" /></label>
+      <label><span>HEX</span><input type="text" data-token-hex value="#2F6DB3" maxlength="7" spellcheck="false" /></label>
+      <button type="button" data-token-remove data-copy-zh="移除" data-copy-en="Remove" data-copy-de="Entfernen">移除</button>
+    </div></template>
+    <p class="contrast-audit-error" role="alert" data-palette-error hidden data-copy-zh="请为每种颜色填写名称和有效的 3 位或 6 位 HEX 值。" data-copy-en="Give each color a name and a valid 3- or 6-digit HEX value." data-copy-de="Gib jeder Farbe einen Namen und einen gültigen 3- oder 6-stelligen HEX-Wert.">请为每种颜色填写名称和有效的 3 位或 6 位 HEX 值。</p>
+    <p class="contrast-audit-summary" data-palette-summary></p>
+    <div class="contrast-pair-list" data-palette-results></div>
+    <p class="hint" data-copy-zh="AA/AAA 是设计检查辅助，实际合规还取决于字号、字重、状态、图形用途与真实界面。" data-copy-en="AA/AAA checks are design aids; actual conformance also depends on type size, weight, states, graphical purpose and the rendered interface." data-copy-de="AA/AAA-Prüfungen sind eine Designhilfe; die tatsächliche Konformität hängt auch von Schriftgröße, Gewicht, Zuständen, grafischem Zweck und der realen Oberfläche ab.">AA/AAA 是设计检查辅助，实际合规还取决于字号、字重、状态、图形用途与真实界面。</p>
+  </section>
   <footer class="lab-export"><Copy as="p" text={['保留颜色、对比度与阈值结果，方便交付设计。','Keep colors, ratios and threshold results with your design handoff.','Farben, Verhältnisse und Grenzwerte für die Designübergabe speichern.']} /><button type="button" class="primary" data-contrast-download><Copy text={['下载配色报告','Download color report','Farbbericht herunterladen']} /></button></footer>
 </section>
