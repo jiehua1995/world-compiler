@@ -1,6 +1,6 @@
 # Professional tool expansion
 
-This release adds 21 independent routes to the 22 existing tools. Each route is a static Astro page with the same responsive local workbench and copy/download flow. The list lives in `src/data/pro-tools.ts`; calculations and browser work are in `src/features/pro-tools/`.
+The project has 49 independent tools. Each route is a static Astro page with the same responsive local workbench and copy/download flow. Definitions live in `src/data/pro-tools.ts`; calculations and browser work are in `src/features/pro-tools/`.
 
 ## New tools
 
@@ -27,6 +27,12 @@ This release adds 21 independent routes to the 22 existing tools. Each route is 
 | Password Audit | Local character-class inventory and approximate character-pool entropy | Heuristic only: no breached-password lookup, dictionary analysis, or crack-time estimate. |
 | Text Formatter | Unicode-aware slug, title/sentence case, whitespace trim and line de-duplication | Case rules use JavaScript Unicode locale operations; they are not a full editorial style guide. |
 | Markdown Table Builder | CSV/TSV parsing, equal-width validation and pipe escaping | Generates a Markdown table; does not infer data types or execute formulas. |
+| JSON Schema Inference | Draft 2020-12 object/array schema inferred from a sample or record array | Sample-based inference; array samples use observed types and do not prove future data constraints. |
+| JSONPath Query | Property paths, array indexes, and `[*]` wildcard selection | Deliberately bounded subset; no recursive descent, filters, scripts, or quoted bracket keys. |
+| Base Converter | Arbitrary-precision signed integer conversion among bases 2, 8, 10 and 16 | Integer values only; no fractional values or fixed-width overflow model. |
+| Unicode Inspector | Code-point listing, UTF-8 byte count, and common ASCII names | General Unicode names are not bundled; unfamiliar names are shown as generic Unicode characters. |
+| CSV Profiler | Record count plus per-column missing and distinct values, using the shared quoted CSV parser | CSV only; rejects duplicate headers and ragged rows; profiling is not statistical inference. |
+| Robots.txt Checker | Local grouping/directive syntax checks and warnings | Does not fetch a site, evaluate crawler-specific precedence, or certify search-engine behavior. |
 
 ## Privacy and resource limits
 

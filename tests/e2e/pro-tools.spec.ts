@@ -3,8 +3,8 @@ import path from 'node:path';
 import { tools } from '../../src/data/tools';
 import { proTools } from '../../src/data/pro-tools';
 
-test('all twenty-one new tools have a localized static page, unique icons and working controls', async ({page}) => {
- expect(proTools).toHaveLength(21);
+test('all twenty-seven new tools have a localized static page, unique icons and working controls', async ({page}) => {
+ expect(proTools).toHaveLength(27);
  await page.goto('./tools/');
  await expect(page.getByRole('article')).toHaveCount(tools.length);
  for (const tool of proTools) {
@@ -14,6 +14,15 @@ test('all twenty-one new tools have a localized static page, unique icons and wo
   await expect(page.getByRole('heading', {level:1})).toHaveText(tool.title['zh-CN']);
   await expect(page.locator('[data-run]')).toBeEnabled();
  }
+});
+test('new data tools generate schema, query JSON, convert bases, inspect Unicode, profile CSV and check robots rules', async ({page}) => {
+ await page.goto('./tools/json-schema/'); await page.locator('[data-run]').click();
+ await expect(page.locator('[data-output]')).toHaveValue(/"required": \[\n\s+"id"/);
+ await page.goto('./tools/jsonpath-query/'); await page.locator('[data-run]').click(); await expect(page.locator('[data-output]')).toHaveValue('[\n  1,\n  2\n]');
+ await page.goto('./tools/base-converter/'); await page.locator('[data-run]').click(); await expect(page.locator('[data-output]')).toHaveValue(/Binary: 11111111/);
+ await page.goto('./tools/unicode-inspector/'); await page.locator('[data-run]').click(); await expect(page.locator('[data-output]')).toHaveValue(/"utf8Bytes": 19/);
+ await page.goto('./tools/csv-profiler/'); await page.locator('[data-run]').click(); await expect(page.locator('[data-output]')).toHaveValue(/"missing": 1/);
+ await page.goto('./tools/robots-checker/'); await page.locator('[data-run]').click(); await expect(page.locator('[data-output]')).toHaveValue(/"directives": 2/);
 });
 test('random forge creates unique lottery draws and multilingual greetings', async ({page}) => {
  await page.goto('./tools/random-forge/');

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { boundedRandomInt, convertColor, decodeHtmlEntities, explainCron, formatHtmlEntities, fractionFromWords, generateRandom, ipv4Subnet, nextCronRuns, normalizeText, parseYamlJson, passwordAudit, validUuid } from '../../src/features/pro-tools/core';
+import { boundedRandomInt, convertColor, decodeHtmlEntities, explainCron, formatHtmlEntities, fractionFromWords, generateRandom, inferJsonSchema, inspectUnicode, ipv4Subnet, nextCronRuns, normalizeText, parseJsonPath, parseYamlJson, passwordAudit, profileCsv, toBase, validateRobots, validUuid } from '../../src/features/pro-tools/core';
 
 describe('professional tool core', () => {
   it('uses an injected random source and enforces lottery uniqueness', () => {
@@ -48,5 +48,28 @@ describe('professional tool core', () => {
   it('validates UUID versions and variant bits', () => {
     expect(validUuid('550e8400-e29b-41d4-a716-446655440000')).toBe(true);
     expect(validUuid('550e8400-e29b-01d4-a716-446655440000')).toBe(false);
+  });
+  it('infers nullable properties across JSON array records', () => {
+    const schema = inferJsonSchema('[{"id":1,"name":"A"},{"id":2,"active":true}]');
+    expect(schema).toMatchObject({ type: 'array', items: { type: 'object', properties: { id: { type: 'integer' }, active: { type: ['boolean', 'null'] } } } });
+    expect((schema.items as { properties: Record<string, { type: string[] }> }).properties.name.type).toEqual(['null', 'string']);
+  });
+  it('evaluates bounded JSONPath property and array selections', () => {
+    expect(parseJsonPath('{"items":[{"id":1},{"id":2}]}', '$.items[*].id')).toEqual([1, 2]);
+    expect(() => parseJsonPath('{}', '$..secret')).toThrow();
+  });
+  it('converts integer bases with strict radix validation', () => {
+    expect(toBase('255', 10)).toEqual({ binary: '11111111', octal: '377', decimal: '255', hexadecimal: 'FF' });
+    expect(() => toBase('102', 2)).toThrow();
+  });
+  it('reports Unicode code points and UTF-8 bytes without splitting surrogate pairs', () => {
+    expect(inspectUnicode('A🚀')).toMatchObject({ codePoints: 2, utf8Bytes: 5, points: [{ codePoint: 'U+0041' }, { codePoint: 'U+1F680' }] });
+  });
+  it('profiles quoted CSV rows with column nulls and distinct counts', () => {
+    expect(profileCsv('name,score\nAda,10\nBob,\nAda,12')).toMatchObject({ rows: 3, columns: [{ name: 'name', missing: 0, distinct: 2 }, { name: 'score', missing: 1, distinct: 2 }] });
+  });
+  it('validates robots rules without counting comments as directives', () => {
+    expect(validateRobots('User-agent: *\nDisallow: /private\nAllow: /public')).toMatchObject({ groups: 1, directives: 2, warnings: [] });
+    expect(validateRobots('Disallow: /x').warnings.length).toBeGreaterThan(0);
   });
 });

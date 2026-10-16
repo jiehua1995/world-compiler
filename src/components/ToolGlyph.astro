@@ -24,6 +24,12 @@ const paths: Record<string,string[]> = {
  'password-audit':['M32 7 51 14v18c0 13-8 21-19 26-11-5-19-13-19-26V14Z','M23 32l6 6 13-14'],
  'text-format':['M12 15h28M26 15v34M18 49h16','M48 27h10M53 22v22M47 44h12'],
  'markdown-table':['M12 9h40v46H12Z','M12 22h40M12 34h40M12 46h40M27 22v33M40 22v33'],
+ 'json-schema':['M12 10h40v44H12Z','M21 22h22M21 32h14M21 42h18','M42 38l5 5 9-12'],
+ 'jsonpath-query':['M13 12h38v40H13Z','M22 22h4M38 22h4M22 40h4M38 40h4','M26 22h12M26 40h12M32 22v18'],
+ 'base-converter':['M10 18h44v30H10Z','M17 27h6M17 37h6M29 27h6M29 37h6M41 27h6M41 37h6','M18 12l-5 5 5 5'],
+ 'unicode-inspector':['M12 12h40v40H12Z','M20 22h24M32 22v21M24 43h16','M15 17h2M47 17h2'],
+ 'csv-profiler':['M10 10h44v44H10Z','M10 23h44M10 37h44M25 23v31M40 23v31','M16 18h3M31 31h3M46 45h3'],
+ 'robots-checker':['M32 7 52 15v16c0 12-8 21-20 27-12-6-20-15-20-27V15Z','M22 31h20M22 39h13','M20 20h24'],
 };
 ---
 {icon && paths[icon] ? <span class="instrument-glyph instrument-glyph--vector" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false">{paths[icon].map((d,i)=><path d={d} class={i===0?'glyph-main':'glyph-detail'} />)}</svg></span> : <span class="instrument-glyph" aria-hidden="true" style={`--glyph-sheet:url('${base}assets/instrument-glyphs/contact-sheet.png');--glyph-position:${((index % 6 + .05) / 5.1) * 100}% ${((Math.floor(index / 6) + .05) / 5.1) * 100}%`}></span>}

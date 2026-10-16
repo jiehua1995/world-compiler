@@ -15,6 +15,12 @@ const defaults: Record<string,string> = {
  'svg-optimizer':'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#2f6db3"/></svg>',
  'text-format':'  Hello, WORLD!  ',
  'markdown-table':'name,category\nColor Vision Lab,vision\nJSON Studio,data',
+ 'json-schema':'[{"id":1,"name":"Ada"},{"id":2,"name":"Lin","active":true}]',
+ 'jsonpath-query':'{"items":[{"id":1,"name":"Ada"},{"id":2,"name":"Lin"}]}',
+ 'base-converter':'255',
+ 'unicode-inspector':'World Compiler 🚀',
+ 'csv-profiler':'name,score\nAda,10\nLin,\nAda,12',
+ 'robots-checker':'User-agent: *\nDisallow: /private\nAllow: /public',
 };
 const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
 ---
@@ -30,6 +36,8 @@ const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
   </>}
   {slug==='gradient-studio' && <div class="field-pair"><label><Copy text={t('起始颜色','Start color','Startfarbe')} /><input data-color-a type="color" value="#2f6db3" /></label><label><Copy text={t('结束颜色','End color','Endfarbe')} /><input data-color-b type="color" value="#e56c57" /></label><label><Copy text={t('角度（度）','Angle (degrees)','Winkel (Grad)')} /><input data-angle type="number" min="0" max="360" value="135" /></label></div>}
   {slug==='cron-planner' && <label><Copy text={t('五段 Cron 表达式（按 UTC）','Five-field cron expression (UTC)','Cron-Ausdruck mit fünf Feldern (UTC)')} /><textarea data-input rows="4">*/15 9-17 * * 1-5</textarea></label>}
+  {slug==='jsonpath-query' && <label><Copy text={t('JSONPath（支持 $.name、$[0]、$[*]）','JSONPath (supports $.name, $[0], $[*])','JSONPath (unterstützt $.name, $[0], $[*])')} /><input data-path value="$.items[*].id" /></label>}
+  {slug==='base-converter' && <label><Copy text={t('输入数值的进制','Input number base','Eingabe-Zahlensystem')} /><select data-radix><option value="10">10 · Decimal</option><option value="2">2 · Binary</option><option value="8">8 · Octal</option><option value="16">16 · Hexadecimal</option></select></label>}
   {slug==='subnet-calculator' && <label><Copy text={t('IPv4 CIDR 地址','IPv4 CIDR address','IPv4-CIDR-Adresse')} /><input data-input value="192.168.1.22/24" /></label>}
   {slug==='date-math' && <><label><Copy text={t('ISO 日期（YYYY-MM-DD）','ISO date (YYYY-MM-DD)','ISO-Datum (JJJJ-MM-TT)')} /><input data-input value="2026-10-15" /></label><label><Copy text={t('偏移天数（可为负）','Offset in days (negative allowed)','Tagesverschiebung (auch negativ)')} /><input data-days type="number" value="30" /></label></>}
   {slug==='hash-studio' && <><label><Copy text={t('文本或选择一个文件','Text or choose a file','Text oder Datei auswählen')} /><textarea data-input rows="8">World Compiler</textarea></label><label><input data-file type="file" /><span><Copy text={t('文件最大 64 MB','Files up to 64 MB','Dateien bis 64 MB')} /></span></label><label><Copy text={t('算法','Algorithmus','Algorithmus')} /><select data-algorithm><option>SHA-256</option><option>SHA-1</option><option>SHA-384</option><option>SHA-512</option></select></label></>}

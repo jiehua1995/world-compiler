@@ -1,6 +1,6 @@
 import { parseDelimitedText, serializeCsv } from '../data-shape/csv';
 import { prepareSvg } from '../color-vision/vector-io';
-import { boundedRandomInt, convertColor, decodeHtmlEntities, explainCron, formatHtmlEntities, generateRandomFrom, ipv4Subnet, nextCronRuns, normalizeText, parseYamlJson, passwordAudit, stringifyJsonYaml, validUuid } from './core';
+import { boundedRandomInt, convertColor, decodeHtmlEntities, explainCron, formatHtmlEntities, generateRandomFrom, inferJsonSchema, inspectUnicode, ipv4Subnet, nextCronRuns, normalizeText, parseJsonPath, parseYamlJson, passwordAudit, profileCsv, stringifyJsonYaml, toBase, validateRobots, validUuid } from './core';
 import { downloadBlob } from '../workbench/browser';
 
 const copy = (zh: string, en: string, de: string) => ({ 'zh-CN': zh, en, de }[document.documentElement.lang] ?? zh);
@@ -59,6 +59,12 @@ export function mount(root: HTMLElement): () => void {
      const toc = headings.map((h)=>`${'  '.repeat(h.level-1)}- [${h.title}](#${normalizeText(h.title,'slug')})`).join('\n') || copy('（未发现标题）','(no headings found)','(keine Überschriften gefunden)');
      setResult(`${copy('文档结构报告','Document structure report','Bericht zur Dokumentstruktur')}\n\n${copy('标题','Headings','Überschriften')}: ${headings.length}\n${copy('段落','Paragraphs','Absätze')}: ${(text.match(/\n\s*\n/gu)||[]).length}\n${copy('估算阅读时间','Estimated reading time','Geschätzte Lesezeit')}: ${Math.max(1,Math.ceil((text.match(/\S+/gu)||[]).length/200))} min\n${copy('检查提示','Review notes','Prüfhinweise')}: ${warnings.length?warnings.join('; '):copy('未发现结构问题','No structural issues found','Keine Strukturprobleme gefunden')}\n\n${copy('目录建议','Suggested table of contents','Vorgeschlagenes Inhaltsverzeichnis')}\n${toc}`); break;
     }
+    case 'json-schema': { const schema=inferJsonSchema(text); setResult(JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',...schema},null,2),new Blob([JSON.stringify({$schema:'https://json-schema.org/draft/2020-12/schema',...schema},null,2)],{type:'application/schema+json'}),'schema.json'); break; }
+    case 'jsonpath-query': { const selected=parseJsonPath(text,get<HTMLInputElement>('path').value); setResult(JSON.stringify(selected,null,2)); break; }
+    case 'base-converter': { const radix=Number(get<HTMLSelectElement>('radix').value), converted=toBase(text,radix); setResult(`Binary: ${converted.binary}\nOctal: ${converted.octal}\nDecimal: ${converted.decimal}\nHexadecimal: ${converted.hexadecimal}`); break; }
+    case 'unicode-inspector': setResult(JSON.stringify(inspectUnicode(text),null,2)); break;
+    case 'csv-profiler': setResult(JSON.stringify(profileCsv(text),null,2)); break;
+    case 'robots-checker': setResult(JSON.stringify(validateRobots(text),null,2)); break;
     case 'yaml-json': setResult(get<HTMLSelectElement>('mode').value==='yaml-json'?parseYamlJson(text):stringifyJsonYaml(text)); break;
     case 'xml-studio': {
      if (/<!\s*(?:DOCTYPE|ENTITY)/iu.test(text)) throw new Error('DTD/entities are blocked');

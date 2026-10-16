@@ -1,4 +1,5 @@
 import { parse as parseYaml, stringify as stringifyYaml } from 'yaml';
+import { parseDelimitedText } from '../data-shape/csv';
 const RANDOM_SPACE = Number.MAX_SAFE_INTEGER + 1;
 
 const clampInt = (n: number, min: number, max: number) => {
@@ -146,3 +147,78 @@ export function passwordAudit(password: string): { length: number; hasUpper: boo
   return { length: [...password].length, hasUpper, hasLower, hasDigit, hasSymbol, estimatedBits: Math.round([...password].length * Math.log2(Math.max(pool, 1))) };
 }
 export function validUuid(value: string): boolean { return /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/iu.test(value.trim()); }
+
+export function inferJsonSchema(source: string): Record<string, unknown> {
+  const root: unknown = JSON.parse(source);
+  const infer = (value: unknown, depth = 0): Record<string, unknown> => {
+    if (depth > 16) throw new Error('nesting limit');
+    if (value === null) return { type: 'null' };
+    if (typeof value === 'string' || typeof value === 'boolean') return { type: typeof value };
+    if (typeof value === 'number') return { type: Number.isInteger(value) ? 'integer' : 'number' };
+    if (Array.isArray(value)) return { type: 'array', ...(value.length ? { items: infer(value[0], depth + 1) } : {}) };
+    if (typeof value === 'object') return { type: 'object', properties: Object.fromEntries(Object.entries(value).map(([key, item]) => [key, infer(item, depth + 1)])), required: Object.keys(value), additionalProperties: false };
+    throw new Error('unsupported JSON');
+  };
+  if (Array.isArray(root) && root.every(item => item && typeof item === 'object' && !Array.isArray(item))) {
+    const rows = root as Record<string, unknown>[];
+    const keys = [...new Set(rows.flatMap(Object.keys))].sort();
+    const properties = Object.fromEntries(keys.map(key => {
+      const values = rows.filter(row => Object.hasOwn(row, key)).map(row => row[key]);
+      const types = [...new Set(values.map(value => value === null ? 'null' : Array.isArray(value) ? 'array' : typeof value === 'number' ? Number.isInteger(value) ? 'integer' : 'number' : typeof value))].sort();
+      const schema = infer(values[0]);
+      if (types.length > 1) schema.type = types;
+      else if (values.length < rows.length) schema.type = [...new Set([...types, 'null'])].sort();
+      return [key, schema];
+    }));
+    return { type: 'array', items: { type: 'object', properties, required: keys.filter(key => rows.every(row => Object.hasOwn(row, key))), additionalProperties: false } };
+  }
+  return infer(root);
+}
+
+export function parseJsonPath(source: string, path: string): unknown[] {
+  if (source.length > 1_000_000 || path.length > 500 || !path.startsWith('$')) throw new Error('input or path limit exceeded');
+  const tokens: (string | number | '*')[] = [], pattern = /\.([A-Za-z_$][\w$]*)|\[(\d+|\*)\]/gy;
+  for (let at = 1; at < path.length;) { pattern.lastIndex = at; const match = pattern.exec(path); if (!match) throw new Error('unsupported JSONPath'); tokens.push(match[1] ?? (match[2] === '*' ? '*' : Number(match[2]))); at = pattern.lastIndex; }
+  let values: unknown[] = [JSON.parse(source)];
+  for (const token of tokens) values = values.flatMap(value => token === '*' ? Array.isArray(value) ? value : value && typeof value === 'object' ? Object.values(value) : [] : typeof token === 'number' ? Array.isArray(value) && token < value.length ? [value[token]] : [] : value && typeof value === 'object' && Object.hasOwn(value, token) ? [(value as Record<string, unknown>)[token]] : []);
+  if (values.length > 10_000) throw new Error('result limit exceeded');
+  return values;
+}
+
+export function toBase(source: string, radix: number): { binary: string; octal: string; decimal: string; hexadecimal: string } {
+  const text = source.trim().toLowerCase(), digits = '0123456789abcdef';
+  if (![2, 8, 10, 16].includes(radix) || !/^-?[0-9a-f]+$/u.test(text) || [...text.replace(/^-/, '')].some(char => digits.indexOf(char) >= radix)) throw new Error('invalid integer for selected base');
+  const negative = text.startsWith('-'); let value = 0n;
+  for (const char of text.replace(/^-/, '')) value = value * BigInt(radix) + BigInt(digits.indexOf(char));
+  if (negative) value = -value;
+  return { binary: value.toString(2), octal: value.toString(8), decimal: value.toString(10), hexadecimal: value.toString(16).toUpperCase() };
+}
+
+export function inspectUnicode(text: string): { codePoints: number; utf8Bytes: number; points: { character: string; codePoint: string; name: string }[] } {
+  if ([...text].length > 5000) throw new Error('character limit exceeded');
+  const points = [...text].map(character => { const n = character.codePointAt(0)!; return { character, codePoint: `U+${n.toString(16).toUpperCase().padStart(n <= 0xffff ? 4 : 5, '0')}`, name: n === 32 ? 'SPACE' : n === 10 ? 'LINE FEED' : n === 9 ? 'TAB' : n >= 48 && n <= 57 ? `DIGIT ${character}` : n >= 65 && n <= 90 ? `LATIN CAPITAL LETTER ${character}` : n >= 97 && n <= 122 ? `LATIN SMALL LETTER ${character.toUpperCase()}` : 'UNICODE CHARACTER' }; });
+  return { codePoints: points.length, utf8Bytes: new TextEncoder().encode(text).length, points };
+}
+
+export function profileCsv(source: string): { rows: number; columns: { name: string; missing: number; distinct: number }[] } {
+  const rows = parseDelimitedText(source, ',');
+  if (!rows.length || rows.length > 100_001) throw new Error('CSV row limit exceeded');
+  const [header, ...data] = rows;
+  if (!header.length || header.length > 200 || new Set(header).size !== header.length || data.some(row => row.length !== header.length)) throw new Error('inconsistent CSV headers or rows');
+  return { rows: data.length, columns: header.map((name, i) => { const values = data.map(row => row[i]); return { name, missing: values.filter(value => !value.trim()).length, distinct: new Set(values.filter(value => value.trim())).size }; }) };
+}
+
+export function validateRobots(source: string): { groups: number; directives: number; warnings: string[] } {
+  if (source.length > 1_000_000) throw new Error('file too large');
+  let groups = 0, directives = 0, hasAgent = false; const warnings: string[] = [];
+  for (const raw of source.split(/\r?\n/u)) {
+    const line = raw.split('#', 1)[0].trim(); if (!line) continue;
+    const match = line.match(/^([\w-]+)\s*:\s*(.*)$/u);
+    if (!match) { warnings.push(`Invalid directive: ${line.slice(0, 80)}`); continue; }
+    const key = match[1].toLowerCase(), value = match[2].trim();
+    if (key === 'user-agent') { if (!value) warnings.push('Empty user-agent'); else if (!hasAgent) { groups++; hasAgent = true; } continue; }
+    if (!['allow', 'disallow', 'crawl-delay', 'sitemap', 'host'].includes(key)) { warnings.push(`Unknown directive: ${key}`); continue; }
+    if (['allow', 'disallow'].includes(key) && !hasAgent) warnings.push(`${key} appears before user-agent`); else directives++;
+  }
+  return { groups, directives, warnings };
+}
