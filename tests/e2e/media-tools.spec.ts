@@ -73,6 +73,9 @@ test("OCR downloads explicitly then recognizes locally without network", async (
   await expect(page.locator("[data-output]")).toHaveValue(/HELLO WORLD/, {
     timeout: 60000,
   });
+  await expect(page.locator("[data-line-results]")).toBeVisible();
+  await expect(page.locator("[data-lines] li").first()).toContainText(/HELLO WORLD[\s\S]*%/);
+  await page.locator("[data-enhance]").selectOption("gray");
   await context.setOffline(true);
   await page.locator("[data-run]").click();
   await expect(page.locator("[data-output]")).toHaveValue(/HELLO WORLD/, {

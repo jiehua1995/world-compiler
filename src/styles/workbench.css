@@ -238,6 +238,32 @@
   font-size: 0.8rem;
   line-height: 1.6;
 }
+.lab .ocr-lines {
+  margin-top: 1rem;
+  border-top: 1px solid var(--line);
+}
+.lab .ocr-lines h3 {
+  margin: 0.75rem 0;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  font-weight: 600;
+}
+.lab .ocr-lines ol {
+  display: grid;
+  gap: 0.4rem;
+  max-height: 18rem;
+  overflow: auto;
+  margin: 0;
+  padding-left: 1.6rem;
+}
+.lab .ocr-lines li {
+  padding: 0.45rem 0.6rem;
+  border: 1px solid var(--line);
+  border-radius: 0.4rem;
+  color: var(--ink);
+  font-size: 0.85rem;
+  overflow-wrap: anywhere;
+}
 .lab .image-stage {
   min-height: 23rem;
   display: grid;

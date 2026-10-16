@@ -6,6 +6,41 @@ import {
   pageRange,
   parsePlaylist,
 } from "./core";
+async function preprocessImage(
+  file: File,
+  rotation: number,
+  enhancement: string,
+  signal: AbortSignal,
+): Promise<Blob | File> {
+  if (rotation === 0 && enhancement === "none") return file;
+  const image = await createImageBitmap(file);
+  try {
+    signal.throwIfAborted();
+    const canvas = document.createElement("canvas"),
+      quarterTurn = rotation % 180 !== 0;
+    canvas.width = quarterTurn ? image.height : image.width;
+    canvas.height = quarterTurn ? image.width : image.height;
+    const context = canvas.getContext("2d");
+    if (!context) throw Error("Canvas preprocessing is unavailable.");
+    context.filter = enhancement === "contrast"
+      ? "grayscale(1) contrast(1.8)"
+      : enhancement === "gray"
+        ? "grayscale(1)"
+        : "none";
+    context.translate(canvas.width / 2, canvas.height / 2);
+    context.rotate((rotation * Math.PI) / 180);
+    context.drawImage(image, -image.width / 2, -image.height / 2);
+    signal.throwIfAborted();
+    const blob = await new Promise<Blob | null>((resolve) =>
+      canvas.toBlob(resolve, "image/png"),
+    );
+    signal.throwIfAborted();
+    if (!blob) throw Error("Could not prepare the image.");
+    return blob;
+  } finally {
+    image.close();
+  }
+}
 export function mount(root: HTMLElement): () => void {
   const q = <T extends HTMLElement>(name: string) =>
     root.querySelector<T>(`[data-${name}]`)!;
@@ -15,6 +50,8 @@ export function mount(root: HTMLElement): () => void {
     run = q<HTMLButtonElement>("run"),
     cancel = q<HTMLButtonElement>("cancel"),
     save = q<HTMLButtonElement>("save");
+  const lineResults = root.querySelector<HTMLElement>("[data-line-results]"),
+    lines = root.querySelector<HTMLOListElement>("[data-lines]");
   const slug = root.dataset.lab!;
   let files: File[] = [],
     abort: AbortController | undefined,
@@ -164,7 +201,7 @@ export function mount(root: HTMLElement): () => void {
     q<HTMLButtonElement>("prepare")?.setAttribute("disabled", "");
     q<HTMLButtonElement>("download")?.setAttribute("disabled", "");
     q<HTMLInputElement>("files")?.setAttribute("disabled", "");
-    for (const name of ["url", "language", "range", "size"])
+    for (const name of ["url", "language", "range", "size", "rotation", "enhance"])
       q(name)?.setAttribute("disabled", "");
     root
       .querySelectorAll<HTMLButtonElement>("[data-list] button")
@@ -173,6 +210,8 @@ export function mount(root: HTMLElement): () => void {
     result = undefined;
     save.disabled = true;
     output.value = "";
+    lines?.replaceChildren();
+    if (lineResults) lineResults.hidden = true;
     status.textContent = message("处理中…", "Processing…", "Wird verarbeitet…");
     try {
       await action(abort.signal);
@@ -193,7 +232,7 @@ export function mount(root: HTMLElement): () => void {
       cancel.disabled = true;
       q("prepare")?.removeAttribute("disabled");
       q("files")?.removeAttribute("disabled");
-      for (const name of ["url", "language", "range", "size"])
+      for (const name of ["url", "language", "range", "size", "rotation", "enhance"])
         q(name)?.removeAttribute("disabled");
       list();
       if (playlist) q("download")?.removeAttribute("disabled");
@@ -436,12 +475,32 @@ export function mount(root: HTMLElement): () => void {
           activeWorker = await creating;
           worker = activeWorker;
           signal.throwIfAborted();
+          const prepared = await preprocessImage(
+            file,
+            Number(q<HTMLSelectElement>("rotation").value),
+            q<HTMLSelectElement>("enhance").value,
+            signal,
+          );
           const recognized = await abortable(
-            activeWorker.recognize(file),
+            activeWorker.recognize(prepared, {}, { blocks: true }),
             signal,
           );
           signal.throwIfAborted();
           output.value = recognized.data.text;
+          lines?.replaceChildren();
+          const recognizedLines = recognized.data.blocks?.flatMap((block) =>
+            block.paragraphs.flatMap((paragraph) => paragraph.lines),
+          ) ?? [];
+          for (const line of recognizedLines) {
+            if (!line.text.trim()) continue;
+            const item = document.createElement("li"),
+              confidence = Number.isFinite(line.confidence)
+                ? `${Math.round(Math.max(0, Math.min(100, line.confidence)))}%`
+                : "—";
+            item.textContent = `${line.text} · ${confidence}`;
+            lines?.append(item);
+          }
+          if (lineResults) lineResults.hidden = !lines?.children.length;
           setResult(
             new Blob([output.value], { type: "text/plain;charset=utf-8" }),
             "ocr.txt",
