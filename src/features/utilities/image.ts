@@ -36,10 +36,14 @@ export function mount(root: HTMLElement): () => void {
     width = get<HTMLInputElement>("image-width"),
     height = get<HTMLInputElement>("image-height"),
     download = get<HTMLButtonElement>("image-download"),
+    batchDownload = get<HTMLButtonElement>("image-batch-download"),
+    queue = get<HTMLOListElement>("image-queue"),
     error = get("tool-error"),
     status = get("tool-status");
   let image: DecodedImage | null = null,
     sourceFile: File | null = null,
+    sourceFiles: File[] = [],
+    batching = false,
     blob: Blob | null = null,
     request = 0,
     loadId = 0,
@@ -56,6 +60,7 @@ export function mount(root: HTMLElement): () => void {
   const fail = () => {
     blob = null;
     download.disabled = true;
+    batchDownload.disabled = true;
     canvas.hidden = true;
     error.hidden = false;
     error.textContent = say([
@@ -127,7 +132,6 @@ export function mount(root: HTMLElement): () => void {
   };
   const onFile = async () => {
     const selected = file.files?.[0];
-    if (!selected) return;
     const id = ++loadId;
     ++request;
     clearTimeout(timer);
@@ -138,16 +142,27 @@ export function mount(root: HTMLElement): () => void {
     canvas.width = 0;
     canvas.height = 0;
     download.disabled = true;
+    error.hidden = true;
     status.textContent = "";
     get("image-source").textContent = "—";
     get("image-result").textContent = "—";
-    if (
-      selected.size > 20000000 ||
-      !["image/png", "image/jpeg", "image/webp"].includes(selected.type)
-    ) {
+    sourceFiles = [...(file.files ?? [])];
+    queue.replaceChildren();
+    for (const item of sourceFiles) {
+      const row = document.createElement("li");
+      row.textContent = `${item.name} · ${(item.size / 1000).toFixed(1)} KB`;
+      queue.append(row);
+    }
+    batchDownload.disabled = sourceFiles.length < 2 || sourceFiles.length > 10;
+    if (sourceFiles.length > 10) {
       fail();
       return;
     }
+    if (sourceFiles.some((item) => item.size > 20000000 || !["image/png", "image/jpeg", "image/webp"].includes(item.type))) {
+      fail();
+      return;
+    }
+    if (!selected) return;
     try {
       const next = await decodeLocalImage(selected);
       if (id !== loadId) {
@@ -201,6 +216,54 @@ export function mount(root: HTMLElement): () => void {
           ext,
       );
     }
+    if ((event.target as Element).closest("[data-image-batch-download]"))
+      void exportBatch();
+  };
+  const exportBatch = async () => {
+    if (batching || sourceFiles.length < 2 || sourceFiles.length > 10) return;
+    batching = true;
+    batchDownload.disabled = true;
+    file.disabled = true;
+    const controls = [...root.querySelectorAll<HTMLInputElement | HTMLSelectElement>("input, select")];
+    controls.forEach((control) => (control.disabled = true));
+    const selectedImage = image;
+    const selectedFile = sourceFile;
+    const rows = [...queue.children];
+    let failed = false;
+    try {
+      for (let index = 0; index < sourceFiles.length; index++) {
+        const item = sourceFiles[index]!;
+        rows[index]!.textContent = `${item.name} · ${say(["处理中…", "Processing…", "Wird verarbeitet…"])}`;
+        const decoded = await decodeLocalImage(item);
+        try {
+          if (decoded.width * decoded.height > 32000000) throw new Error("Too large");
+          image = decoded;
+          sourceFile = item;
+          await render();
+          if (!blob) throw new Error("Could not encode image");
+          const ext = blob.type === "image/jpeg" ? "jpg" : blob.type.split("/")[1];
+          downloadBlob(blob, `${item.name.replace(/\.[^.]+$/u, "")}-${index + 1}-compiled.${ext}`);
+          rows[index]!.textContent = `${item.name} · ${say(["已导出", "Exported", "Exportiert"])}`;
+        } finally {
+          decoded.cleanup();
+        }
+      }
+      status.textContent = say(["批量导出完成。", "Batch export complete.", "Stapelexport abgeschlossen."]);
+    } catch {
+      failed = true;
+    } finally {
+      image = selectedImage;
+      sourceFile = selectedFile;
+      batching = false;
+      controls.forEach((control) => (control.disabled = false));
+      file.disabled = false;
+      batchDownload.disabled = sourceFiles.length < 2 || sourceFiles.length > 10;
+      if (image) await render();
+      if (failed) {
+        error.hidden = false;
+        error.textContent = say(["批量处理中断；请检查图片格式、尺寸及大小。", "Batch stopped; check image format and size.", "Stapelverarbeitung abgebrochen; Format und Größe prüfen."]);
+      }
+    }
   };
   const localeChange = () => {
     if (!error.hidden) fail();
@@ -215,6 +278,7 @@ export function mount(root: HTMLElement): () => void {
     clearTimeout(timer);
     image?.cleanup();
     file.removeEventListener("change", onFile);
+    batchDownload.disabled = true;
     root.removeEventListener("input", input);
     root.removeEventListener("click", click);
     document.removeEventListener("worldcompiler:localechange", localeChange);

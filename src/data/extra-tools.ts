@@ -8,9 +8,9 @@ export const extraTools: readonly ToolDefinition[] = [
     glyph: 13,
     title: { "zh-CN": "图像工坊", en: "Image Studio", de: "Bildwerkstatt" },
     summary: {
-      "zh-CN": "调整尺寸、裁剪、旋转与转换格式，预览后导出图片。",
-      en: "Resize, crop, rotate and convert images with a live export preview.",
-      de: "Bilder skalieren, zuschneiden, drehen und mit Vorschau konvertieren.",
+      "zh-CN": "调整尺寸、裁剪、旋转与转换格式；支持最多 10 张图片逐张预览和批量导出。",
+      en: "Resize, crop, rotate and convert up to 10 images with preview and batch export.",
+      de: "Bis zu 10 Bilder skalieren, zuschneiden, drehen, einzeln prüfen und stapelweise exportieren.",
     },
     tags: {
       "zh-CN": ["图片", "压缩", "裁剪", "转换"],

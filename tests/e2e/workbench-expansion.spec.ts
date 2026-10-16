@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import path from "node:path";
+import { readFile } from "node:fs/promises";
 import { tools } from '../../src/data/tools';
 
 test("expanded catalog has distinct artwork and every released tool", async ({
@@ -91,6 +92,29 @@ test("image studio transforms pixels and exports a local PNG", async ({
   const download = page.waitForEvent("download");
   await page.locator("[data-image-download]").click();
   expect((await download).suggestedFilename()).toContain("-compiled.png");
+});
+test("image studio batch-exports a bounded local image queue", async ({
+  page,
+}) => {
+  await page.goto("./tools/image-studio/");
+  await page.locator("[data-image-file]").setInputFiles([
+    { name: "first.png", mimeType: "image/png", buffer: await readFile(path.resolve("tests/fixtures/color-grid.png")) },
+    { name: "second.png", mimeType: "image/png", buffer: await readFile(path.resolve("tests/fixtures/color-grid.png")) },
+  ]);
+  await expect(page.locator("[data-image-queue] li")).toHaveCount(2);
+  await expect(page.locator("[data-image-batch-download]")).toBeEnabled();
+  const downloads: string[] = [];
+  page.on("download", (download) => downloads.push(download.suggestedFilename()));
+  await page.locator("[data-image-batch-download]").click();
+  await expect.poll(() => downloads.length).toBe(2);
+  expect(downloads).toEqual(["first-1-compiled.webp", "second-2-compiled.webp"]);
+  await expect(page.locator("[data-image-queue]")).toContainText("已导出");
+  const fixture = await readFile(path.resolve("tests/fixtures/color-grid.png"));
+  await page.locator("[data-image-file]").setInputFiles(Array.from({ length: 11 }, (_, index) => ({
+    name: `image-${index}.png`, mimeType: "image/png", buffer: fixture,
+  })));
+  await expect(page.locator("[data-image-batch-download]")).toBeDisabled();
+  await expect(page.locator("[data-tool-error]")).toBeVisible();
 });
 test("text diff renders safe content and clears stale results after editing", async ({
   page,

@@ -251,6 +251,21 @@
     )
     50%/24px 24px;
 }
+.lab .image-queue:empty {
+  display: none;
+}
+.lab .image-queue {
+  display: grid;
+  gap: 0.35rem;
+  max-height: 9rem;
+  overflow: auto;
+  margin: 0;
+  padding: 0.65rem 0.65rem 0.65rem 2.25rem;
+  border: 1px solid var(--line);
+  color: var(--ink-muted);
+  font-size: 0.8rem;
+  overflow-wrap: anywhere;
+}
 .lab canvas,
 .lab .image-stage img {
   display: block;
