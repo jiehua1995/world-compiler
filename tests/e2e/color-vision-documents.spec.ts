@@ -77,7 +77,7 @@ test("imports SVG with local styles, blocks active/external content and exports 
     false,
   );
   const download = page.waitForEvent("download");
-  await page.locator("[data-export]").click();
+  await page.locator('[data-export-mode="original"]').click();
   expect((await download).suggestedFilename()).toMatch(/\.png$/);
   await expect(page.locator("[data-pdf-controls]")).toBeHidden();
 });
@@ -122,7 +122,7 @@ test("imports a local PDF, changes page, localizes controls and exports the sele
   await expect(page.locator("[data-pdf-page]")).toHaveValue("2");
   await page.locator("[data-export-format]").selectOption("image/jpeg");
   const download = page.waitForEvent("download");
-  await page.locator("[data-export]").click();
+  await page.locator('[data-export-mode="original"]').click();
   const result = await download;
   expect(result.suggestedFilename()).toContain("page-2-");
   expect(result.suggestedFilename()).toMatch(/\.jpg$/);

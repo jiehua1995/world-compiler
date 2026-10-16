@@ -16,9 +16,10 @@ test('applies a stored English locale to the complete workbench on first load', 
 
   await page.goto('./tools/color-vision/');
 
-  await expect(page.getByRole('heading', { name: 'Original' })).toBeVisible();
+  await expect(page.getByRole('region', { name: 'Color vision mode comparison' }).getByRole('heading', { name: 'Original' })).toBeVisible();
   await expect(page.getByLabel('Original preview canvas')).toBeVisible();
-  await expect(page.getByRole('combobox', { name: 'Color-vision simulation mode' })).toHaveValue('protan');
+  await expect(page.locator('[data-vision-mode]')).toHaveCount(0);
+  await expect(page.locator('canvas[data-canvas]')).toHaveCount(9);
   await expect(page).toHaveTitle('Color Vision Lab / World Compiler');
   await expect(page.getByRole('region', { name: 'Color vision mode comparison' })).toBeVisible();
   await expect(page.getByText('INPUT / Local file')).toBeVisible();
@@ -27,7 +28,7 @@ test('applies a stored English locale to the complete workbench on first load', 
   await page.getByLabel('Choose a local image').setInputFiles(fixture);
   await expect(page.getByRole('status')).toContainText('Complete');
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: 'Export image' }).click();
+  await page.locator('[data-export-mode="protan"]').click();
   expect((await downloadPromise).suggestedFilename()).toBe('world-compiler-protan-100.png');
 });
 
@@ -69,8 +70,9 @@ test('imports locally and renders original and selected comparisons without uplo
   await page.getByLabel('选择本地图片').setInputFiles(fixture);
 
   await expect(page.getByRole('status')).toContainText('完成');
-  await expect(page.locator('canvas[data-canvas][data-rendered="true"]')).toHaveCount(2);
-  await expect(page.getByRole('article')).toHaveCount(2);
+  await expect(page.locator('canvas[data-canvas][data-rendered="true"]')).toHaveCount(9);
+  await expect(page.getByRole('article')).toHaveCount(9);
+  await expect(page.locator('[data-palette-preview-row]')).toHaveCount(9);
   expect(externalDataRequests).toEqual([]);
 });
 
@@ -87,7 +89,7 @@ test('accepts the same local image through drag and drop', async ({ page }) => {
   await page.locator('[data-drop-zone]').dispatchEvent('drop', { dataTransfer });
 
   await expect(page.getByRole('status')).toContainText('完成');
-  await expect(page.locator('canvas[data-canvas][data-rendered="true"]')).toHaveCount(2);
+  await expect(page.locator('canvas[data-canvas][data-rendered="true"]')).toHaveCount(9);
 });
 
 test('opens a focus-managed preview and restores its trigger', async ({ page }) => {
@@ -113,44 +115,74 @@ test('exports the selected JPEG and reveals quality control', async ({ page }) =
   await page.getByLabel('导出格式').selectOption('image/png');
   await expect(page.locator('[data-quality-row]')).toBeHidden();
   await page.getByLabel('导出格式').selectOption('image/jpeg');
-  await page.getByLabel('色觉模拟模式').selectOption('tritan');
   await setRange(page.locator('[data-severity]'), 75);
   const downloadPromise = page.waitForEvent('download');
-  await page.getByRole('button', { name: '导出图片' }).click();
+  await page.locator('[data-export-mode="tritan"]').click();
   const download = await downloadPromise;
   expect(download.suggestedFilename()).toBe('world-compiler-tritan-75.jpg');
 });
 
-test('updates each deficiency axis at its selected severity and supports monochrome presets', async ({ page }) => {
+test('shows every deficiency mode together and updates all three weak-axis simulations at once', async ({ page }) => {
   await page.goto('./tools/color-vision/');
   await page.getByLabel('选择本地图片').setInputFiles(fixture);
   await expect(page.getByRole('status')).toContainText('完成');
-  const simulation = page.locator('canvas[data-canvas="simulation"]');
+  const simulation = page.locator('canvas[data-canvas="protan"]');
   const original = page.locator('canvas[data-canvas="original"]');
   const pixels = (canvas: HTMLCanvasElement) => {
+    if (!canvas.width || !canvas.height) return [];
     const data = canvas.getContext('2d')!.getImageData(0, 0, canvas.width, canvas.height).data;
     return Array.from({ length: Math.ceil(data.length / 4096) }, (_, index) => data[index * 4096]);
   };
   const originalSample = await original.evaluate(pixels);
 
-  const modes = page.getByLabel('色觉模拟模式');
   const severity = page.locator('[data-severity]');
-  for (const [axis, label] of [['protan', '红色弱'], ['deutan', '绿色弱'], ['tritan', '蓝黄色弱']] as const) {
-    await modes.selectOption(axis);
-    await setRange(severity, 0);
-    await expect(simulation).toHaveAttribute('data-rendered', 'true');
-    await expect.poll(() => simulation.evaluate(pixels)).toEqual(originalSample);
-    await setRange(severity, 65);
-    await expect(simulation).toHaveAttribute('data-rendered', 'true');
-    await expect(simulation).toHaveAttribute('aria-label', new RegExp(label));
-  }
+  await setRange(severity, 0);
+  await expect.poll(() => simulation.evaluate(pixels)).toEqual(originalSample);
+  await setRange(severity, 65);
+  await expect(simulation).toHaveAttribute('data-rendered', 'true');
+  await expect(simulation).toHaveAttribute('aria-label', /红色弱/);
+  await expect(page.locator('canvas[data-canvas][data-rendered="true"]')).toHaveCount(9);
+  const modes = page.locator('.comparison-card');
+  await expect(modes).toHaveCount(9);
+  await expect(page.locator('[data-canvas="deuteranopia"]')).toBeVisible();
+  await expect(page.locator('[data-canvas="tritanopia"]')).toBeVisible();
+  await expect(page.locator('[data-canvas="blue-cone-monochromacy"]')).toBeVisible();
 
-  await modes.selectOption('achromatopsia');
-  await expect(severity).toBeHidden();
+  const monochrome = page.locator('canvas[data-canvas="achromatopsia"]');
+  await expect(monochrome).toHaveAttribute('data-rendered', 'true');
   await expect(simulation).toHaveAttribute('data-rendered', 'true');
-  await modes.selectOption('blue-cone-monochromacy');
-  await expect(simulation).toHaveAttribute('data-rendered', 'true');
-  await expect(simulation).toHaveAttribute('aria-label', /蓝锥单色视/);
+  await expect(page.locator('canvas[data-canvas="blue-cone-monochromacy"]')).toHaveAttribute('data-rendered', 'true');
+});
+
+test('builds and audits editable palettes, applies presets, and samples image colors locally', async ({ page }) => {
+  await page.goto('./tools/color-vision/');
+  await page.getByLabel('选择本地图片').setInputFiles(fixture);
+  await expect(page.getByRole('status')).toContainText('完成');
+  await expect(page.locator('[data-palette-preview-row]')).toHaveCount(9);
+  await page.locator('[data-palette-count]').fill('4');
+  await page.locator('[data-palette-count]').dispatchEvent('change');
+  await expect(page.locator('[data-palette-swatch]')).toHaveCount(4);
+  await page.locator('[data-palette-base]').fill('#FF0000');
+  await page.locator('[data-palette-count]').fill('3');
+  await page.locator('[data-palette-harmony]').selectOption('triadic');
+  await page.locator('[data-palette-generate]').click();
+  await expect(page.locator('[data-palette-hex]').nth(0)).toHaveValue('#FF0000');
+  await expect(page.locator('[data-palette-hex]').nth(1)).toHaveValue('#00FF00');
+  await expect(page.locator('[data-palette-hex]').nth(2)).toHaveValue('#0000FF');
+  await page.locator('[data-palette-preset]').selectOption('brand');
+  await page.locator('[data-palette-apply-preset]').click();
+  await expect(page.locator('[data-palette-swatch]')).toHaveCount(6);
+  await page.locator('[data-palette-foreground]').selectOption('0');
+  await page.locator('[data-palette-background]').selectOption('1');
+  await expect(page.locator('[data-palette-contrast-row]')).toHaveCount(9);
+  await page.locator('[data-palette-extract]').click();
+  expect(await page.locator('[data-palette-swatch]').count()).toBeGreaterThan(1);
+  await page.locator('[data-palette-sample]').click();
+  await page.locator('[data-canvas="original"]').click({ position: { x: 50, y: 50 } });
+  await expect(page.locator('[data-palette-status]')).toContainText('取样');
+  const download = page.waitForEvent('download');
+  await page.locator('[data-palette-export="json"]').click();
+  expect((await download).suggestedFilename()).toBe('color-palette.json');
 });
 
 test('recovers from a corrupt image and remains keyboard operable', async ({ page }) => {

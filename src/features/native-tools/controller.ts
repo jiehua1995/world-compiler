@@ -1,4 +1,4 @@
-import { convertUnit,editUrl,transformText,palette,wav,randomPassword,units } from './core';
+import { convertUnit,editUrl,palette,wav,randomPassword,units } from './core';
 import { say,downloadBlob,errorCopy } from '../workbench/browser';
 export function mount(root:HTMLElement):()=>void {
  const get=<T extends HTMLElement=HTMLInputElement>(name:string)=>root.querySelector<T>(`[data-${name}]`)!;
@@ -11,7 +11,6 @@ export function mount(root:HTMLElement):()=>void {
  const stopWorker=()=>{worker?.terminate();worker=undefined;if(timer)clearTimeout(timer);};
  const drawColors=()=>{const count=Number(value('count'));if(!Number.isInteger(count)||count<2||count>12)throw Error('count');const canvas=get<HTMLCanvasElement>('image');colors=palette(canvas.getContext('2d')!.getImageData(0,0,canvas.width,canvas.height).data,count);get('swatches').replaceChildren(...colors.map(color=>{const chip=document.createElement('div');chip.style.cssText=`background:${color};width:5rem;height:5rem;border:1px solid var(--line);display:grid;align-items:end`;const label=document.createElement('span');label.textContent=color;label.style.cssText='background:#fff;color:#111;font:12px monospace;text-align:center';chip.append(label);return chip;}));write(colors.map((c,i)=>`--color-${i+1}: ${c};`).join('\n'));};
  const handlers:Record<string,()=>void|Promise<void>>={
-  'text-workshop':()=>{const input=value('input');if(input.length>1000000)throw Error('size');write(transformText(input,value('mode')));status.textContent=say(['字符 / 单词 / 行','Characters / words / lines','Zeichen / Wörter / Zeilen'])+`: ${[...input].length} / ${(input.match(/\S+/gu)??[]).length} / ${input?input.split(/\r?\n/).length:0}`;},
   'unit-lab':()=>{const from=value('from'),to=value('to');if(value('value').trim()==='')throw Error('value');write(`${convertUnit(Number(value('value')),from,to).toLocaleString(document.documentElement.lang,{maximumSignificantDigits:14})} ${to}`);},
   'token-lab':()=>{const length=Number(value('length'));if(!Number.isInteger(length)||length<4||length>256)throw Error('length');write(value('kind')==='uuid'?crypto.randomUUID():randomPassword(length,'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'+(get<HTMLInputElement>('symbols').checked?'!@#$%^&*()-_=+[]{};:,.?':'')));},
   'url-lab':()=>{const result=editUrl(value('url'),get<HTMLInputElement>('strip').checked,value('query'));const u=new URL(result);write(result+'\n\n'+JSON.stringify({protocol:u.protocol,hostname:u.hostname,port:u.port,pathname:u.pathname,hash:u.hash,query:[...u.searchParams]},null,2));},

@@ -1,16 +1,16 @@
 ---
-interface Props { variant: 'original' | 'simulation'; name: string; nameEn: string; nameDe: string; }
-const { variant, name, nameEn, nameDe } = Astro.props;
+import type { VisionMode } from '../../features/color-vision/types';
+interface Props { variant: VisionMode; index: number; name: string; nameEn: string; nameDe: string; }
+const { variant, index, name, nameEn, nameDe } = Astro.props;
 ---
 
 <article class="comparison-card" data-comparison-card={variant}>
   <header>
-    <span class="comparison-card__index">{variant === 'original' ? '01' : '02'}</span>
+    <span class="comparison-card__index">{String(index).padStart(2, '0')}</span>
     <h2
       data-copy-zh={name}
       data-copy-en={nameEn}
       data-copy-de={nameDe}
-      data-simulation-title={variant === 'simulation' ? true : undefined}
     >{name}</h2>
   </header>
   <div class="comparison-card__viewport">
@@ -30,5 +30,8 @@ const { variant, name, nameEn, nameDe } = Astro.props;
     disabled
   >
     <span data-i18n="cv.inspect">放大查看</span><b aria-hidden="true">↗</b>
+  </button>
+  <button type="button" data-export-mode={variant} data-export disabled aria-label={name}>
+    <span data-i18n="cv.exportButton">导出此模式</span><b aria-hidden="true">↓</b>
   </button>
 </article>

@@ -24,6 +24,8 @@
     "@tesseract.js-data/eng": "^1.0.0",
     "astro": "7.3.8",
     "diff": "^9.0.0",
+    "markdown-it": "^15.0.3",
+    "markdown-it-task-lists": "^2.1.1",
     "pdf-lib": "^1.17.1",
     "pdfjs-dist": "^6.4.299",
     "qrcode": "^1.5.4",

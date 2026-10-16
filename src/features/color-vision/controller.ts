@@ -7,14 +7,13 @@ import { SimulationWorkerClient } from './worker-client';
 import type { Locale } from '../../i18n/types';
 import type { VisionMode } from './types';
 
-type CanvasSlot = 'original' | 'simulation';
+type CanvasSlot = VisionMode;
 type WorkbenchState = 'empty' | 'decoding' | 'processing' | 'ready' | 'error';
 const axisModes = new Set<VisionMode>(['protan', 'deutan', 'tritan']);
-const selectableModes = new Set<VisionMode>(['original', 'protan', 'deutan', 'tritan', 'achromatopsia', 'blue-cone-monochromacy']);
 
 export interface ColorVisionDependencies {
   decode(file: File, page?: number, signal?: AbortSignal): Promise<DecodedImage>;
-  render(decoded: DecodedImage, canvases: Map<CanvasSlot, HTMLCanvasElement>, requestId: number, isCurrent: () => boolean, mode: VisionMode, severity: number): Promise<void>;
+  render(decoded: DecodedImage, canvases: Map<CanvasSlot, HTMLCanvasElement>, requestId: number, isCurrent: () => boolean, severity: number): Promise<void>;
   exportMode(decoded: DecodedImage, mode: VisionMode, options: ExportOptions, severity: number): Promise<Blob>;
   download(blob: Blob, filename: string): void;
   dispose?(): void;
@@ -27,8 +26,8 @@ function createBrowserDependencies(): ColorVisionDependencies {
 
   return {
     decode: decodeVisionFile,
-    async render(decoded, canvases, requestId, isCurrent, mode, severity) {
-      const dimensions = fitWithin(decoded.width, decoded.height, 1200, 1_200_000);
+    async render(decoded, canvases, requestId, isCurrent, severity) {
+      const dimensions = fitWithin(decoded.width, decoded.height, 1000, 600_000);
       const sourceCanvas = document.createElement('canvas');
       sourceCanvas.width = dimensions.width;
       sourceCanvas.height = dimensions.height;
@@ -37,14 +36,13 @@ function createBrowserDependencies(): ColorVisionDependencies {
       sourceContext.drawImage(decoded.source, 0, 0, dimensions.width, dimensions.height);
       const sourcePixels = sourceContext.getImageData(0, 0, dimensions.width, dimensions.height).data;
 
-      for (const slot of ['original', 'simulation'] as const) {
+      for (const [slot, canvas] of canvases) {
         if (!isCurrent()) return;
-        const canvas = canvases.get(slot);
-        const context = canvas?.getContext('2d');
-        if (!canvas || !context) throw new ColorVisionError('processing-failed', 'A preview canvas is unavailable.');
-        const pixels = slot === 'original' || mode === 'original'
+        const context = canvas.getContext('2d');
+        if (!context) throw new ColorVisionError('processing-failed', 'A preview canvas is unavailable.');
+        const pixels = slot === 'original'
           ? new Uint8ClampedArray(sourcePixels)
-          : await client.process(requestId, sourcePixels, mode, severity);
+          : await client.process(requestId, sourcePixels, slot, axisModes.has(slot) ? severity : 100);
         if (!isCurrent()) return;
         canvas.width = dimensions.width;
         canvas.height = dimensions.height;
@@ -91,7 +89,7 @@ const names: Record<VisionMode, Record<Locale, string>> = {
 const messages: Record<WorkbenchState, Record<Locale, string>> = {
   empty: { 'zh-CN': '等待导入图片', en: 'Waiting for an image', de: 'Warte auf ein Bild' },
   decoding: { 'zh-CN': '正在读取图片…', en: 'Reading the image…', de: 'Bild wird gelesen…' },
-  processing: { 'zh-CN': '正在生成当前对照…', en: 'Generating the selected comparison…', de: 'Der ausgewählte Vergleich wird erstellt…' },
+  processing: { 'zh-CN': '正在生成所有色觉对照…', en: 'Generating all comparisons…', de: 'Alle Vergleiche werden erstellt…' },
   ready: { 'zh-CN': '处理完成，预览可导出', en: 'Complete — preview is ready to export', de: 'Fertig — die Vorschau kann exportiert werden' },
   error: { 'zh-CN': '处理未完成', en: 'Processing did not complete', de: 'Verarbeitung nicht abgeschlossen' },
 };
@@ -117,7 +115,6 @@ export function mountColorVisionLab(
   const status = root.querySelector<HTMLElement>('[data-workbench-status]');
   const error = root.querySelector<HTMLElement>('[data-workbench-error]');
   const reset = root.querySelector<HTMLButtonElement>('[data-reset]');
-  const modeControl = root.querySelector<HTMLSelectElement>('[data-vision-mode]');
   const severityControl = root.querySelector<HTMLInputElement>('[data-severity]');
   const severityRow = root.querySelector<HTMLElement>('[data-severity-row]');
   const severityValue = root.querySelector<HTMLElement>('[data-severity-value]');
@@ -129,19 +126,18 @@ export function mountColorVisionLab(
   const exportFormat = root.querySelector<HTMLSelectElement>('[data-export-format]');
   const exportQuality = root.querySelector<HTMLInputElement>('[data-export-quality]');
   const qualityRow = root.querySelector<HTMLElement>('[data-quality-row]');
-  const exportButton = root.querySelector<HTMLButtonElement>('[data-export]');
+  const exportButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-export-mode]'));
   const dialog = root.querySelector<HTMLDialogElement>('[data-preview-dialog]');
   const dialogCanvas = root.querySelector<HTMLCanvasElement>('[data-dialog-canvas]');
   const dialogTitle = root.querySelector<HTMLElement>('[data-dialog-title]');
   const dialogClose = root.querySelector<HTMLButtonElement>('[data-dialog-close]');
   const previewButtons = Array.from(root.querySelectorAll<HTMLButtonElement>('[data-preview-target]'));
-  const simulationTitle = root.querySelector<HTMLElement>('[data-simulation-title]');
   const canvases = new Map<CanvasSlot, HTMLCanvasElement>();
   root.querySelectorAll<HTMLCanvasElement>('[data-canvas]').forEach((canvas) => {
-    if (canvas.dataset.canvas === 'original' || canvas.dataset.canvas === 'simulation') canvases.set(canvas.dataset.canvas, canvas);
+    if (canvas.dataset.canvas && canvas.dataset.canvas in names) canvases.set(canvas.dataset.canvas as CanvasSlot, canvas);
   });
 
-  if (!input || !dropZone || !status || !error || !reset || !modeControl || !severityControl || !severityRow || !severityValue || !exportFormat || !exportQuality || !qualityRow || !exportButton || !dialog || !dialogCanvas || !dialogTitle || !dialogClose || !simulationTitle || canvases.size !== 2) {
+  if (!input || !dropZone || !status || !error || !reset || !severityControl || !severityRow || !severityValue || !exportFormat || !exportQuality || !qualityRow || !exportButtons.length || !dialog || !dialogCanvas || !dialogTitle || !dialogClose || canvases.size !== 9) {
     throw new Error('Color Vision Lab markup is incomplete.');
   }
 
@@ -150,7 +146,6 @@ export function mountColorVisionLab(
   let requestId = 0;
   let currentError: ColorVisionError['code'] | undefined;
   let previewTrigger: HTMLButtonElement | null = null;
-  let mode = selectableModes.has(modeControl.value as VisionMode) ? modeControl.value as VisionMode : 'protan';
   let severity = Number(severityControl.value) || 100;
   let destroyed = false;
   let selectedFile: File | null = null;
@@ -162,19 +157,14 @@ export function mountColorVisionLab(
     const activeLocale = locale();
     status.textContent = messages[state][activeLocale];
     error.textContent = currentError ? errorMessages[currentError][activeLocale] : '';
-    const selectedName = names[mode][activeLocale];
-    simulationTitle.textContent = selectedName;
-    const labels: Record<CanvasSlot, string> = {
-      original: activeLocale === 'en' ? 'Original preview canvas' : activeLocale === 'de' ? 'Original-Vorschau' : '原图预览画布',
-      simulation: activeLocale === 'en' ? `${selectedName} preview canvas` : activeLocale === 'de' ? `${selectedName} Vorschau` : `${selectedName}预览画布`,
-    };
-    canvases.forEach((canvas, slot) => canvas.setAttribute('aria-label', labels[slot]));
+    canvases.forEach((canvas, slot) => canvas.setAttribute('aria-label', slot === 'original' ? (activeLocale === 'en' ? 'Original preview canvas' : activeLocale === 'de' ? 'Original-Vorschau' : '原图预览画布') : (activeLocale === 'en' ? `${names[slot].en} preview canvas` : activeLocale === 'de' ? `${names[slot].de} Vorschau` : `${names[slot]['zh-CN']}预览画布`)));
     previewButtons.forEach((button) => {
       const slot = button.dataset.previewTarget as CanvasSlot;
-      const name = slot === 'original' ? names.original[activeLocale] : selectedName;
+      const name = names[slot][activeLocale];
       button.setAttribute('aria-label', previewLabel(name, activeLocale));
     });
-    severityRow.hidden = !axisModes.has(mode);
+    exportButtons.forEach(button => { const name = names[button.dataset.exportMode as VisionMode][activeLocale]; button.setAttribute('aria-label', activeLocale === 'en' ? `Export ${name}` : activeLocale === 'de' ? `${name} exportieren` : `导出${name}`); });
+    severityRow.hidden = false;
     severityValue.textContent = `${severity}%`;
     severityControl.setAttribute('aria-valuetext', `${severity}%`);
     root.querySelectorAll<HTMLElement>('[data-copy-zh][data-copy-en][data-copy-de]').forEach((element) => {
@@ -191,7 +181,7 @@ export function mountColorVisionLab(
     error.hidden = next !== 'error';
     const ready = next === 'ready';
     previewButtons.forEach((button) => { button.disabled = !ready; });
-    [exportFormat, exportQuality, exportButton].forEach((control) => { control.disabled = !ready; });
+    [exportFormat, exportQuality, ...exportButtons].forEach((control) => { control.disabled = !ready; });
     if (pdfRender) pdfRender.disabled = next === 'decoding' || next === 'processing';
     localizeDynamic();
   };
@@ -210,7 +200,7 @@ export function mountColorVisionLab(
   const renderImage = async (image: DecodedImage, currentRequest: number) => {
     setState('processing');
     try {
-      await dependencies.render(image, canvases, currentRequest, () => !destroyed && requestId === currentRequest, mode, severity);
+      await dependencies.render(image, canvases, currentRequest, () => !destroyed && requestId === currentRequest, severity);
       if (!destroyed && requestId === currentRequest) setState('ready');
     } catch (problem) {
       if (!destroyed && requestId === currentRequest) setState('error', problem);
@@ -261,17 +251,13 @@ export function mountColorVisionLab(
   const onDragOver = (event: DragEvent) => { event.preventDefault(); dropZone.classList.add('is-dragging'); };
   const onDragLeave = () => dropZone.classList.remove('is-dragging');
   const onDrop = (event: DragEvent) => { event.preventDefault(); dropZone.classList.remove('is-dragging'); void loadFile(event.dataTransfer?.files[0]); };
-  const onMode = () => {
-    if (!selectableModes.has(modeControl.value as VisionMode)) return;
-    mode = modeControl.value as VisionMode;
-    rerender();
-  };
   const onSeverity = () => { severity = Math.max(0, Math.min(100, Number(severityControl.value) || 0)); rerender(); };
   const onFormat = () => { qualityRow.hidden = exportFormat.value !== 'image/jpeg'; };
-  const onExport = async () => {
+  const onExport = async (event: Event) => {
     if (!activeImage) return;
+    const exportButton = event.currentTarget as HTMLButtonElement;
     const exportingImage = activeImage;
-    const exportMode = mode;
+    const exportMode = exportButton.dataset.exportMode as VisionMode;
     const exportSeverity = severity;
     const format = exportFormat.value as ExportOptions['format'];
     exportButton.disabled = true;
@@ -297,7 +283,7 @@ export function mountColorVisionLab(
     dialogCanvas.height = source.height;
     context.drawImage(source, 0, 0);
     const activeLocale = locale();
-    const name = slot === 'original' ? names.original[activeLocale] : names[mode][activeLocale];
+    const name = names[slot][activeLocale];
     dialogTitle.textContent = activeLocale === 'en' ? `${name} preview` : activeLocale === 'de' ? `${name} Vorschau` : `${name}预览`;
     previewTrigger = button;
     dialog.showModal();
@@ -312,10 +298,9 @@ export function mountColorVisionLab(
   dropZone.addEventListener('dragleave', onDragLeave);
   dropZone.addEventListener('drop', onDrop);
   reset.addEventListener('click', resetWorkbench);
-  modeControl.addEventListener('change', onMode);
   severityControl.addEventListener('input', onSeverity);
   exportFormat.addEventListener('change', onFormat);
-  exportButton.addEventListener('click', onExport);
+  exportButtons.forEach(button => button.addEventListener('click', onExport));
   previewButtons.forEach((button) => button.addEventListener('click', onPreview));
   dialogClose.addEventListener('click', onDialogCloseButton);
   dialog.addEventListener('close', onDialogClose);
@@ -335,10 +320,9 @@ export function mountColorVisionLab(
     dropZone.removeEventListener('dragleave', onDragLeave);
     dropZone.removeEventListener('drop', onDrop);
     reset.removeEventListener('click', resetWorkbench);
-    modeControl.removeEventListener('change', onMode);
     severityControl.removeEventListener('input', onSeverity);
     exportFormat.removeEventListener('change', onFormat);
-    exportButton.removeEventListener('click', onExport);
+    exportButtons.forEach(button => button.removeEventListener('click', onExport));
     previewButtons.forEach((button) => button.removeEventListener('click', onPreview));
     dialogClose.removeEventListener('click', onDialogCloseButton);
     dialog.removeEventListener('close', onDialogClose);

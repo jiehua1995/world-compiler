@@ -20,14 +20,14 @@ The interface is available in Chinese, English, and German. The site can be inst
 
 ### The toolkit
 
-There are **49 tools**, including:
+There are **48 distinct workbenches** (49 compatible tool URLs), including:
 
 - **Vision & design:** color-vision simulation, WCAG contrast checks, palette extraction, color conversion, gradients, image editing/conversion, SVG cleanup, and favicon creation.
-- **Text & writing:** plain-language analysis, text diff, Markdown diagnostics/tables, Unicode inspection, regex testing, HTML entities, random copy and greetings.
+- **Text & writing:** plain-language analysis, text diff, a side-by-side Markdown editor with safe live preview, Unicode inspection, regex testing, HTML entities, random copy and greetings.
 - **Data & development:** JSON/YAML/XML/CSV conversion, JSON Schema inference, bounded JSONPath queries, CSV profiling, CSS cleanup, cron, IPv4 subnets, date/time, hashes, and UUIDs.
 - **Media & documents:** local OCR, PDF organization and text extraction, images to PDF, audio trimming, QR codes, and downloads of public M3U8 VOD playlists.
 
-Recent additions include JSON Schema inference; JSONPath selection (properties, array indexes, and wildcards); arbitrary-precision base conversion; Unicode code-point and UTF-8 byte inspection; CSV missing/distinct-value profiling; and a local robots.txt syntax checker. Each tool has its own page.
+Recent additions include JSON Schema inference; JSONPath selection (properties, array indexes, and wildcards); arbitrary-precision base conversion; Unicode code-point and UTF-8 byte inspection; CSV missing/distinct-value profiling; and a local robots.txt syntax checker. Markdown tables are now part of Markdown Studio; the old `/tools/markdown-table/` URL remains available and opens its table-insertion panel.
 
 ## Privacy and limitations
 
@@ -40,6 +40,7 @@ A few features need network access for specific resources: the media tool reques
 This project is open source under the MIT License. Copyright © 2026 World Compiler contributors. Bug reports, translations, tool ideas, and code contributions are welcome. New tools should include Chinese, English, and German copy, local-first processing, input limits, accessibility, and automated tests.
 
 - [How to build a tool and submit a pull request](CONTRIBUTING.md)
+- [Tool quality roadmap](docs/TOOL-QUALITY-ROADMAP.md)
 - [Architecture and local commands](docs/DEVELOPMENT.md)
 - [Third-party notices](public/THIRD_PARTY_NOTICES.txt)
 - [简体中文 README](README.md)

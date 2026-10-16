@@ -3,55 +3,45 @@ import ComparisonCard from './ComparisonCard.astro';
 import DropZone from './DropZone.astro';
 import ExportPanel from './ExportPanel.astro';
 import PreviewDialog from './PreviewDialog.astro';
+import PaletteWorkbench from './PaletteWorkbench.astro';
 
 const modes = [
-  { mode: 'original', key: 'cv.mode.original', zh: '原图', en: 'Original', de: 'Original' },
-  { mode: 'protan', key: 'cv.mode.protan', zh: '红色弱 / Protanomaly', en: 'Red-weak / Protanomaly', de: 'Rot-Schwäche / Protanomalie' },
-  { mode: 'deutan', key: 'cv.mode.deutan', zh: '绿色弱 / Deuteranomaly', en: 'Green-weak / Deuteranomaly', de: 'Grün-Schwäche / Deuteranomalie' },
-  { mode: 'tritan', key: 'cv.mode.tritan', zh: '蓝黄色弱 / Tritanomaly', en: 'Blue-yellow weak / Tritanomaly', de: 'Blau-Gelb-Schwäche / Tritanomalie' },
-  { mode: 'achromatopsia', key: 'cv.mode.achromatopsia', zh: '全色盲 / Achromatopsia', en: 'Achromatopsia', de: 'Achromatopsie' },
-  { mode: 'blue-cone-monochromacy', key: 'cv.mode.blueCone', zh: '蓝锥单色视 / Blue-cone monochromacy', en: 'Blue-cone monochromacy', de: 'Blauzapfen-Monochromasie' },
+  ['original', '原图', 'Original', 'Original'],
+  ['protan', '红色弱 / Protanomaly', 'Red-weak / Protanomaly', 'Rot-Schwäche / Protanomalie'],
+  ['deutan', '绿色弱 / Deuteranomaly', 'Green-weak / Deuteranomaly', 'Grün-Schwäche / Deuteranomalie'],
+  ['tritan', '蓝黄色弱 / Tritanomaly', 'Blue-yellow weak / Tritanomaly', 'Blau-Gelb-Schwäche / Tritanomalie'],
+  ['protanopia', '红色盲 / Protanopia', 'Red-blind / Protanopia', 'Protanopie'],
+  ['deuteranopia', '绿色盲 / Deuteranopia', 'Green-blind / Deuteranopia', 'Deuteranopie'],
+  ['tritanopia', '蓝色盲 / Tritanopia', 'Blue-blind / Tritanopia', 'Tritanopie'],
+  ['achromatopsia', '全色盲 / Achromatopsia', 'Achromatopsia', 'Achromatopsie'],
+  ['blue-cone-monochromacy', '蓝锥单色视 / Blue-cone monochromacy', 'Blue-cone monochromacy', 'Blauzapfen-Monochromasie'],
 ] as const;
 ---
 
 <div class="color-vision-lab" data-color-vision-lab data-state="empty">
   <section class="input-panel" aria-labelledby="input-title">
-    <div>
-      <p class="section-kicker" data-copy-zh="INPUT / 本地文件" data-copy-en="INPUT / Local file" data-copy-de="INPUT / Lokale Datei">INPUT / 本地文件</p>
-      <h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2>
-    </div>
+    <div><p class="section-kicker" data-copy-zh="INPUT / 本地文件" data-copy-en="INPUT / Local file" data-copy-de="INPUT / Lokale Datei">INPUT / 本地文件</p><h2 id="input-title" data-i18n="cv.inputTitle">图片输入</h2></div>
     <DropZone />
-    <form class="pdf-controls" data-pdf-controls data-pdf-page-form hidden>
-      <label><span data-copy-zh="PDF 页码" data-copy-en="PDF page" data-copy-de="PDF-Seite">PDF 页码</span><input type="number" min="1" step="1" value="1" required data-pdf-page /></label>
-      <span data-pdf-count></span>
-      <button type="submit" data-pdf-render data-copy-zh="显示此页" data-copy-en="Show page" data-copy-de="Seite anzeigen">显示此页</button>
-    </form>
-    <p class="input-format-note" data-copy-zh="SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为最长边 4096 像素、最多 16 MP 的静态图像，再模拟并导出 PNG/JPEG。SVG 外部资源和交互内容会移除，PDF 可选择页码。" data-copy-en="SVG up to 5 MB; PDF up to 32 MB. Both are rasterized to a static image (max edge 4096 px / 16 MP) for simulation and PNG/JPEG export. SVG external resources and interactive content are removed; PDF supports page selection." data-copy-de="SVG bis 5 MB; PDF bis 32 MB. Beide werden als statisches Rasterbild (maximal 4096 px / 16 MP) simuliert und als PNG/JPEG exportiert. Externe und interaktive SVG-Inhalte werden entfernt; bei PDFs ist eine Seitenauswahl möglich.">SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为最长边 4096 像素、最多 16 MP 的静态图像，再模拟并导出 PNG/JPEG。SVG 外部资源和交互内容会移除，PDF 可选择页码。</p>
-    <div class="workbench-feedback">
-      <p role="status" aria-live="polite" data-workbench-status data-i18n="cv.status.empty">等待导入图片</p>
-      <p role="alert" data-workbench-error hidden></p>
-      <button type="button" data-reset data-i18n="cv.reset">重置工作台</button>
-    </div>
-    <div class="simulation-controls">
-      <label>
-        <span data-i18n="cv.modeLabel">色觉模拟模式</span>
-        <select data-vision-mode>
-          {modes.map(({ mode, key }) => <option value={mode} selected={mode === 'protan'} data-i18n={key}>红色弱 / Protanomaly</option>)}
-        </select>
-      </label>
-      <label data-severity-row>
-        <span data-i18n="cv.severityLabel">模拟强度</span>
-        <span data-severity-value aria-hidden="true">100%</span>
-        <input id="simulation-severity" type="range" min="0" max="100" step="1" value="100" data-severity aria-describedby="severity-help" />
-      </label>
-      <p id="severity-help" data-i18n="cv.severityHelp">0% 为原图；100% 使用对应二色视觉矩阵。这只是模型参数，不是临床程度。</p>
-    </div>
+    <form class="pdf-controls" data-pdf-controls data-pdf-page-form hidden><label><span data-copy-zh="PDF 页码" data-copy-en="PDF page" data-copy-de="PDF-Seite">PDF 页码</span><input type="number" min="1" step="1" value="1" required data-pdf-page /></label><span data-pdf-count></span><button type="submit" data-pdf-render data-copy-zh="显示此页" data-copy-en="Show page" data-copy-de="Seite anzeigen">显示此页</button></form>
+    <p class="input-format-note" data-copy-zh="SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为静态图像；SVG 外部资源和交互内容会移除，PDF 可选择页码。" data-copy-en="SVG up to 5 MB; PDF up to 32 MB. Both become static images; external and interactive SVG content is removed, and PDFs support page selection." data-copy-de="SVG bis 5 MB; PDF bis 32 MB. Beide werden statisch gerastert; externe/interaktive SVG-Inhalte werden entfernt, PDFs unterstützen die Seitenauswahl。">SVG 上限 5 MB，PDF 上限 32 MB。两种格式均转为静态图像；SVG 外部资源和交互内容会移除，PDF 可选择页码。</p>
+    <div class="workbench-feedback"><p role="status" aria-live="polite" data-workbench-status data-i18n="cv.status.empty">等待导入图片</p><p role="alert" data-workbench-error hidden></p><button type="button" data-reset data-i18n="cv.reset">重置工作台</button></div>
+    <div class="simulation-controls"><label data-severity-row><span data-i18n="cv.severityLabel">模拟强度</span><span data-severity-value aria-hidden="true">100%</span><input id="simulation-severity" type="range" min="0" max="100" step="1" value="100" data-severity aria-describedby="severity-help" /></label><p id="severity-help" data-i18n="cv.severityHelp">0% 为原图；100% 使用对应二色视觉矩阵。这只是模型参数，不是临床程度。</p></div>
   </section>
   <section class="comparison-section" aria-label="色觉模式对照" data-label-zh="色觉模式对照" data-label-en="Color vision mode comparison" data-label-de="Vergleich der Farbsehmodi">
-    <ComparisonCard variant="original" name="原图" nameEn="Original" nameDe="Original" />
-    <ComparisonCard variant="simulation" name="红色弱 / Protanomaly" nameEn="Red-weak / Protanomaly" nameDe="Rot-Schwäche / Protanomalie" />
+    {modes.map(([mode, name, nameEn, nameDe], index) => <ComparisonCard variant={mode} index={index + 1} name={name} nameEn={nameEn} nameDe={nameDe} />)}
   </section>
+  <PaletteWorkbench />
   <p class="model-note" data-i18n="cv.modelNote">红/绿/蓝黄色轴采用 Machado 等人（2009）的教育性近似。全色盲与蓝锥单色视为独立通道近似；结果不用于诊断，也不代表个体体验。</p>
-  <ExportPanel />
-  <PreviewDialog />
+  <ExportPanel /><PreviewDialog />
 </div>
+
+<script>
+  import { mountColorVisionLab } from '../../features/color-vision/controller';
+  import { mountPaletteWorkbench } from '../../features/color-vision/palette-controller';
+  const root = document.querySelector<HTMLElement>('[data-color-vision-lab]');
+  if (root) {
+    const controller = mountColorVisionLab(root);
+    const palette = mountPaletteWorkbench(root);
+    window.addEventListener('pagehide', () => { controller.destroy(); palette.destroy(); }, { once: true });
+  }
+</script>

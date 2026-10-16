@@ -2,6 +2,7 @@ import { parseDelimitedText, serializeCsv } from '../data-shape/csv';
 import { prepareSvg } from '../color-vision/vector-io';
 import { boundedRandomInt, convertColor, decodeHtmlEntities, explainCron, formatHtmlEntities, generateRandomFrom, inferJsonSchema, inspectUnicode, ipv4Subnet, nextCronRuns, normalizeText, parseJsonPath, parseYamlJson, passwordAudit, profileCsv, stringifyJsonYaml, toBase, validateRobots, validUuid } from './core';
 import { downloadBlob } from '../workbench/browser';
+import { mountMarkdownStudio } from '../markdown-studio/controller';
 
 const copy = (zh: string, en: string, de: string) => ({ 'zh-CN': zh, en, de }[document.documentElement.lang] ?? zh);
 const secureInteger = (min:number,max:number) => {
@@ -27,6 +28,7 @@ const blobFromCanvas = (canvas: HTMLCanvasElement, type: string, quality: number
 const fileSize = (size: number) => `${(size / 1024).toFixed(1)} KiB (${size.toLocaleString()} bytes)`;
 
 export function mount(root: HTMLElement): () => void {
+ if(root.dataset.proLab==='markdown-studio'||root.dataset.proLab==='markdown-table') return mountMarkdownStudio(root);
  const get = <T extends HTMLElement = HTMLInputElement>(key: string) => root.querySelector<T>(`[data-${key}]`)!;
  const slug = root.dataset.proLab!; const input = root.querySelector<HTMLTextAreaElement>('[data-input]');
  const output = get<HTMLTextAreaElement>('output'), status = get('status'), runButton = get<HTMLButtonElement>('run');
@@ -121,7 +123,6 @@ export function mount(root: HTMLElement): () => void {
     }
     case 'favicon-studio': { const mark=get<HTMLInputElement>('mark').value.trim().slice(0,3)||'WC'; const escape=(s:string)=>s.replace(/[&<>"']/gu,(c)=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]!)); const svg=`<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"><rect width="128" height="128" rx="28" fill="${get<HTMLInputElement>('color-a').value}"/><text x="64" y="72" text-anchor="middle" dominant-baseline="middle" fill="${get<HTMLInputElement>('color-b').value}" font-family="system-ui,sans-serif" font-size="48" font-weight="700">${escape(mark)}</text></svg>`; const blob=new Blob([svg],{type:'image/svg+xml'}); if(preview){const url=URL.createObjectURL(blob),img=document.createElement('img');img.alt=copy('生成的 SVG 图标','Generated SVG icon','Erzeugtes SVG-Symbol');img.src=url;preview.replaceChildren(img);preview.hidden=false;preview.dataset.objectUrl=url;} setResult(`${svg}\n\n<link rel="icon" type="image/svg+xml" href="/favicon.svg">`,blob,'favicon.svg'); break; }
     case 'password-audit': { if(!text)throw new Error('enter password'); const audit=passwordAudit(text); setResult(`${copy('字符数','Length','Länge')}: ${audit.length}\n${copy('大写字母','Uppercase letters','Großbuchstaben')}: ${audit.hasUpper}\n${copy('小写字母','Lowercase letters','Kleinbuchstaben')}: ${audit.hasLower}\n${copy('数字','Digits','Ziffern')}: ${audit.hasDigit}\n${copy('符号','Symbols','Sonderzeichen')}: ${audit.hasSymbol}\n${copy('粗略熵估算','Rough entropy estimate','Grobe Entropieschätzung')}: ${audit.estimatedBits} bits\n\n${copy('这是字符池模型估算，不等同于实际抗破解时间；常见词、重复模式和泄露密码会显著降低安全性。','This character-pool estimate is not crack-time prediction; common words, patterns and breached passwords reduce security.','Diese Zeichensatz-Schätzung ist keine Aussage zur Knackzeit; Wörter, Muster und kompromittierte Passwörter senken die Sicherheit.')}`); break; }
-    case 'text-format': setResult(normalizeText(text,get<HTMLSelectElement>('mode').value as 'slug'|'title'|'sentence'|'trim'|'dedupe')); break;
     case 'markdown-table': {
      const delimiter=get<HTMLSelectElement>('mode').value==='tab'?'\t':','; const rows=parseDelimitedText(text,delimiter); if(rows.length<2||!rows[0].length||rows.some((row)=>row.length!==rows[0].length))throw new Error('rows must have equal columns and header'); const escape=(value:string)=>value.replace(/\|/gu,'\\|').replace(/\r?\n/gu,'<br>'); setResult(`| ${rows[0].map(escape).join(' | ')} |\n| ${rows[0].map(()=> '---').join(' | ')} |\n${rows.slice(1).map((row)=>`| ${row.map(escape).join(' | ')} |`).join('\n')}`,new Blob([output.value],{type:'text/markdown'}),'table.md'); break;
     }

@@ -16,7 +16,7 @@ const categoryDe = tool.category === 'vision' ? 'Visuelles' : tool.category === 
 
 <article class:list={['tool-card', { 'tool-card--available': tool.status === 'available' }]} data-tool-slug={tool.slug}>
   <div class="tool-card__visual">
-    {tool.asset ? <img src={`${baseWithSlash}${tool.asset}`} alt="" width="320" height="320" loading="lazy" /> : <ToolGlyph index={tool.glyph ?? 0} icon={tool.icon} />}
+    {tool.asset ? <img src={`${baseWithSlash}${tool.asset}`} alt="" width="320" height="320" loading="lazy" /> : <ToolGlyph index={tool.glyph ?? 0} />}
     <span class="tool-card__sequence">WC—{tool.sequence}</span>
   </div>
   <div class="tool-card__body">

@@ -1,45 +1,11 @@
 ---
-interface Props { index: number; icon?: string; }
-const { index, icon } = Astro.props;
+interface Props { index: number; }
+const { index } = Astro.props;
 const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
-const paths: Record<string,string[]> = {
- 'random-forge':['M18 10 32 3 46 10 46 30 32 38 18 30Z','M18 10 32 18 46 10','M32 18v20','M25 11h.1M39 11h.1M25 25h.1M39 25h.1'],
- 'markdown-studio':['M12 12h7M12 21h7M12 32h40M12 42h35M12 52h27','M7 9v6M7 18v6M7 28v8'],
- 'yaml-json':['M25 10c-8 0-8 4-8 10v3c0 4-3 6-7 7 4 1 7 3 7 7v3c0 6 0 10 8 10','M39 10c8 0 8 4 8 10v3c0 4 3 6 7 7-4 1-7 3-7 7v3c0 6 0 10-8 10','M25 32h14'],
- 'xml-studio':['M25 17 11 32l14 15','M39 17l14 15-14 15','M36 12 28 52'],
- 'css-studio':['M32 6 52 13l-3 29-17 13-17-13-3-29Z','M23 22h18M22 31h17l-2 10-5 4-6-4'],
- 'csv-json':['M10 12h44v40H10Z','M10 25h44M10 38h44M24 12v40M39 12v40'],
- 'color-converter':['M32 8c-5 9-17 21-17 31a17 17 0 0 0 34 0C49 29 37 17 32 8Z','M23 40a9 9 0 0 0 9 9'],
- 'gradient-studio':['M12 14h40M12 24h40M12 34h40M12 44h40M12 54h40','M15 14v40M24 14v40M34 14v40M44 14v40'],
- 'cron-planner':['M32 8a24 24 0 1 0 0 48 24 24 0 0 0 0-48Z','M32 17v16l11 7','M32 4v5M60 32h-5'],
- 'subnet-calculator':['M32 11v16M14 48V37l18-10 18 10v11','M11 49a6 6 0 1 0 12 0 6 6 0 0 0-12 0ZM26 10a6 6 0 1 0 12 0 6 6 0 0 0-12 0ZM43 49a6 6 0 1 0 12 0 6 6 0 0 0-12 0Z'],
- 'date-math':['M13 15h38v38H13Z','M13 25h38M23 10v10M41 10v10','M22 35h7M35 35h7M22 44h7'],
- 'hash-studio':['M24 10 17 54M47 10 40 54M11 25h42M8 41h42'],
- 'uuid-studio':['M11 15h42v34H11Z','M20 25a6 6 0 1 0 12 0 6 6 0 0 0-12 0ZM20 39h13M38 24h9M38 32h9M38 40h9'],
- 'html-entities':['M32 11 11 32l21 21M32 11l21 21-21 21','M40 45l7-14 7 14M42 41h10'],
- 'svg-optimizer':['M13 49c10-24 28-34 39-34','M12 49h8M49 11v8M25 32a4 4 0 1 0 8 0 4 4 0 0 0-8 0ZM47 14a4 4 0 1 0 8 0 4 4 0 0 0-8 0Z'],
- 'image-converter':['M10 14h34v34H10Z','M16 40l9-10 7 7 4-5 8 8','M46 20h8v34H20v-6','M26 8h12'],
- 'favicon-studio':['M15 10h34v44H15Z','M23 41l9-22 9 22M26 35h12','M45 10l4 7'],
- 'image-metadata':['M10 14h35v30H10Z','M14 38l9-10 7 7 6-8 8 11','M12 52h42M20 48v8M30 48v5M40 48v8M50 48v5'],
- 'password-audit':['M32 7 51 14v18c0 13-8 21-19 26-11-5-19-13-19-26V14Z','M23 32l6 6 13-14'],
- 'text-format':['M12 15h28M26 15v34M18 49h16','M48 27h10M53 22v22M47 44h12'],
- 'markdown-table':['M12 9h40v46H12Z','M12 22h40M12 34h40M12 46h40M27 22v33M40 22v33'],
- 'json-schema':['M12 10h40v44H12Z','M21 22h22M21 32h14M21 42h18','M42 38l5 5 9-12'],
- 'jsonpath-query':['M13 12h38v40H13Z','M22 22h4M38 22h4M22 40h4M38 40h4','M26 22h12M26 40h12M32 22v18'],
- 'base-converter':['M10 18h44v30H10Z','M17 27h6M17 37h6M29 27h6M29 37h6M41 27h6M41 37h6','M18 12l-5 5 5 5'],
- 'unicode-inspector':['M12 12h40v40H12Z','M20 22h24M32 22v21M24 43h16','M15 17h2M47 17h2'],
- 'csv-profiler':['M10 10h44v44H10Z','M10 23h44M10 37h44M25 23v31M40 23v31','M16 18h3M31 31h3M46 45h3'],
- 'robots-checker':['M32 7 52 15v16c0 12-8 21-20 27-12-6-20-15-20-27V15Z','M22 31h20M22 39h13','M20 20h24'],
-};
 ---
-{icon && paths[icon] ? <span class="instrument-glyph instrument-glyph--vector" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false">{paths[icon].map((d,i)=><path d={d} class={i===0?'glyph-main':'glyph-detail'} />)}</svg></span> : <span class="instrument-glyph" aria-hidden="true" style={`--glyph-sheet:url('${base}assets/instrument-glyphs/contact-sheet.png');--glyph-position:${((index % 6 + .05) / 5.1) * 100}% ${((Math.floor(index / 6) + .05) / 5.1) * 100}%`}></span>}
+<span class="instrument-glyph" aria-hidden="true" style={`--glyph-sheet:url('${base}assets/instrument-glyphs/contact-sheet.png');--glyph-position:${((index % 6 + .05) / 5.1) * 100}% ${((Math.floor(index / 6) + .05) / 5.1) * 100}%`}></span>
 <style is:global>
 .instrument-glyph { position:relative; display:inline-block; flex:none; width:7rem; aspect-ratio:1; border-radius:.8rem; background-color:#fffdf8; overflow:hidden; }
 .instrument-glyph::after { content:''; position:absolute; inset:8%; background-image:var(--glyph-sheet); background-position:var(--glyph-position); background-size:666.6667% 666.6667%; }
-.instrument-glyph--vector { display:grid; place-items:center; border:1px solid var(--line); background:color-mix(in srgb,var(--institution-blue) 8%,var(--paper-raised)); }
-.instrument-glyph--vector::after { content:none; }
-.instrument-glyph--vector svg { width:82%; height:82%; fill:none; stroke:var(--institution-blue); stroke-width:2.6; stroke-linecap:round; stroke-linejoin:round; }
-.instrument-glyph--vector .glyph-detail { stroke:var(--lunar-violet); stroke-width:2.1; }
-.instrument-glyph--vector .glyph-detail:last-child { stroke:var(--signal-coral); }
 .tool-card__visual .instrument-glyph { width:min(80%, 8rem); }
 </style>

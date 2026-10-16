@@ -44,6 +44,17 @@ test('keeps the landing page card-free and links to the separate directory', asy
   await expect(page.getByText(/MIT/)).toBeVisible();
 });
 
+test('about page is a project dossier, distinct from the landing-page pitch', async ({ page }) => {
+  await page.goto('./about/');
+  await expect(page.getByRole('heading', { name: '世界编译局是什么' })).toBeVisible();
+  await expect(page.locator('.about-dossier__facts > div')).toHaveCount(4);
+  await expect(page.locator('.home-principles')).toHaveCount(0);
+  await expect(page.locator('[data-install-icon]')).toHaveCount(1);
+  await page.getByRole('combobox', { name: '语言' }).selectOption('en');
+  await expect(page.locator('[data-install-label]')).toHaveText('Install app');
+  await expect(page.locator('[data-install-icon]')).toHaveCount(1);
+});
+
 test('searches German catalog titles and tags', async ({ page }) => {
   await page.goto('./tools/');
   await page.getByRole('combobox', { name: '语言' }).selectOption('de');

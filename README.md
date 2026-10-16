@@ -20,14 +20,14 @@
 
 ### 工具一览
 
-目前提供 **49 个工具**，包括：
+目前提供 **48 个独立工作台**（含兼容入口共 49 个工具页面），包括：
 
 - **视觉与设计：** 色觉模拟、WCAG 对比度检查、配色提取、颜色转换、渐变、图片编辑与转换、SVG 清理、图标制作。
-- **文本与写作：** 清晰语言分析、文本差异、Markdown 诊断与表格、Unicode 检视、正则测试、HTML 实体、随机短文与祝福语。
+- **文本与写作：** 清晰语言分析、文本差异、Markdown 双栏实时编辑与安全预览、Unicode 检视、正则测试、HTML 实体、随机短文与祝福语。
 - **数据与开发：** JSON/YAML/XML/CSV 转换、JSON Schema 推断、受限 JSONPath 查询、CSV 数据剖析、CSS 整理、Cron、IPv4 子网、日期与时区、哈希与 UUID。
 - **媒体与文档：** 本地 OCR、PDF 整理与文本提取、图片转 PDF、音频裁剪、二维码、公开 M3U8 点播列表下载。
 
-新加入的工具有：JSON Schema 推断、JSONPath 查询（属性、数组索引和通配符）、任意精度进制换算、Unicode 码位和 UTF-8 字节检视、CSV 缺失值/唯一值剖析，以及本地 robots.txt 语法检查。每项均提供独立页面。
+新加入的工具有：JSON Schema 推断、JSONPath 查询（属性、数组索引和通配符）、任意精度进制换算、Unicode 码位和 UTF-8 字节检视、CSV 缺失值/唯一值剖析，以及本地 robots.txt 语法检查。Markdown 表格已并入 Markdown Studio；原 `/tools/markdown-table/` 链接继续可用，会打开同一编辑器的表格插入面板。
 
 ## 隐私与使用边界
 
@@ -40,6 +40,7 @@
 项目以 MIT License 开源，版权归 World Compiler contributors（2026）。欢迎报告问题、完善翻译、提出新工具或提交代码。新增工具需兼顾中英德文案、浏览器本地处理、输入边界、无障碍与自动化测试。
 
 - [如何开发新工具与提交 Pull Request](CONTRIBUTING.md)
+- [现有工具专业化路线图](docs/TOOL-QUALITY-ROADMAP.md)
 - [开发架构与本地命令](docs/DEVELOPMENT.md)
 - [第三方许可清单](public/THIRD_PARTY_NOTICES.txt)
 - [英文 README](README.en.md)

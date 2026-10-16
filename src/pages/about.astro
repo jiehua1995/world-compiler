@@ -1,21 +1,36 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 import PrivacyPanel from '../components/PrivacyPanel.astro';
-import RoadmapPanel from '../components/RoadmapPanel.astro';
 import Copy from '../components/Copy.astro';
 import '../styles/catalog.css';
 ---
 <BaseLayout title={{'zh-CN':'关于世界编译局',en:'About World Compiler',de:'Über World Compiler'}}>
-  <section class="catalog-section">
-    <p class="section-kicker">WC / OPEN PUBLIC INFRASTRUCTURE</p>
-    <Copy as="h1" text={['把工具，还给每个人。','Good tools belong to everyone.','Gute Werkzeuge gehören allen.']} />
-    <Copy as="p" text={['世界编译局是免费、开源、本地优先的公益工具平台。我们用中、英、德三种语言，把专业处理能力带到你的浏览器。','World Compiler is a free, open-source, local-first public toolkit. We bring practical processing tools to your browser in Chinese, English and German.','World Compiler ist ein kostenloser, quelloffener und lokal arbeitender Werkzeugkasten auf Chinesisch, Englisch und Deutsch.']} />
+  <section class="about-dossier" aria-labelledby="about-title">
+    <div class="about-dossier__main">
+      <p class="section-kicker">PROJECT / DOSSIER — 001</p>
+      <Copy as="h1" text={['世界编译局是什么','What is World Compiler?','Was ist World Compiler?']} />
+      <Copy as="p" text={[
+        '一个持续扩展的开源工具目录。它把常见的视觉、文本、数据和媒体处理任务做成独立的浏览器工作台；能在设备上完成的计算，就尽量不经过服务器。',
+        'An evolving open-source toolkit. It turns common vision, text, data and media tasks into focused browser workbenches—and keeps processing on your device whenever practical.',
+        'Ein wachsender Open-Source-Werkzeugkasten. Häufige Aufgaben für Gestaltung, Text, Daten und Medien werden zu fokussierten Browser-Werkbänken; Verarbeitung bleibt nach Möglichkeit auf deinem Gerät.'
+      ]} />
+    </div>
+    <dl class="about-dossier__facts">
+      <div><dt><Copy text={['项目形态','Project','Projekt']} /></dt><dd><Copy text={['静态网站 · 浏览器端处理','Static site · browser-side processing','Statische Website · Verarbeitung im Browser']} /></dd></div>
+      <div><dt><Copy text={['界面语言','Languages','Sprachen']} /></dt><dd>简体中文 · English · Deutsch</dd></div>
+      <div><dt><Copy text={['源码许可','Source license','Quellcode-Lizenz']} /></dt><dd>MIT License</dd></div>
+      <div><dt><Copy text={['维护方式','Stewardship','Mitwirkung']} /></dt><dd><Copy text={['公开协作 · 逐项验证','Open collaboration · verified tool by tool','Offene Mitarbeit · Werkzeug für Werkzeug geprüft']} /></dd></div>
+    </dl>
   </section>
   <PrivacyPanel />
-  <RoadmapPanel />
-  <section class="catalog-section">
-    <Copy as="h2" text={['使用与许可','Use & licensing','Nutzung & Lizenz']} />
-    <Copy as="p" text={['© 2026 World Compiler contributors。项目源码采用 MIT 许可证，第三方依赖及其许可单独列明。你导入的文件与生成内容不会转让版权给本项目。工具按现状提供；色觉模拟不是医学诊断。','© 2026 World Compiler contributors. Source code is MIT licensed; third-party notices apply separately. Importing files or producing output does not transfer your copyright to this project. Tools are provided as-is; vision simulation is not a medical diagnosis.','© 2026 World Compiler contributors. Der Quellcode steht unter der MIT-Lizenz; für Abhängigkeiten gelten eigene Lizenzen. Urheberrechte an Eingaben und Ausgaben gehen nicht an dieses Projekt über. Nutzung ohne Gewähr; Farbseh-Simulation ist keine medizinische Diagnose.']} />
-    <a href="https://github.com/jiehua1995/world-compiler/blob/main/LICENSE">MIT License ↗</a> · <a href="https://github.com/jiehua1995/world-compiler/blob/main/public/THIRD_PARTY_NOTICES.txt">Third-party notices ↗</a>
+  <section class="about-contribute" aria-labelledby="about-contribute-title">
+    <div><p class="section-kicker">MAINTENANCE / OPEN SOURCE</p><Copy as="h2" text={['按实际能力说明边界，按测试结果发布。','Document limits honestly. Ship against tests.','Grenzen ehrlich benennen. Getestet veröffentlichen.']} /></div>
+    <div class="about-contribute__links">
+      <Copy as="p" text={['欢迎报告问题、完善翻译或贡献工具。每个工作台都应有明确输入边界、隐私说明和可重复验证的结果。','Report issues, improve translations, or contribute a tool. Each workbench should have clear input limits, privacy notes and repeatable checks.','Melde Fehler, verbessere Übersetzungen oder entwickle Werkzeuge. Jede Werkbank braucht klare Eingabegrenzen, Datenschutzhinweise und reproduzierbare Prüfungen.']} />
+      <a href="https://github.com/jiehua1995/world-compiler/blob/main/CONTRIBUTING.md"><Copy text={['贡献指南与 Pull Request','Contribution guide & pull requests','Mitwirken & Pull Requests']} /><span aria-hidden="true">↗</span></a>
+      <a href="https://github.com/jiehua1995/world-compiler/blob/main/LICENSE">MIT License ↗</a>
+      <a href="https://github.com/jiehua1995/world-compiler/blob/main/public/THIRD_PARTY_NOTICES.txt"><Copy text={['第三方许可清单','Third-party notices','Lizenzen von Drittanbietern']} /><span aria-hidden="true">↗</span></a>
+    </div>
   </section>
+  <p class="about-copyright"><Copy text={['© 2026 World Compiler contributors。你导入的文件和生成内容，其权利仍归你或原权利人。','© 2026 World Compiler contributors. You and the original rights holders retain rights to imported files and generated content.','© 2026 World Compiler contributors. Rechte an importierten Dateien und erzeugten Inhalten verbleiben bei dir bzw. den ursprünglichen Rechteinhabern.']} /></p>
 </BaseLayout>

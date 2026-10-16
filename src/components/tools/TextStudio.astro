@@ -1,0 +1,50 @@
+---
+import Copy from '../Copy.astro';
+const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
+const operations = [
+ ['trim-lines',t('修剪每行并移除空行','Trim lines & remove blanks','Zeilen trimmen & Leerzeilen entfernen')],
+ ['collapse-whitespace',t('合并空白','Collapse whitespace','Leerraum zusammenfassen')],
+ ['dedupe',t('删除重复行','Deduplicate lines','Doppelte Zeilen entfernen')],
+ ['sort',t('按字母排序行','Sort lines alphabetically','Zeilen alphabetisch sortieren')],
+ ['upper',t('转换为大写','Uppercase','Großbuchstaben')],
+ ['lower',t('转换为小写','Lowercase','Kleinbuchstaben')],
+ ['title',t('标题式大小写','Title case','Titel-Großschreibung')],
+ ['sentence',t('句首大写','Sentence case','Satzanfang groß')],
+ ['slug',t('生成 URL slug','Create URL slug','URL-Slug erstellen')],
+ ['nfc',t('Unicode NFC','Unicode NFC','Unicode NFC')],
+ ['nfkc',t('Unicode NFKC','Unicode NFKC','Unicode NFKC')],
+ ['lf',t('换行为 LF','Line endings: LF','Zeilenenden: LF')],
+ ['crlf',t('换行为 CRLF','Line endings: CRLF','Zeilenenden: CRLF')],
+] as const;
+---
+<section class="lab text-studio" data-text-studio>
+ <div class="lab-toolbar"><Copy text={t('纯本地处理 · 不自动保存 · 原文始终保留','Processed locally · no autosave · source stays untouched','Lokal verarbeitet · keine automatische Speicherung · Quelle bleibt unverändert')} /><span data-text-stats aria-live="polite"></span></div>
+ <div class="lab-grid">
+  <div class="lab-panel">
+   <header><b>01</b><Copy as="h2" text={t('原文与操作链','Source & operation chain','Quelle & Operationskette')} /></header>
+   <label for="text-source"><Copy text={t('原始文本','Source text','Quelltext')} /></label>
+   <textarea id="text-source" data-text-input rows="14" maxlength="1000000" spellcheck="false">Hello world
+Hello world
+  A fresh line  </textarea>
+   <fieldset class="text-operation-list"><legend><Copy text={t('选择并按下列顺序执行操作','Select operations; they run in this order','Operationen auswählen; sie laufen in dieser Reihenfolge')} /></legend>
+    {operations.map(([value,label],index)=><label><input type="checkbox" data-text-operation value={value} checked={value==='trim-lines'} /><span class="text-operation-number">{String(index+1).padStart(2,'0')}</span><Copy text={label} /></label>)}
+   </fieldset>
+   <div class="text-actions"><button data-text-run data-run class="primary" type="button"><Copy text={t('应用到结果','Apply to result','Auf Ergebnis anwenden')} /></button><button data-text-undo type="button" disabled><Copy text={t('撤销','Undo','Rückgängig')} /></button><button data-text-redo type="button" disabled><Copy text={t('重做','Redo','Wiederholen')} /></button></div>
+  </div>
+  <div class="lab-panel">
+   <header><b>02</b><Copy as="h2" text={t('结果与对照','Result & comparison','Ergebnis & Vergleich')} /></header>
+   <div class="text-before-after"><section><h3><Copy text={t('原文','Before','Vorher')} /></h3><pre data-text-before></pre></section><section><h3><Copy text={t('处理后','After','Nachher')} /></h3><pre data-text-after></pre></section></div>
+   <label for="text-output"><Copy text={t('可复制的结果','Result','Ergebnis')} /></label><textarea id="text-output" data-text-output data-output rows="14" readonly></textarea>
+   <div class="text-actions"><button data-text-copy type="button" disabled><Copy text={t('复制结果','Copy result','Ergebnis kopieren')} /></button><button data-text-download type="button" disabled><Copy text={t('下载 .txt','Download .txt','.txt herunterladen')} /></button></div>
+   <p data-text-status data-status role="status" aria-live="polite"></p>
+  </div>
+ </div>
+</section>
+<style>
+ .text-studio .lab-panel>header{margin-bottom:1.25rem}.text-studio label{margin:.75rem 0}.text-studio textarea{width:100%;min-height:15rem;resize:vertical;font:.95rem/1.6 ui-monospace,monospace}.text-operation-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.1rem .75rem;margin:1.25rem 0;padding:.75rem;border:1px solid var(--line)}.text-operation-list legend{padding-inline:.4rem;color:var(--ink-muted)}.text-operation-list label{display:flex;align-items:center;gap:.5rem;min-width:0}.text-operation-list input{width:auto}.text-operation-number{color:var(--ink-muted);font:.75rem ui-monospace,monospace}.text-actions{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}.text-before-after{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:.75rem;margin-bottom:1rem}.text-before-after section{min-width:0;border:1px solid var(--line);background:var(--paper);padding:.75rem}.text-before-after h3{font-size:.85rem;margin:0 0 .5rem}.text-before-after pre{max-height:12rem;overflow:auto;white-space:pre-wrap;overflow-wrap:anywhere;margin:0;font:.85rem/1.5 ui-monospace,monospace}.text-studio [data-text-stats]{margin-left:auto;color:var(--ink-muted);font:.8rem ui-monospace,monospace}@media(max-width:760px){.text-operation-list,.text-before-after{grid-template-columns:1fr}}
+</style>
+<script>
+ import { mountTextStudio } from '../../features/text-studio/controller';
+ const root=document.querySelector<HTMLElement>('[data-text-studio]');
+ if(root) window.addEventListener('pagehide',mountTextStudio(root),{once:true});
+</script>

@@ -13,7 +13,6 @@ const defaults: Record<string,string> = {
  'date-math':'2026-10-15',
  'html-entities':'<p>World & Compiler</p>',
  'svg-optimizer':'<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128"><circle cx="64" cy="64" r="48" fill="#2f6db3"/></svg>',
- 'text-format':'  Hello, WORLD!  ',
  'markdown-table':'name,category\nColor Vision Lab,vision\nJSON Studio,data',
  'json-schema':'[{"id":1,"name":"Ada"},{"id":2,"name":"Lin","active":true}]',
  'jsonpath-query':'{"items":[{"id":1,"name":"Ada"},{"id":2,"name":"Lin"}]}',
@@ -23,8 +22,21 @@ const defaults: Record<string,string> = {
  'robots-checker':'User-agent: *\nDisallow: /private\nAllow: /public',
 };
 const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
+const isMarkdown = slug === 'markdown-studio' || slug === 'markdown-table';
+const markdownLabels: Record<string, readonly [string,string,string]> = { h1:t('插入标题','Insert heading','Überschrift einfügen'), bold:t('粗体','Bold','Fett'), link:t('插入链接','Insert link','Link einfügen'), code:t('代码','Code','Code'), quote:t('引用','Quote','Zitat'), list:t('列表','List','Liste'), table:t('表格','Table','Tabelle') };
 ---
-<section class="lab pro-lab" data-pro-lab={slug}>
+{isMarkdown ? <section class="lab markdown-lab" data-pro-lab={slug} data-mobile-view="editor">
+ <div class="markdown-topline"><Copy text={t('完全本地处理 · 不自动保存','Processed locally · no automatic saving','Lokal verarbeitet · keine automatische Speicherung')} /><div class="markdown-mobile-tabs" role="group" aria-label="Markdown 视图" data-label-zh="Markdown 视图" data-label-en="Markdown view" data-label-de="Markdown-Ansicht"><button type="button" data-mobile-tab="editor" aria-pressed="true"><Copy text={t('编辑','Edit','Bearbeiten')} /></button><button type="button" data-mobile-tab="preview" aria-pressed="false"><Copy text={t('预览','Preview','Vorschau')} /></button></div><div class="markdown-actions"><button type="button" data-markdown-copy><Copy text={t('复制 Markdown','Copy Markdown','Markdown kopieren')} /></button><button type="button" data-markdown-download><Copy text={t('下载 .md','Download .md','.md herunterladen')} /></button></div></div>
+ <div class="markdown-toolbar" role="toolbar" aria-label="Markdown 格式工具" data-label-zh="Markdown 格式工具" data-label-en="Markdown formatting" data-label-de="Markdown-Formatierung">
+  {(['h1','bold','link','code','quote','list','table'] as const).map((action) => <button type="button" data-md-action={action} aria-label={markdownLabels[action][0]} data-label-zh={markdownLabels[action][0]} data-label-en={markdownLabels[action][1]} data-label-de={markdownLabels[action][2]} title={action}>{({h1:'H1',bold:'B',link:'↗',code:'</>',quote:'❝',list:'☷',table:'▦'})[action]}</button>)}
+ </div>
+ <div class="markdown-stats" aria-live="polite"><span data-markdown-stats></span><label><input type="checkbox" data-sync-scroll /> <Copy text={t('同步滚动','Sync scroll','Scroll synchronisieren')} /></label></div>
+ <div class="markdown-grid"><section class="markdown-editor-pane" aria-label="Markdown 源文档" data-label-zh="Markdown 源文档" data-label-en="Markdown editor" data-label-de="Markdown-Editor"><label for="markdown-source"><Copy text={t('Markdown 源文档','Markdown source','Markdown-Quelldokument')} /></label><textarea id="markdown-source" data-markdown-editor maxlength="1000000" spellcheck="false">{slug==='markdown-studio' ? defaults[slug] : ''}</textarea>
+  <details class="markdown-table-builder" open={slug==='markdown-table'}><summary><Copy text={t('插入表格','Insert table','Tabelle einfügen')} /></summary><label for="markdown-table-source"><Copy text={t('CSV / TSV 内容','CSV / TSV data','CSV- / TSV-Daten')} /></label><textarea id="markdown-table-source" data-table-input rows="5">{defaults['markdown-table']}</textarea><div class="markdown-table-actions"><label><Copy text={t('分隔符','Delimiter','Trennzeichen')} /><select data-table-delimiter><option value=",">CSV · ,</option><option value="tab">TSV · Tab</option></select></label><button type="button" data-table-insert class="primary"><Copy text={t('插入到光标处','Insert at cursor','An Cursorposition einfügen')} /></button></div><p data-table-status role="status" aria-live="polite"></p></details>
+ </section><section class="markdown-preview-pane" aria-label="Markdown 预览" data-label-zh="Markdown 预览" data-label-en="Markdown preview" data-label-de="Markdown-Vorschau"><header><Copy as="h2" text={t('实时预览','Live preview','Live-Vorschau')} /></header><article class="markdown-preview" data-markdown-preview></article></section></div>
+ <div class="markdown-inspector-grid"><section><h2><Copy text={t('文档目录','Document outline','Dokumentgliederung')} /></h2><nav data-markdown-toc aria-label="文档目录" data-label-zh="文档目录" data-label-en="Document outline" data-label-de="Dokumentgliederung"></nav></section><section><h2><Copy text={t('结构诊断','Structure checks','Strukturprüfung')} /></h2><ul data-markdown-diagnostics></ul></section></div>
+ <p class="markdown-status" data-markdown-status role="status" aria-live="polite"></p>
+ </section> : <section class="lab pro-lab" data-pro-lab={slug}>
  <div class="lab-toolbar"><Copy text={t('本地运行 · 输入不会上传','Runs locally · your input is never uploaded','Läuft lokal · Eingaben werden nicht hochgeladen')} /></div>
  <div class="lab-grid"><div class="lab-panel">
   <header><b>01</b><Copy as="h2" text={t('输入与参数','Input & settings','Eingabe & Einstellungen')} /></header>
@@ -53,7 +65,6 @@ const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
    {slug==='csv-json' && <label><Copy text={t('转换方向','Conversion direction','Konvertierungsrichtung')} /><select data-mode><option value="csv-json">CSV → JSON</option><option value="json-csv">JSON → CSV</option></select></label>}
    {slug==='csv-json' && <><label class="check"><input data-formula-safe type="checkbox" checked /><Copy text={t('CSV 导出时转义电子表格公式','Escape spreadsheet formulas in CSV exports','Tabellenformeln beim CSV-Export entschärfen')} /></label><p class="hint"><Copy text={t('默认在以 =、+、- 或 @ 开头的字段前加单引号；取消勾选会保留原值。','By default, prefix cells beginning with =, +, - or @ with an apostrophe; uncheck to preserve values.','Standardmäßig werden Zellen mit =, +, - oder @ mit einem Apostroph entschärft; deaktivieren, um Werte zu erhalten.')} /></p></>}
    {slug==='html-entities' && <label><Copy text={t('操作','Operation','Aktion')} /><select data-mode><option value="encode">编码 / Encode</option><option value="decode">解码 / Decode</option></select></label>}
-   {slug==='text-format' && <label><Copy text={t('整理方式','Format','Format')} /><select data-mode><option value="slug">URL slug</option><option value="title">标题格式 / Title case</option><option value="sentence">句首格式 / Sentence case</option><option value="trim">修剪空白 / Trim whitespace</option><option value="dedupe">去重行 / Deduplicate lines</option></select></label>}
    {slug==='css-studio' && <label><Copy text={t('操作','Operation','Aktion')} /><select data-mode><option value="format">规范化 / Normalize</option><option value="minify">压缩 / Minify</option></select></label>}
    {slug==='markdown-table' && <label><Copy text={t('输入分隔符','Input delimiter','Eingabetrennzeichen')} /><select data-mode><option value=",">CSV</option><option value="tab">TSV</option></select></label>}
    {slug!=='markdown-table' && <label><Copy text={slug==='markdown-studio'?t('Markdown 文档', 'Markdown document','Markdown-Dokument'):slug==='xml-studio'?t('XML 文档','XML document','XML-Dokument'):slug==='css-studio'?t('CSS 样式表','CSS stylesheet','CSS-Stylesheet'):slug==='csv-json'?t('CSV 或 JSON','CSV or JSON','CSV oder JSON'):slug==='yaml-json'?t('YAML 或 JSON','YAML or JSON','YAML oder JSON'):t('输入文本','Input text','Eingabetext')} /><textarea data-input rows="14" maxlength={slug==='svg-optimizer'?5000000:1000000}>{defaults[slug] ?? ''}</textarea></label>}
@@ -67,7 +78,7 @@ const t = (zh:string,en:string,de:string) => [zh,en,de] as const;
   <div class="lab-actions"><button data-copy type="button" disabled><Copy text={t('复制','Copy','Kopieren')} /></button><button data-download type="button" disabled><Copy text={t('下载结果','Download result','Ergebnis herunterladen')} /></button></div>
   <p data-status role="status" aria-live="polite"></p>
  </div></div>
-</section>
+</section>}
 <style>.pro-lab .lab-panel>header{margin-bottom:1.5rem}.pro-lab textarea[hidden]{display:none}.pro-lab input[type=file]{min-height:3rem}.pro-lab input[type=password]{font-family:ui-monospace,monospace}.pro-lab .hint{max-width:50rem}.pro-preview{min-height:10rem;margin-block:1rem;border:1px solid var(--line);border-radius:var(--radius-sm);background-position:center;background-size:cover}.pro-preview img{display:block;width:8rem;height:8rem;margin:1rem auto}</style>
 <script>
  import { mount } from '../../features/pro-tools/controller';

@@ -21,15 +21,6 @@ export function editUrl(input:string,strip:boolean,query?:string):string {
   if(strip) for(const key of [...url.searchParams.keys()]) if(/^utm_/i.test(key)||/^(fbclid|gclid|msclkid|dclid|mc_cid|mc_eid)$/i.test(key)) url.searchParams.delete(key);
   return url.href;
 }
-export function transformText(input:string,mode:string):string {
-  if(mode==='upper') return input.toLocaleUpperCase();
-  if(mode==='lower') return input.toLocaleLowerCase();
-  const lines=input.split(/\r?\n/);
-  if(mode==='dedupe') return [...new Set(lines)].join('\n');
-  if(mode==='sort') return lines.sort((a,b)=>a.localeCompare(b)).join('\n');
-  if(mode==='trim') return lines.map(l=>l.trim()).filter(Boolean).join('\n');
-  return input;
-}
 export function palette(pixels:Uint8ClampedArray,count:number):string[] {
   const buckets=new Map<number,{n:number;r:number;g:number;b:number}>();
   for(let i=0;i<pixels.length;i+=4){if(pixels[i+3]<128)continue; const [r,g,b]=[pixels[i],pixels[i+1],pixels[i+2]];const key=(r>>4)*256+(g>>4)*16+(b>>4);const p=buckets.get(key)??{n:0,r:0,g:0,b:0};p.n++;p.r+=r;p.g+=g;p.b+=b;buckets.set(key,p);}

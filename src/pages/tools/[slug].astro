@@ -9,9 +9,10 @@ import UtilityWorkbench from '../../components/tools/UtilityWorkbench.astro';
 import NativeWorkbench from '../../components/tools/NativeWorkbench.astro';
 import MediaWorkbench from '../../components/tools/MediaWorkbench.astro';
 import ProWorkbench from '../../components/tools/ProWorkbench.astro';
+import TextStudio from '../../components/tools/TextStudio.astro';
 import '../../styles/workbench.css';
 export function getStaticPaths() { return [...extraTools,...nativeTools,...mediaTools,...proTools].map(tool=>({params:{slug:tool.slug},props:{tool}})); }
 const {tool}=Astro.props;
-const Workbench = proTools.some(t=>t.slug===tool.slug) ? ProWorkbench : nativeTools.some(t=>t.slug===tool.slug) ? NativeWorkbench : mediaTools.some(t=>t.slug===tool.slug) ? MediaWorkbench : UtilityWorkbench;
+const Workbench = ['text-workshop','text-format'].includes(tool.slug) ? TextStudio : proTools.some(t=>t.slug===tool.slug) ? ProWorkbench : nativeTools.some(t=>t.slug===tool.slug) ? NativeWorkbench : mediaTools.some(t=>t.slug===tool.slug) ? MediaWorkbench : UtilityWorkbench;
 ---
 <BaseLayout title={tool.title} description={tool.summary}><ToolHeading tool={tool} /><Workbench slug={tool.slug} /></BaseLayout>

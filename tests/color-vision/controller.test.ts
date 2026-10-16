@@ -21,6 +21,7 @@ function deferred<T>() {
 }
 
 function workbench() {
+  const modes = ['original', 'protan', 'deutan', 'tritan', 'protanopia', 'deuteranopia', 'tritanopia', 'achromatopsia', 'blue-cone-monochromacy'];
   document.body.innerHTML = `
     <div data-color-vision-lab data-state="empty">
       <input type="file" data-image-input>
@@ -28,14 +29,11 @@ function workbench() {
       <p data-workbench-status></p>
       <div data-workbench-error hidden></div>
       <button data-reset>reset</button>
-      <select data-vision-mode><option value="original">original</option><option value="protan">protan</option><option value="deutan">deutan</option><option value="tritan">tritan</option><option value="achromatopsia">gray</option><option value="blue-cone-monochromacy">blue</option></select>
       <div data-severity-row><input type="range" data-severity min="0" max="100" value="100"><output data-severity-value></output></div>
-      <canvas data-canvas="original"></canvas><h2 data-simulation-title></h2><canvas data-canvas="simulation"></canvas>
-      <button data-preview-target="original"></button><button data-preview-target="simulation"></button>
+      ${modes.map(mode => `<canvas data-canvas="${mode}"></canvas><button data-preview-target="${mode}"></button><button data-export-mode="${mode}" data-export></button>`).join('')}
       <select data-export-format><option value="image/png">png</option></select>
       <input data-export-quality value="0.9">
       <span data-quality-row hidden></span>
-      <button data-export>export</button>
       <dialog data-preview-dialog><h2 data-dialog-title>preview</h2><canvas data-dialog-canvas></canvas><button data-dialog-close>close</button></dialog>
     </div>`;
   return document.querySelector<HTMLElement>('[data-color-vision-lab]')!;
@@ -59,9 +57,6 @@ describe('mountColorVisionLab', () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    const mode = root.querySelector<HTMLSelectElement>('[data-vision-mode]')!;
-    mode.value = 'tritan';
-    mode.dispatchEvent(new Event('change', { bubbles: true }));
     const severity = root.querySelector<HTMLInputElement>('[data-severity]')!;
     severity.value = '35';
     severity.dispatchEvent(new Event('input', { bubbles: true }));
@@ -69,8 +64,8 @@ describe('mountColorVisionLab', () => {
     await Promise.resolve();
     await Promise.resolve();
 
-    expect(render.mock.calls.at(-1)?.slice(4)).toEqual(['tritan', 35]);
-    root.querySelector<HTMLButtonElement>('[data-export]')!.click();
+    expect(render.mock.calls.at(-1)?.slice(4)).toEqual([35]);
+    root.querySelector<HTMLButtonElement>('[data-export-mode="tritan"]')!.click();
     await Promise.resolve();
     await Promise.resolve();
     expect(exportMode).toHaveBeenCalledWith(image, 'tritan', expect.any(Object), 35);
@@ -178,7 +173,7 @@ describe('mountColorVisionLab', () => {
     const controller = mountColorVisionLab(root, dependencies);
     setFile(root.querySelector<HTMLInputElement>('[data-image-input]')!, new File(['image'], 'image.png', { type: 'image/png' }));
     await vi.waitFor(() => expect(root.dataset.state).toBe('ready'));
-    root.querySelector<HTMLButtonElement>('[data-export]')!.click();
+    root.querySelector<HTMLButtonElement>('[data-export-mode="protan"]')!.click();
     root.querySelector<HTMLButtonElement>('[data-reset]')!.click();
     exportResult.resolve(new Blob(['image']));
     await Promise.resolve(); await Promise.resolve();
@@ -201,7 +196,7 @@ describe('mountColorVisionLab', () => {
     await Promise.resolve();
     await Promise.resolve();
     expect(root.dataset.state).toBe('ready');
-    root.querySelector<HTMLButtonElement>('[data-export]')!.click();
+    root.querySelector<HTMLButtonElement>('[data-export-mode="protan"]')!.click();
     root.querySelector<HTMLButtonElement>('[data-reset]')!.click();
     exportResult.reject(new ColorVisionError('processing-failed', 'worker replaced'));
     await Promise.resolve();

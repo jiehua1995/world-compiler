@@ -33,25 +33,47 @@
 .workbench-feedback button, .preview-dialog button { min-height: 2.75rem; padding: .5rem .8rem; color: var(--ink); background: transparent; border: 1px solid var(--line-strong); border-radius: var(--radius-sm); cursor: pointer; }
 .simulation-controls { grid-column: 1 / -1; display: grid; grid-template-columns: minmax(14rem, .7fr) minmax(18rem, 1.3fr); gap: var(--space-2) var(--space-4); padding-top: var(--space-2); border-top: 1px solid var(--line); }
 .simulation-controls label { display: grid; grid-template-columns: 1fr auto; gap: .4rem; color: var(--ink-muted); font-size: .8rem; }
-.simulation-controls [data-severity-row][hidden] { display: none; }
-.simulation-controls select, .simulation-controls input { grid-column: 1 / -1; min-height: 3rem; padding: .55rem .7rem; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
+.simulation-controls input { grid-column: 1 / -1; min-height: 3rem; padding: .55rem .7rem; color: var(--ink); background: var(--paper-raised); border: 1px solid var(--line-strong); border-radius: var(--radius-sm); }
 .simulation-controls input[type='range'] { padding-inline: 0; }
 .simulation-controls output { color: var(--institution-blue); font: 700 .85rem/1.4 ui-monospace, SFMono-Regular, Consolas, monospace; }
 .simulation-controls p { grid-column: 1 / -1; margin: 0; color: var(--ink-muted); font-size: .8rem; }
 .model-note { margin: 0; padding: var(--space-3) var(--space-4); color: var(--ink-muted); border-bottom: 1px solid var(--line); font-size: .82rem; }
 
-.comparison-section { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
+.comparison-section { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1px; background: var(--line); border-bottom: 1px solid var(--line); }
 .comparison-card { min-width: 0; background: var(--paper-raised); }
 .comparison-card header { display: flex; align-items: center; gap: .8rem; min-height: 4.2rem; padding: 0 var(--space-2); border-bottom: 1px solid var(--line); }
 .comparison-card__index { font-family: ui-monospace, SFMono-Regular, Consolas, monospace; color: var(--signal-coral); }
 .comparison-card h2 { margin: 0; font-size: 1.2rem; }
-.comparison-card__viewport { position: relative; display: grid; place-items: center; min-height: 24rem; padding: var(--space-2); overflow: hidden; background-image: linear-gradient(45deg, var(--grid) 25%, transparent 25%), linear-gradient(-45deg, var(--grid) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--grid) 75%), linear-gradient(-45deg, transparent 75%, var(--grid) 75%); background-size: 2rem 2rem; background-position: 0 0, 0 1rem, 1rem -1rem, -1rem 0; }
+.comparison-card__viewport { position: relative; display: grid; place-items: center; min-height: 15rem; padding: var(--space-2); overflow: hidden; background-image: linear-gradient(45deg, var(--grid) 25%, transparent 25%), linear-gradient(-45deg, var(--grid) 25%, transparent 25%), linear-gradient(45deg, transparent 75%, var(--grid) 75%), linear-gradient(-45deg, transparent 75%, var(--grid) 75%); background-size: 2rem 2rem; background-position: 0 0, 0 1rem, 1rem -1rem, -1rem 0; }
 .comparison-card canvas { display: block; max-width: 100%; max-height: 36rem; object-fit: contain; }
 .comparison-card__waiting { position: absolute; inset: 0; display: grid; place-items: center; }
 .comparison-card__waiting span { width: 7rem; aspect-ratio: 1; border: 1px solid var(--line-strong); border-radius: 50%; box-shadow: inset 0 0 0 1.5rem color-mix(in srgb, var(--institution-blue) 7%, transparent); }
 .comparison-card.is-rendered .comparison-card__waiting { display: none; }
 .comparison-card > button { display: flex; justify-content: space-between; width: 100%; min-height: 3.5rem; padding: .65rem var(--space-2); color: var(--ink); background: transparent; border: 0; border-top: 1px solid var(--line); cursor: pointer; }
 .comparison-card > button:disabled { color: var(--ink-muted); cursor: not-allowed; }
+
+.palette-workbench { display:grid; gap:var(--space-3); padding:var(--space-4); border-bottom:1px solid var(--line); }
+.palette-workbench__heading { display:grid; grid-template-columns:1fr 1fr; gap:var(--space-4); align-items:end; }
+.palette-workbench h2 { margin:0; max-width:22ch; font-size:clamp(2rem,4vw,3.5rem); line-height:1; }
+.palette-workbench__heading > p { max-width:50ch; margin:0; color:var(--ink-muted); }
+.palette-controls { display:flex; flex-wrap:wrap; align-items:end; gap:.65rem; padding:var(--space-2); background:var(--paper-raised); border:1px solid var(--line); }
+.palette-controls label,.palette-contrast label { display:grid; gap:.35rem; color:var(--ink-muted); font-size:.78rem; }
+.palette-controls input,.palette-controls select,.palette-controls button,.palette-contrast select { min-height:2.7rem; padding:.45rem .65rem; color:var(--ink); background:var(--paper); border:1px solid var(--line-strong); border-radius:var(--radius-sm); }
+.palette-controls input[type=number] { width:7rem; }.palette-controls input[type=color] { width:4rem; padding:.2rem; }
+.palette-controls button { cursor:pointer; }.palette-controls button:disabled { opacity:.5; cursor:not-allowed; }
+.palette-status { margin:0; min-height:1.4rem; color:var(--ink-muted); font-size:.85rem; }
+.palette-swatches { display:grid; grid-template-columns:repeat(auto-fit,minmax(9rem,1fr)); gap:.65rem; }
+.palette-swatch { display:grid; grid-template-columns:2.7rem 1fr auto; gap:.4rem; align-items:center; padding:.45rem; background:var(--paper-raised); border:1px solid var(--line); }
+.palette-swatch input[type=color] { width:2.5rem; height:2.5rem; padding:0; border:0; cursor:pointer; }.palette-swatch input[type=text] { width:100%; min-width:0; padding:.45rem; color:var(--ink); background:var(--paper); border:1px solid var(--line-strong); font: .75rem ui-monospace,monospace; }
+.palette-swatch button { width:2rem; height:2rem; color:var(--ink); background:transparent; border:1px solid var(--line); cursor:pointer; }
+.palette-preview-grid { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.5rem; }
+.palette-preview-row { min-width:0; padding:.6rem; background:var(--paper-raised); border:1px solid var(--line); }
+.palette-preview-row h4 { margin:0 0 .45rem; font-size:.78rem; }
+.palette-preview-row__chips { display:flex; min-height:3rem; }
+.palette-preview-row__chips span { display:grid; flex:1 1 0; place-items:center; min-width:0; overflow:hidden; color:#fff; font: .62rem ui-monospace,monospace; text-shadow:0 1px 2px #000,0 0 3px #000; overflow-wrap:anywhere; }
+.palette-contrast { display:grid; grid-template-columns:1fr 1fr 1fr; gap:.75rem; align-items:end; padding-top:var(--space-2); border-top:1px solid var(--line); }
+.palette-contrast h3 { margin:0; font-size:1.2rem; }.palette-contrast-results { grid-column:1/-1; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:.4rem; }
+.palette-contrast-row { display:flex; justify-content:space-between; gap:.5rem; padding:.55rem; background:var(--paper-raised); border:1px solid var(--line); font-size:.75rem; }.palette-contrast-row [data-pass=false] { color:var(--signal-coral); }.palette-contrast-row [data-pass=true] { color:#18875b; }
 
 .export-panel { display: grid; grid-template-columns: .6fr 1.4fr; gap: var(--space-4); padding: var(--space-5) var(--space-4); border-bottom: 1px solid var(--line); }
 .export-panel__controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-2); align-items: end; }
@@ -70,11 +92,13 @@
 
 @media (max-width: 54rem) {
   .tool-hero__grid, .input-panel, .export-panel, .simulation-controls { grid-template-columns: 1fr; }
-  .comparison-section { grid-template-columns: 1fr; }
+  .comparison-section { grid-template-columns: repeat(2,minmax(0,1fr)); }
   .comparison-card__viewport { min-height: 18rem; }
+  .palette-preview-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+  .palette-workbench__heading { grid-template-columns:1fr; }
 }
 @media (max-width: 38rem) {
   .tool-hero, .input-panel, .export-panel, .model-note { padding-inline: var(--space-3); }
-  .workbench-feedback, .export-panel__controls { grid-template-columns: 1fr; }
+  .workbench-feedback, .export-panel__controls, .palette-preview-grid, .palette-contrast, .palette-contrast-results { grid-template-columns: 1fr; }
   .workbench-feedback button { width: 100%; }
 }

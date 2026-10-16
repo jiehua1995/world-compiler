@@ -12,6 +12,6 @@ const base = import.meta.env.BASE_URL.replace(/\/?$/, '/');
       <h1 data-copy-zh={tool.title['zh-CN']} data-copy-en={tool.title.en} data-copy-de={tool.title.de}>{tool.title['zh-CN']}</h1>
       <p class="tool-hero__intro" data-copy-zh={tool.summary['zh-CN']} data-copy-en={tool.summary.en} data-copy-de={tool.summary.de}>{tool.summary['zh-CN']}</p>
     </div>
-    <div class="instrument-identity"><ToolGlyph index={tool.glyph ?? 0} icon={tool.icon} /><div><p class="section-kicker">LOCAL / PRIVATE</p><p class="local-badge"><span aria-hidden="true"></span><Copy as="b" text={['内容只在此浏览器处理','Processed in your browser','Verarbeitung in deinem Browser']} /></p><Copy as="p" text={['自由使用，安心探索。','Open to everyone. Made for exploring.','Frei nutzbar. Zum Entdecken gemacht.']} /></div></div>
+    <div class="instrument-identity"><ToolGlyph index={tool.glyph ?? 0} /><div><p class="section-kicker">LOCAL / PRIVATE</p><p class="local-badge"><span aria-hidden="true"></span><Copy as="b" text={['内容只在此浏览器处理','Processed in your browser','Verarbeitung in deinem Browser']} /></p><Copy as="p" text={['自由使用，安心探索。','Open to everyone. Made for exploring.','Frei nutzbar. Zum Entdecken gemacht.']} /></div></div>
   </div>
 </section>

@@ -285,7 +285,7 @@ main:focus {
 .site-footer__github { grid-column:3; grid-row:2; justify-self:start; }
 .install-control { grid-column:1 / -1; display:flex; align-items:center; gap:1rem; padding-top:1rem; border-top:1px solid var(--line); }
 .install-control button { display:flex; align-items:center; gap:.5rem; min-height:44px; padding:.6rem 1rem; font:inherit; font-size:.85rem; border:1px solid var(--line-strong); background:var(--paper-raised); color:var(--ink); border-radius:var(--radius-sm); cursor:pointer; white-space:nowrap; }
-.install-control button::before { content:'⊞'; font-size:1.25rem; }
+.install-control button svg { flex:none; color:var(--institution-blue); }
 .install-control p { color:var(--ink-muted); margin:0; }
 @media(max-width:48rem) {
   .site-footer__copyright,.site-footer__github { grid-column:1; grid-row:auto; }

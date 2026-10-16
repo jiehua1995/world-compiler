@@ -17,7 +17,6 @@ export interface ToolDefinition {
   sequence?: string;
   asset?: string;
   glyph?: number;
-  icon?: string;
 }
 
 export const tools: readonly ToolDefinition[] = [
@@ -53,5 +52,5 @@ export const tools: readonly ToolDefinition[] = [
   ...extraTools,
   ...nativeTools,
   ...mediaTools,
-  ...proTools,
+  ...proTools.filter((tool) => tool.slug !== 'markdown-table' && tool.slug !== 'text-format'),
 ];

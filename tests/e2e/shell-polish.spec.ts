@@ -28,7 +28,7 @@ test('homepage clock tracks device time and the call to action is centered', asy
   const cta = await page.getByRole('link', { name: '浏览工具目录' }).boundingBox();
   const frame = await page.locator('.site-frame').boundingBox();
   expect(Math.abs(cta!.x + cta!.width / 2 - frame!.x - frame!.width / 2)).toBeLessThan(2);
-  await expect(page.getByRole('link', { name: '关于计划' })).toHaveAttribute('href', '/world-compiler/about/');
+  await expect(page.getByRole('link', { name: '关于项目' })).toHaveAttribute('href', '/world-compiler/about/');
   await expect(page.getByRole('link', { name: 'World Compiler on GitHub' })).toBeVisible();
 });
 
@@ -47,7 +47,7 @@ test('codec controls and input/output panels align', async ({ page }) => {
 test('mobile navigation and language flags remain visible', async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
   await page.goto('./');
-  await expect(page.getByRole('link', { name: '关于计划' })).toBeVisible();
+  await expect(page.getByRole('link', { name: '关于项目' })).toBeVisible();
   await page.getByRole('combobox', { name: '语言' }).selectOption('de');
   await expect(page.locator('[data-locale-flag="de"]')).toBeVisible();
   await expect(page.locator('[data-locale-flag="zh-CN"]')).toBeHidden();

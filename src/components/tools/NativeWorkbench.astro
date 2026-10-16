@@ -48,12 +48,6 @@ const {slug}=Astro.props as {slug:string};
   <label><input data-symbols type="checkbox" checked /><Copy text={['包含符号','Include symbols','Symbole einschließen']} /></label>
   <Copy as="p" text={['使用设备的加密随机数。输出不会保存。','Uses device cryptographic randomness. Output is not saved.','Verwendet kryptografischen Zufall des Geräts. Ausgaben werden nicht gespeichert.']} />
  </>}
- {slug==='text-workshop' && <>
-  <label><Copy text={['原文','Source text','Ausgangstext']} /><textarea data-input rows="16" maxlength="1000000">Hello world
-Hello world
-  A fresh line  </textarea></label>
-  <label><Copy text={['操作','Operation','Aktion']} /><select data-mode>{[['upper','大写','Uppercase','Großbuchstaben'],['lower','小写','Lowercase','Kleinbuchstaben'],['dedupe','去重行','Deduplicate lines','Doppelte Zeilen entfernen'],['sort','排序行','Sort lines','Zeilen sortieren'],['trim','修剪并移除空行','Trim & remove blank lines','Trimmen & Leerzeilen entfernen']].map(([value,zh,en,de])=><option value={value} data-copy-zh={zh} data-copy-en={en} data-copy-de={de}>{zh}</option>)}</select></label>
- </>}
  <button data-run class="primary" type="button"><Copy text={slug==='audio-lab'?['导出 WAV','Export WAV','WAV exportieren']:slug==='token-lab'?['生成','Generate','Erzeugen']:['运行','Run','Ausführen']} /></button>
  </div><div class="lab-panel">
  <header><b>02</b><Copy as="h2" text={['结果','Result','Ergebnis']} /></header>

@@ -11,6 +11,7 @@ const copy = {
 
 export function initializePwa() {
   const button = document.querySelector<HTMLButtonElement>('[data-install-app]');
+  const label = button?.querySelector<HTMLElement>('[data-install-label]');
   const status = document.querySelector<HTMLElement>('[data-install-status]');
   if (!button || !status) return;
   let prompt: InstallPrompt | null = null;
@@ -19,7 +20,7 @@ export function initializePwa() {
   const render = () => {
     const lang = document.documentElement.lang;
     const text = copy[lang === 'en' || lang === 'de' ? lang : 'zh-CN'];
-    button.textContent = installed ? text.installed : text.install;
+    if (label) label.textContent = installed ? text.installed : text.install;
     button.disabled = installed;
     status.textContent = installed ? text[state === 'failed' ? 'failed' : 'offline'] : text[state];
   };
