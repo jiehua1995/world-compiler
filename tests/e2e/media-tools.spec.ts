@@ -50,6 +50,28 @@ test("OCR downloads explicitly then recognizes locally without network", async (
     /cached|已缓存|gespeichert/,
     { timeout: 60000 },
   );
+  await page.reload();
+  await page.evaluate(() => {
+    const nativeFetch = window.fetch.bind(window);
+    let failPdfWorkerOnce = true;
+    window.name = "0";
+    window.fetch = (input, init) => {
+      const url = input instanceof Request ? input.url : String(input);
+      if (url.includes("pdf.worker.min")) {
+        window.name = String(Number(window.name) + 1);
+        if (failPdfWorkerOnce) {
+          failPdfWorkerOnce = false;
+          return Promise.reject(new TypeError("Failed to fetch"));
+        }
+      }
+      return nativeFetch(input, init);
+    };
+  });
+  await page.locator("[data-prepare]").click();
+  await expect(page.locator("[data-status]")).toContainText(/处理失败/);
+  await page.locator("[data-prepare]").click();
+  await expect.poll(() => page.evaluate(() => window.name)).toBe("2");
+  await expect(page.locator("[data-status]")).toContainText(/完成/);
   await expect(page.locator("[data-run]")).toBeEnabled();
   const png = await page.evaluate(() => {
     const canvas = document.createElement("canvas");
@@ -79,6 +101,26 @@ test("OCR downloads explicitly then recognizes locally without network", async (
   await context.setOffline(true);
   await page.locator("[data-run]").click();
   await expect(page.locator("[data-output]")).toHaveValue(/HELLO WORLD/, {
+    timeout: 60000,
+  });
+  await page.locator("[data-enhance]").selectOption("threshold");
+  await page.locator("[data-run]").click();
+  await expect(page.locator("[data-output]")).toHaveValue(/HELLO WORLD/, {
+    timeout: 60000,
+  });
+  const scan = await PDFDocument.create();
+  scan.addPage([900, 160]);
+  const scanPage = scan.addPage([900, 160]);
+  scanPage.drawImage(await scan.embedPng(Buffer.from(png, "base64")), {
+    x: 0, y: 0, width: 900, height: 160,
+  });
+  await page.locator("[data-files]").setInputFiles({
+    name: "scan.pdf", mimeType: "application/pdf", buffer: Buffer.from(await scan.save()),
+  });
+  await page.locator("[data-range]").fill("2");
+  await page.locator("[data-run]").click();
+  await expect(page.locator("[data-status]")).toContainText(/Done|完成|Fertig/);
+  await expect(page.locator("[data-output]")).toHaveValue(/Page 2[\s\S]*HELLO WORLD/, {
     timeout: 60000,
   });
   await context.setOffline(false);

@@ -7,22 +7,25 @@ import {
   parsePlaylist,
 } from "./core";
 async function preprocessImage(
-  file: File,
+  file: Blob,
   rotation: number,
   enhancement: string,
+  threshold: number,
   signal: AbortSignal,
 ): Promise<Blob | File> {
   if (rotation === 0 && enhancement === "none") return file;
   const image = await createImageBitmap(file);
   try {
     signal.throwIfAborted();
+    if (enhancement === "threshold" && image.width * image.height > 8_000_000)
+      throw Error("Threshold preprocessing is limited to 8 million pixels.");
     const canvas = document.createElement("canvas"),
       quarterTurn = rotation % 180 !== 0;
     canvas.width = quarterTurn ? image.height : image.width;
     canvas.height = quarterTurn ? image.width : image.height;
     const context = canvas.getContext("2d");
     if (!context) throw Error("Canvas preprocessing is unavailable.");
-    context.filter = enhancement === "contrast"
+    context.filter = enhancement === "contrast" || enhancement === "threshold"
       ? "grayscale(1) contrast(1.8)"
       : enhancement === "gray"
         ? "grayscale(1)"
@@ -30,6 +33,18 @@ async function preprocessImage(
     context.translate(canvas.width / 2, canvas.height / 2);
     context.rotate((rotation * Math.PI) / 180);
     context.drawImage(image, -image.width / 2, -image.height / 2);
+    if (enhancement === "threshold") {
+      const pixels = context.getImageData(0, 0, canvas.width, canvas.height),
+        cutoff = Math.max(0, Math.min(255, Number.isFinite(threshold) ? threshold : 160));
+      for (let i = 0; i < pixels.data.length; i += 4) {
+        const value = pixels.data[i]! * 0.299 + pixels.data[i + 1]! * 0.587 + pixels.data[i + 2]! * 0.114,
+          binary = value >= cutoff ? 255 : 0;
+        pixels.data[i] = binary;
+        pixels.data[i + 1] = binary;
+        pixels.data[i + 2] = binary;
+      }
+      context.putImageData(pixels, 0, 0);
+    }
     signal.throwIfAborted();
     const blob = await new Promise<Blob | null>((resolve) =>
       canvas.toBlob(resolve, "image/png"),
@@ -114,6 +129,18 @@ export function mount(root: HTMLElement): () => void {
         "请选择有效的 PNG 或 JPEG 图片，并遵守此工具显示的大小限制。",
         detail,
         "Ein gültiges PNG- oder JPEG-Bild innerhalb der angezeigten Größenlimits wählen.",
+      );
+    if (/up to 20 PDF pages/.test(detail))
+      return message(
+        "每次最多识别 20 页，请缩小页码范围。",
+        detail,
+        "Pro Durchlauf höchstens 20 PDF-Seiten auswählen.",
+      );
+    if (/Threshold preprocessing/.test(detail))
+      return message(
+        "阈值处理最多支持 800 万像素；请改用灰度或缩小图片。",
+        detail,
+        "Schwellwertverarbeitung unterstützt höchstens 8 Megapixel.",
       );
     if (/Download the selected/.test(detail))
       return message(
@@ -201,7 +228,7 @@ export function mount(root: HTMLElement): () => void {
     q<HTMLButtonElement>("prepare")?.setAttribute("disabled", "");
     q<HTMLButtonElement>("download")?.setAttribute("disabled", "");
     q<HTMLInputElement>("files")?.setAttribute("disabled", "");
-    for (const name of ["url", "language", "range", "size", "rotation", "enhance"])
+    for (const name of ["url", "language", "range", "size", "rotation", "enhance", "threshold"])
       q(name)?.setAttribute("disabled", "");
     root
       .querySelectorAll<HTMLButtonElement>("[data-list] button")
@@ -232,7 +259,7 @@ export function mount(root: HTMLElement): () => void {
       cancel.disabled = true;
       q("prepare")?.removeAttribute("disabled");
       q("files")?.removeAttribute("disabled");
-      for (const name of ["url", "language", "range", "size", "rotation", "enhance"])
+      for (const name of ["url", "language", "range", "size", "rotation", "enhance", "threshold"])
         q(name)?.removeAttribute("disabled");
       list();
       if (playlist) q("download")?.removeAttribute("disabled");
@@ -283,9 +310,9 @@ export function mount(root: HTMLElement): () => void {
       if (hits.every(Boolean)) await import("tesseract.js");
       label.textContent = hits.every(Boolean)
         ? message(
-            "语言与引擎已缓存 · 当前工作台可离线识别",
-            "Language and engine cached · this open workbench is ready offline",
-            "Sprache und Engine gespeichert · diese offene Werkbank ist offline bereit",
+            "语言与 OCR 引擎已缓存 · 点击准备以载入 PDF 支持",
+            "Language and OCR engine cached · prepare to load PDF support",
+            "Sprache und OCR-Engine gespeichert · PDF-Unterstützung über „Vorbereiten“ laden",
           )
         : message(
             "尚未下载所选语言。",
@@ -318,6 +345,8 @@ export function mount(root: HTMLElement): () => void {
           progress.value = (i + 1) / paths.length;
         }
         await import("tesseract.js");
+        const { preparePdfRenderer } = await import("./pdf-text");
+        await preparePdfRenderer();
         await ready();
       }),
   );
@@ -377,17 +406,18 @@ export function mount(root: HTMLElement): () => void {
       }
       validateFiles(slug === "ocr-studio" || slug === "pdf-text");
       if (slug === "ocr-studio") {
-        const file = files[0];
-        if (
-          !["image/png", "image/jpeg"].includes(file.type) ||
-          file.size > 20_000_000
-        )
-          throw Error("Choose a PNG/JPEG image up to 20 MB.");
-        const image = await createImageBitmap(file);
-        const pixels = image.width * image.height;
-        image.close();
-        if (pixels > 32_000_000)
-          throw Error("Image exceeds 32 million pixels.");
+        const file = files[0],
+          isPdf = file.type === "application/pdf" || file.name.toLowerCase().endsWith(".pdf");
+        if (isPdf) {
+          if (file.size > 32_000_000) throw Error("PDF exceeds 32 MB.");
+        } else {
+          if (!["image/png", "image/jpeg"].includes(file.type) || file.size > 20_000_000)
+            throw Error("Choose a PNG/JPEG image up to 20 MB.");
+          const image = await createImageBitmap(file),
+            pixels = image.width * image.height;
+          image.close();
+          if (pixels > 32_000_000) throw Error("Image exceeds 32 million pixels.");
+        }
         const language = q<HTMLSelectElement>("language").value,
           cache = await caches.open("world-compiler-ocr-v1"),
           paths = cachedFiles(language);
@@ -472,38 +502,63 @@ export function mount(root: HTMLElement): () => void {
             gzip: true,
           });
           // Keep cached blob URLs alive until initialization settles, including cancellation.
-          activeWorker = await creating;
-          worker = activeWorker;
+          const ocrWorker = await creating;
+          activeWorker = ocrWorker;
+          worker = ocrWorker;
           signal.throwIfAborted();
-          const prepared = await preprocessImage(
-            file,
-            Number(q<HTMLSelectElement>("rotation").value),
-            q<HTMLSelectElement>("enhance").value,
-            signal,
-          );
-          const recognized = await abortable(
-            activeWorker.recognize(prepared, {}, { blocks: true }),
-            signal,
-          );
-          signal.throwIfAborted();
-          output.value = recognized.data.text;
           lines?.replaceChildren();
-          const recognizedLines = recognized.data.blocks?.flatMap((block) =>
-            block.paragraphs.flatMap((paragraph) => paragraph.lines),
-          ) ?? [];
-          for (const line of recognizedLines) {
-            if (!line.text.trim()) continue;
-            const item = document.createElement("li"),
-              confidence = Number.isFinite(line.confidence)
-                ? `${Math.round(Math.max(0, Math.min(100, line.confidence)))}%`
-                : "—";
-            item.textContent = `${line.text} · ${confidence}`;
-            lines?.append(item);
-          }
-          if (lineResults) lineResults.hidden = !lines?.children.length;
+          if (lineResults) lineResults.hidden = true;
+          const pages: string[] = [],
+            recognize = async (source: Blob, pageNumber?: number) => {
+              const prepared = await preprocessImage(
+                source,
+                Number(q<HTMLSelectElement>("rotation").value),
+                q<HTMLSelectElement>("enhance").value,
+                Number(q<HTMLInputElement>("threshold").value),
+                signal,
+              );
+              const recognized = await abortable(
+                ocrWorker.recognize(prepared, {}, { blocks: true }),
+                signal,
+              );
+              signal.throwIfAborted();
+              pages.push(`${pageNumber ? `--- Page ${pageNumber} ---\n` : ""}${recognized.data.text}`);
+              output.value = pages.join("\n\n");
+              const recognizedLines = recognized.data.blocks?.flatMap((block) =>
+                block.paragraphs.flatMap((paragraph) => paragraph.lines),
+              ) ?? [];
+              for (const line of recognizedLines) {
+                if (!line.text.trim()) continue;
+                const item = document.createElement("li"),
+                  confidence = Number.isFinite(line.confidence)
+                    ? `${Math.round(Math.max(0, Math.min(100, line.confidence)))}%`
+                    : "—";
+                item.textContent = `${pageNumber ? `Page ${pageNumber} · ` : ""}${line.text} · ${confidence}`;
+                lines?.append(item);
+              }
+              if (lineResults) lineResults.hidden = !lines?.children.length;
+            };
+          if (isPdf) {
+            const { renderPages } = await import("./pdf-text");
+            for await (const page of renderPages(
+              file,
+              q<HTMLInputElement>("range").value,
+              signal,
+              (_value, pageNumber, total) => {
+                progress.value = _value * 0.15;
+                status.textContent = message(
+                  `正在渲染第 ${pageNumber} 页（共 ${total} 页）…`,
+                  `Rendering PDF page ${pageNumber} of ${total}…`,
+                  `PDF-Seite ${pageNumber} von ${total} wird gerendert…`,
+                );
+              },
+            )) {
+              await recognize(page.image, page.pageNumber);
+            }
+          } else await recognize(file);
           setResult(
             new Blob([output.value], { type: "text/plain;charset=utf-8" }),
-            "ocr.txt",
+            isPdf ? `${file.name.replace(/\.pdf$/iu, "")}-ocr.txt` : "ocr.txt",
           );
         } finally {
           await activeWorker?.terminate();
